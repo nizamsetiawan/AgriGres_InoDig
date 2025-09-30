@@ -8,6 +8,9 @@ class TColors{
   static const Color secondary = Color(0xFFf68620);
   static const Color accent = Color(0xFFb0c7ff);
 
+  // light theme accent color
+  static const Color milkColor = Color(0xFFF8F8EC);
+
   //text colors
   static const Color textPrimary = Color(0xFF333333);
   static const Color textSecondary = Color(0xFF6C757D);

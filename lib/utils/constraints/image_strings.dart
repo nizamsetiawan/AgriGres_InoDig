@@ -13,10 +13,13 @@ class TImages{
   static const String google = "assets/logos/ic_google.png";
   static const String facebook = "assets/logos/facebook.png";
 
-  // -- OnBoarding images
-  static const String onBoardingImage1 = "assets/images/on_boarding_images/splashicon_farmer.json";
-  static const String onBoardingImage2 = "assets/images/on_boarding_images/splashicon_imagedetection.json";
-  static const String onBoardingImage3 = "assets/images/on_boarding_images/splashicon_time.json";
+  // -- OnBoarding images (use PNG placeholders)
+  static const String onBoardingImage1 = "assets/images/on_boarding_images/onboarding1.png";
+  static const String onBoardingImage2 = "assets/images/on_boarding_images/onboarding2.png";
+  static const String onBoardingImage3 = "assets/images/on_boarding_images/onboarding3.png";
+
+  // -- Splash screen
+  static const String splashImage = "assets/logos/ic_splash.png";
 
   // -- Animations
   static const String noDataIllustration = "assets/images/animations/nodata.json";
@@ -57,7 +60,6 @@ static const String urlGalleryIcon = 'https://img.icons8.com/?size=100&id=64062&
 static const String urlHistoryIcon = 'https://img.icons8.com/?size=100&id=122593&format=png&color=000000';
 //detection
 static const String imagePlaceholder = 'assets/images/detection/image_placeholder.png';
-
 
 
 

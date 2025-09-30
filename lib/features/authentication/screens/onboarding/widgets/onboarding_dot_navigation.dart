@@ -16,14 +16,20 @@ class OnBoardingNavigation extends StatelessWidget {
     final controller = OnBoardingController.instance;
     final dark = THelperFunctions.isDarkMode(context);
     return Positioned(
-      bottom: TDeviceUtils.getBottomNavigationBarHeight() + 25,
+      bottom: TDeviceUtils.getBottomNavigationBarHeight() + 64,
       left: TSizes.defaultSpace,
       child: SmoothPageIndicator(
         controller: controller.pageController,
         onDotClicked: controller.dotNavigationClick,
         count: 3,
-        effect:  ExpandingDotsEffect(
-            activeDotColor: dark ? TColors.secondary: TColors.primary, dotHeight: 6),
+        effect: ExpandingDotsEffect(
+          spacing: 8,
+          dotHeight: 6,
+          dotWidth: 24,
+          expansionFactor: 2.5,
+          activeDotColor: dark ? TColors.secondary : TColors.primary,
+          dotColor: TColors.darkGrey.withOpacity(0.2),
+        ),
       ),
     );
   }

@@ -11,7 +11,8 @@ plugins {
 android {
     namespace = "com.nizamsetiawan.agrigres"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "25.2.9519653"
+//    ndkVersion = "25.2.9519653"
+    ndkVersion = "29.0.13113456"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -21,9 +22,18 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
-    aaptOptions {
-        noCompress 'tflite'
-        noCompress 'lite'
+
+    packagingOptions {
+        resources {
+            excludes += setOf("META-INF/*.kotlin_module")
+        }
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
+    androidResources {
+        noCompress("tflite", "lite")
     }
 
     defaultConfig {
@@ -39,8 +49,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false // Nonaktifkan minifikasi
-            shrinkResources false // Nonaktifkan shrink resources
+            isMinifyEnabled = false  // di Kotlin DSL pakai isMinifyEnabled
+            isShrinkResources = false // di Kotlin DSL pakai isShrinkResources
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")

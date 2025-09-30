@@ -1,7 +1,7 @@
+import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:agrigres/features/authentication/controllers/onboarding_controller.dart';
-import 'package:agrigres/features/authentication/screens/onboarding/widgets/onboarding_dot_navigation.dart';
 import 'package:agrigres/features/authentication/screens/onboarding/widgets/onboarding_next_button.dart';
 import 'package:agrigres/features/authentication/screens/onboarding/widgets/onboarding_page.dart';
 import 'package:agrigres/features/authentication/screens/onboarding/widgets/onboarding_skip.dart';
@@ -15,9 +15,9 @@ class OnBoardingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(OnBoardingController());
     return Scaffold(
+      backgroundColor: TColors.milkColor,
       body: Stack(
         children: [
-          ///horizontal scrollable pages
           PageView(
             controller: controller.pageController,
             onPageChanged: controller.updatePageIndicator,
@@ -36,14 +36,7 @@ class OnBoardingScreen extends StatelessWidget {
                   subTitle: TTexts.onBoardingSubTitle3),
             ],
           ),
-
-          ///skip button
           const OnBoardingSkip(),
-
-          ///dot navigation smooth page indicator
-          const OnBoardingNavigation(),
-
-          ///circular button
           const OnBoardingNextButton(),
         ],
       ),

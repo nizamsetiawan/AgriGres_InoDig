@@ -16,12 +16,12 @@ class OnBoardingSkip extends StatelessWidget {
         top: TDeviceUtils.getAppBarHeight(),
         right: TSizes.defaultSpace,
         child: TextButton(
-          style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.all(TColors.primary),
-            foregroundColor: WidgetStateProperty.all(Colors.white),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           onPressed: () =>OnBoardingController.instance.skipPage(),
-          child: const Text('Skip'),
+          child: Text('Skip', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: TColors.primary)),
         ));
   }
 }

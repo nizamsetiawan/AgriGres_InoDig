@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
+import 'package:get/get.dart';
 import 'package:agrigres/features/authentication/controllers/onboarding_controller.dart';
 import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:agrigres/utils/constraints/sizes.dart';
 import 'package:agrigres/utils/device/device_utility.dart';
-import 'package:agrigres/utils/helpers/helper_functions.dart';
 
 class OnBoardingNextButton extends StatelessWidget {
   const OnBoardingNextButton({
@@ -13,15 +12,27 @@ class OnBoardingNextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = THelperFunctions.isDarkMode(context);
+    final controller = OnBoardingController.instance;
     return Positioned(
+      left: TSizes.defaultSpace,
       right: TSizes.defaultSpace,
       bottom: TDeviceUtils.getBottomNavigationBarHeight(),
-      child: ElevatedButton(
-        onPressed: () => OnBoardingController.instance.nextPage(),
-        style: ElevatedButton.styleFrom(shape: const CircleBorder(), backgroundColor: dark ? TColors.secondary : TColors.secondary),
-        child: const Icon(Iconsax.arrow_right_3),
-      ),
+      child: Obx(() {
+        final isLast = controller.currentPageIndex.value == 2;
+        return SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: TColors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () => controller.nextPage(),
+            child: Text(isLast ? 'Mulai Sekarang' : 'Lanjut'),
+          ),
+        );
+      }),
     );
   }
 }

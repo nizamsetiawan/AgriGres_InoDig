@@ -5,18 +5,18 @@ class TTexts {
   // -- OnBoarding TEXTS
 
   static const String onBoardingTitle1 =
-      "Bantu Petani Deteksi Penyakit Daun Tanaman";
+      "Informasi Pertanian Real-time";
   static const String onBoardingTitle2 =
-      "Perawatan Daun Tanaman Lebih Mudah dan Cepat";
+      "Layanan & Panduan Tani";
   static const String onBoardingTitle3 =
-      "Pemantauan Tanaman dengan Timer Cerdas";
+      "Jual Beli Kebutuhan & Komunitas Tani";
 
   static const String onBoardingSubTitle1 =
-      "Petani dapat memantau kesehatan daun tanaman secara cepat dan akurat, membantu mengidentifikasi penyakit sebelum terlambat.";
+  "Dapatkan update harga pasar harian, info cuaca & iklim Gresik, serta ketersediaan pupuk dan pestisida resmi langsung di genggamanmu.";
   static const String onBoardingSubTitle2 =
-      "Menggunakan teknologi AI, aplikasi ini memungkinkan petani untuk memeriksa daun tanaman secara instan dan memberikan solusi tepat waktu untuk kesehatan tanaman.";
+      "Laporkan hama & penyakit tanaman dengan foto, gunakan kalkulator tani, dan ikuti panduan digital untuk hasil panen lebih baik.";
   static const String onBoardingSubTitle3 =
-      "Aplikasi ini membantu petani mengatur waktu pemantauan daun tanaman secara efisien, memberikan peringatan penyakit secara tepat waktu untuk tindakan preventif.";
+      "Jual hasil panen langsung ke pembeli, bergabung di Forum Tani Gresik, serta ikuti pelatihan & sekolah.";
 
   //--Home
   static const String homeAppbarTitle = "Selamat datang di agrigres,";
