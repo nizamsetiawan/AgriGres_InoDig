@@ -1,19 +1,17 @@
 import 'package:agrigres/features/personalization/screens/settings/widgets/about_app.dart';
 import 'package:agrigres/features/personalization/screens/settings/widgets/feedback_form.dart';
 import 'package:agrigres/features/personalization/screens/settings/widgets/privacy_securty_page.dart';
+import 'package:agrigres/features/personalization/screens/settings/widgets/settings_profile_header.dart';
+import 'package:agrigres/features/personalization/screens/settings/widgets/settings_menu_item.dart';
+import 'package:agrigres/features/personalization/screens/settings/widgets/settings_section_header.dart';
+import 'package:agrigres/features/personalization/controllers/user_controller.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:agrigres/common/widgets/appbar/appbar.dart';
-import 'package:agrigres/common/widgets/custom_shapes/containers/primary_header_container.dart';
-import 'package:agrigres/common/widgets/list_tiles/settings_menu_tile.dart';
-import 'package:agrigres/common/widgets/list_tiles/user_profile_tile.dart';
-import 'package:agrigres/common/widgets/texts/section_heading.dart';
 import 'package:agrigres/data/repositories/authentication/authentication_repository.dart';
 import 'package:agrigres/features/personalization/screens/profile/profile.dart';
 import 'package:agrigres/utils/constraints/colors.dart';
-import 'package:agrigres/utils/constraints/sizes.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 
 import '../../../../utils/constraints/text_strings.dart';
@@ -23,115 +21,111 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(UserController());
+    
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ///Header
-            TPrimaryHeaderContainer(
-              child: Column(
-                children: [
-                  ///appbar
-                  TAppBar(
-                      title: Text('Akun Saya',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineMedium!
-                              .apply(color: TColors.white))),
-
-                  ///user profile card
-                  TUserProfileTile(
-                      onPressed: () => Get.to(() => const ProfileScreen())),
-                  const SizedBox(height: TSizes.spaceBtwSections),
-                ],
+      backgroundColor: Colors.grey[50],
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // AppBar
+            SliverAppBar(
+              title: const Text('Profil'),
+              floating: false,
+              pinned: true,
+              snap: false,
+              backgroundColor: Colors.grey[50],
+              foregroundColor: Colors.black,
+              elevation: 0,
+              automaticallyImplyLeading: false,
+            ),
+            
+            // Settings Content
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Profile Header
+                    const TSettingsProfileHeader(),
+                    
+                    // Personalisasi Section
+                    const TSettingsSectionHeader(title: 'Personalisasi'),
+                    
+                    TSettingsMenuItem(
+                      icon: Iconsax.user,
+                      title: 'Data Diri',
+                      subtitle: 'Lengkapi Data',
+                      onTap: () => Get.to(() => const ProfileScreen()),
+                    ),
+                    
+                    TSettingsMenuItem(
+                      icon: Iconsax.setting,
+                      title: 'Pengaturan',
+                      onTap: () => AppSettings.openAppSettings(
+                        type: AppSettingsType.settings
+                      ),
+                    ),
+                    
+                    // General Section
+                    const TSettingsSectionHeader(title: 'General'),
+                    
+                    TSettingsMenuItem(
+                      icon: Iconsax.information,
+                      title: 'Tentang',
+                      onTap: () => Get.to(() => AboutAPPPage()),
+                    ),
+                    
+                    TSettingsMenuItem(
+                      icon: Iconsax.security_card,
+                      title: 'Syarat & Ketentuan',
+                      onTap: () => Get.to(() => PrivacyAndSecurityPage()),
+                    ),
+                    
+                    TSettingsMenuItem(
+                      icon: Iconsax.call,
+                      title: 'Masukan Pengguna',
+                      onTap: () => Get.to(() => FeedbackForm()),
+                    ),
+                    
+                    const SizedBox(height: 6),
+                    
+                    // Logout
+                    TSettingsMenuItem(
+                      icon: Iconsax.logout,
+                      title: 'Keluar',
+                      isLogout: true,
+                      onTap: () => _showLogoutDialog(context),
+                    ),
+                    
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
-
-            ///Body
-            Padding(
-              padding: const EdgeInsets.all(TSizes.defaultSpace),
-              child: Column(
-                children: [
-                  ///-- Account settings
-                  const TSectionHeading(
-                      title: TTexts.accountSettingsTitle, showActionButton: false),
-                  const SizedBox(height: TSizes.spaceBtwItems),
-
-                  TSettingsMenuTile(
-                      icon: Iconsax.sun,
-                      title: TTexts.changeThemeTitle,
-                      onTap: () => AppSettings.openAppSettings(
-                          type: AppSettingsType.display),
-                      subTitle: TTexts.changeThemeSubtitle),
-                  TSettingsMenuTile(
-                    icon: Iconsax.location,
-                    title: TTexts.locationTitle,
-                    subTitle: TTexts.locationSubtitle,
-                    onTap: () => AppSettings.openAppSettings(
-                        type: AppSettingsType.location),
-                  ),
-                  TSettingsMenuTile(
-                    icon: Iconsax.setting,
-                    title: TTexts.otherOptionsTitle,
-                    subTitle: TTexts.otherOptionsSubtitle,
-                    onTap: () => AppSettings.openAppSettings(
-                        type: AppSettingsType.generalSettings),
-                  ),
-                  ///-- App settings
-                  const SizedBox(height: TSizes.spaceBtwSections),
-                  const TSectionHeading(
-                      title: TTexts.aboutAppTitle, showActionButton: false),
-                  const SizedBox(height: TSizes.spaceBtwItems),
-                  TSettingsMenuTile(
-                      icon: Iconsax.information,
-                      title: TTexts.aboutAppTitle,
-                      onTap: () => Get.to(() => AboutAPPPage()),
-                      subTitle: TTexts.aboutAppSubtitle),
-                  TSettingsMenuTile(
-                    icon: Iconsax.security_user,
-                    title: TTexts.giveRatingTitle,
-                    onTap: () => Get.to(() => FeedbackForm()),
-                    subTitle: TTexts.giveRatingSubtitle,
-                  ),
-                  TSettingsMenuTile(
-                      icon: Iconsax.security_card,
-                      title: TTexts.privacyAndSecurity,
-                      onTap: () => Get.to(() => PrivacyAndSecurityPage()),
-                      subTitle: TTexts.privacyAndSecuritySubtitle),
-
-                  ///--logout button
-                  const SizedBox(height: TSizes.spaceBtwSections),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                        onPressed: () {
-                          PanaraConfirmDialog.show(
-                            color: TColors.primary,
-                            context,
-                            title: TTexts.logoutConfirmationTitle,
-                            message: TTexts.logoutConfirmationMessage,
-                            confirmButtonText: TTexts.logoutButtonText,
-                            cancelButtonText: TTexts.cancelButtonText,
-                            onTapCancel: () {
-                              Navigator.pop(context);
-                            },
-                            onTapConfirm: () {
-                              AuthenticationRepository.instance.logout();
-                            },
-                            panaraDialogType: PanaraDialogType.custom,
-                            barrierDismissible:
-                            false, // optional parameter (default is true)
-                          );
-                        },
-                        child: const Text(TTexts.logoutButtonText)),
-                  ),
-                  const SizedBox(height: TSizes.spaceBtwSections * 2.5),
-                ],
-              ),
-            )
           ],
         ),
       ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    PanaraConfirmDialog.show(
+      color: TColors.primary,
+      context,
+      title: TTexts.logoutConfirmationTitle,
+      message: TTexts.logoutConfirmationMessage,
+      confirmButtonText: TTexts.logoutButtonText,
+      cancelButtonText: TTexts.cancelButtonText,
+      onTapCancel: () {
+        Navigator.pop(context);
+      },
+      onTapConfirm: () {
+        AuthenticationRepository.instance.logout();
+      },
+      panaraDialogType: PanaraDialogType.custom,
+      barrierDismissible: false,
     );
   }
 }

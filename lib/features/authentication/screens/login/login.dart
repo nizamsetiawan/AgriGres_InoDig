@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:agrigres/common/styles/spacing_styles.dart';
@@ -8,16 +9,26 @@ import 'package:agrigres/features/authentication/screens/login/widgets/login_hea
 import 'package:agrigres/utils/constraints/sizes.dart';
 import 'package:agrigres/utils/constraints/text_strings.dart';
 
+import '../../../../common/widgets/appbar/appbar.dart';
+import '../../../../routes/routes.dart';
+import '../../../../utils/constraints/colors.dart';
+
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
+      backgroundColor: Colors.grey[50],
+      appBar: TAppBar(
+        showBackArrow: true,
+      ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: TSpacingStyle.paddingWithAppBarHeight,
+          padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               ///logo,title,subtitle
@@ -26,13 +37,29 @@ class LoginScreen extends StatelessWidget {
               ///form
               const TLoginForm(),
 
-              ///Divider
-              TFormDivider(dividerText: TTexts.orSignInWith.capitalize!),
-              const SizedBox(height: TSizes.defaultSpace),
-
-
               ///footer
               const TSocialButtons(),
+
+              const SizedBox(height: 24),
+
+              Center(
+                child: RichText(
+                  text: TextSpan(
+                    style: textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                    children: [
+                      const TextSpan(text: 'Belum punya akun?  '),
+                      TextSpan(
+                        text: 'Daftar',
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: TColors.primary, 
+                          fontWeight: FontWeight.w600
+                        ),
+                        recognizer: TapGestureRecognizer()..onTap = () => Get.toNamed(TRoutes.signup),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),

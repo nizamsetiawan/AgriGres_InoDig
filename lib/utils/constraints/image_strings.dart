@@ -8,6 +8,10 @@ class TImages{
   static const String lightAppLogo = "assets/logos/logo_light.png";
   static const String appLogoLight = "assets/logos/logo_light.png";
   static const String appLogoDark = "assets/logos/logo_dark.png";
+  static const String icFirstPageAuth = "assets/logos/ic_firstpage_auth.png";
+  static const String icFarmerAuth = "assets/logos/ic_farmer_auth.png";
+  static const String icGreenLogo = "assets/logos/ic_green_logo.png";
+  static const String icWhiteLogo = "assets/logos/ic_white_logo.png";
 
   // -- Social logos
   static const String google = "assets/logos/ic_google.png";

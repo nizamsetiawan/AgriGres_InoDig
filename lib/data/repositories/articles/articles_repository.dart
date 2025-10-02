@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import '../../../utils/exceptions/firebase_exceptions.dart';
 import '../../../utils/exceptions/format_exceptions.dart';
 import '../../../utils/exceptions/platform_exceptions.dart';
+import '../../../utils/logging/logger.dart';
 
 class ArticlesRepository extends GetxController {
   static ArticlesRepository get instance => Get.find();
@@ -14,17 +15,36 @@ class ArticlesRepository extends GetxController {
 
   Future<List<ArticleModel>> getAllArticles() async {
     try {
+      TLoggerHelper.info('Starting to fetch articles from Firebase...');
+      
       final snapshot = await _db.collection('Articles').get();
-      final result =
-          snapshot.docs.map((e) => ArticleModel.fromSnapshot(e)).toList();
+      
+      TLoggerHelper.info('Firebase snapshot received with ${snapshot.docs.length} documents');
+      
+      if (snapshot.docs.isEmpty) {
+        TLoggerHelper.warning('No documents found in Articles collection');
+        return [];
+      }
+      
+      final result = snapshot.docs.map((e) {
+        TLoggerHelper.info('Processing document: ${e.id}');
+        TLoggerHelper.info('Document data: ${e.data()}');
+        return ArticleModel.fromSnapshot(e);
+      }).toList();
+      
+      TLoggerHelper.info('Successfully parsed ${result.length} articles');
       return result;
     } on FirebaseException catch (e) {
+      TLoggerHelper.error('Firebase error: ${e.code} - ${e.message}');
       throw TFirebaseException(e.code).message;
-    } on FormatException catch (_) {
+    } on FormatException catch (e) {
+      TLoggerHelper.error('Format error: $e');
       throw const TFormatException();
     } on PlatformException catch (e) {
+      TLoggerHelper.error('Platform error: ${e.code} - ${e.message}');
       throw TPlatformException(e.code).message;
     } catch (e) {
+      TLoggerHelper.error('Unknown error while fetching articles: $e');
       throw 'Something went wrong while fetching articles';
     }
   }

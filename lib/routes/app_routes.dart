@@ -16,6 +16,8 @@ import 'package:agrigres/features/detection/screens/home/home.dart';
 import 'package:agrigres/routes/routes.dart';
 
 import '../features/article/screens/all_articles/article.dart';
+import '../features/forum/screens/farmer_forum.dart';
+import '../features/calculator/screens/calculator_screen.dart';
 
 class AppRoutes {
   static final pages = [
@@ -34,8 +36,8 @@ class AppRoutes {
     GetPage(name: TRoutes.feedbackForm, page: () => const FeedbackForm()),
     GetPage(name: TRoutes.aboutApp, page: () => const AboutAPPPage()),
     GetPage(name: TRoutes.guidelines, page: () => const GuidelinesScreen()),
-
-
+    GetPage(name: TRoutes.farmerForum, page: () => const FarmerForum()),
+    GetPage(name: TRoutes.calculator, page: () => const CalculatorScreen()),
 
   ];
 }

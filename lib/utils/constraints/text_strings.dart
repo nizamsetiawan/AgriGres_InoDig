@@ -25,8 +25,10 @@ class TTexts {
   //--authentication headings
   static const String loginTitle = "Selamat Datang di agrigres";
   static const String loginSubTitle =
-      "Maksimalkan hasil pertanian dengan deteksi penyakit daun yang cepat dan tepat menggunakan teknologi AI.";
+      "Masukkan data Anda untuk masuk ke aplikasi.";
   static const String signUpTitle = "Mari buat akun Anda";
+  static const String signUpSubTitle =
+      "Silakan isi formulir berikut untuk melanjutkan pendaftaran.";
   static const String forgotPasswordSubTitle =
       "Tidak masalah, kadang kita lupa. Masukkan email Anda dan kami akan kirimkan tautan untuk reset kata sandi";
   static const String changeYourPasswordTitle =

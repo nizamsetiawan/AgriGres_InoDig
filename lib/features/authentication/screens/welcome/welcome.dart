@@ -6,17 +6,21 @@ import 'package:agrigres/utils/constraints/sizes.dart';
 import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:agrigres/routes/routes.dart';
 
+import '../../controllers/login/login_controller.dart';
+
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final controller = Get.put(LoginController());
 
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(TSizes.defaultSpace),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -25,101 +29,109 @@ class WelcomeScreen extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Image.asset(
                   TImages.icFirstPageAuth,
-                  width: 120,
-                  height: 50,
+                  width: 100,
+                  height: 40,
                   fit: BoxFit.contain,
                 ),
               ),
 
+              const SizedBox(height: 20),
+
               // Illustration + tagline
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: TSizes.spaceBtwSections),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Image(
-                      image: AssetImage(TImages.icFarmerAuth),
-                      width: 220,
-                      height: 250,
-                      fit: BoxFit.contain,
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Image(
+                    image: AssetImage(TImages.icFarmerAuth),
+                    width: 180,
+                    height: 200,
+                    fit: BoxFit.contain,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Mulai perjalananmu menuju pertanian modern & sejahtera!',
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey[600],
                     ),
-                    const SizedBox(height: TSizes.spaceBtwSections),
-                    Text(
-                      'Mulai perjalananmu menuju pertanian modern & sejahtera!',
-                      style: textTheme.bodyMedium?.copyWith(color: TColors.darkGrey),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
+
+              const SizedBox(height: 24),
 
               // Email button (go to phone-register flow as requested)
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Get.toNamed(TRoutes.phoneRegister);
+                    Get.toNamed(TRoutes.signup);
                   },
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
-                  child: const Text('Lanjutkan dengan Email'),
+                  child: const Text('Daftar Sekarang'),
                 ),
               ),
 
-              const SizedBox(height: TSizes.spaceBtwItems),
+              const SizedBox(height: 12),
 
               // Google outlined button (full-width)
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () => Get.toNamed(TRoutes.signIn),
+                  onPressed: () => controller.googleSignIn(),
                   icon: const Image(
                     image: AssetImage(TImages.google),
-                    width: 20,
-                    height: 20,
+                    width: 18,
+                    height: 18,
                   ),
-                  label: const Text('Lanjutkan dengan Google', style: TextStyle(color: TColors.primary),),
+                  label: const Text(
+                    'Lanjutkan dengan Google', 
+                    style: TextStyle(color: TColors.primary)
+                  ),
                   style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: BorderSide(color: TColors.grey),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    side: BorderSide(color: Colors.grey[300]!),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
               ),
 
-              const SizedBox(height: TSizes.spaceBtwItems),
+              const SizedBox(height: 12),
 
               // Apple button (orange)
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () {},
-                  icon: const Icon(Icons.apple),
+                  icon: const Icon(Icons.apple, size: 18),
                   label: const Text('Lanjutkan dengan Apple'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: TColors.secondary,
                     foregroundColor: Colors.white,
-                    side: BorderSide(color: TColors.secondary),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
               ),
 
-              const SizedBox(height: TSizes.spaceBtwItems),
+              const SizedBox(height: 16),
 
               // Login link with clickable 'Masuk'
               Center(
                 child: RichText(
                   text: TextSpan(
-                    style: textTheme.bodyMedium?.copyWith(color: TColors.darkGrey),
+                    style: textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
                     children: [
                       const TextSpan(text: 'Sudah punya akun?  '),
                       TextSpan(
                         text: 'Masuk',
-                        style: textTheme.bodyMedium?.copyWith(color: TColors.primary, fontWeight: FontWeight.w600),
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: TColors.primary, 
+                          fontWeight: FontWeight.w600
+                        ),
                         recognizer: TapGestureRecognizer()..onTap = () => Get.toNamed(TRoutes.signIn),
                       ),
                     ],
@@ -127,24 +139,24 @@ class WelcomeScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: TSizes.spaceBtwSections*3),
+              const SizedBox(height: 32),
 
               // Terms text with clickable green links
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  style: textTheme.labelMedium?.copyWith(color: TColors.darkGrey),
+                  style: textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
                   children: [
                     const TextSpan(text: 'Dengan mendaftar atau masuk, saya menyetujui '),
                     TextSpan(
                       text: 'Syarat Layanan',
-                      style: textTheme.labelMedium?.copyWith(color: TColors.primary),
+                      style: textTheme.bodySmall?.copyWith(color: TColors.primary),
                       recognizer: TapGestureRecognizer()..onTap = () => Get.toNamed(TRoutes.privacyAndSecurity),
                     ),
                     const TextSpan(text: ' dan '),
                     TextSpan(
                       text: 'Kebijakan Privasi',
-                      style: textTheme.labelMedium?.copyWith(color: TColors.primary),
+                      style: textTheme.bodySmall?.copyWith(color: TColors.primary),
                       recognizer: TapGestureRecognizer()..onTap = () => Get.toNamed(TRoutes.privacyAndSecurity),
                     ),
                     const TextSpan(text: ' aplikasi.'),

@@ -5,8 +5,6 @@ import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:agrigres/utils/constraints/image_strings.dart';
 import 'package:agrigres/utils/constraints/sizes.dart';
 
-import '../../../features/personalization/screens/settings/settings.dart';
-
 class TSocialButtons extends StatelessWidget {
   const TSocialButtons({
     super.key,
@@ -15,17 +13,45 @@ class TSocialButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(LoginController());
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          decoration: BoxDecoration(border: Border.all(color: TColors.grey), borderRadius: BorderRadius.circular(100)),
-          child: IconButton(
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
             onPressed: () => controller.googleSignIn(),
             icon: const Image(
-              width: TSizes.iconMd,
-              height: TSizes.iconMd,
               image: AssetImage(TImages.google),
+              width: 18,
+              height: 18,
+            ),
+            label: const Text(
+              'Lanjutkan dengan Google',
+              style: TextStyle(color: TColors.primary),
+            ),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              side: BorderSide(color: Colors.grey[300]!),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: () {},
+            icon: const Icon(Icons.apple, size: 18),
+            label: const Text('Lanjutkan dengan Apple'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: TColors.secondary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           ),
         ),

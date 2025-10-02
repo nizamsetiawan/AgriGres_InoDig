@@ -22,4 +22,6 @@ class TRoutes {
   static const imageGallery = '/image-gallery';
   static const mediaPreview = '/media-preview';
   static const resultAnalysis = '/result-analysis';
+  static const farmerForum = '/farmer-forum';
+  static const calculator = '/calculator';
 }

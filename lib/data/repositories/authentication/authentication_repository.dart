@@ -1,3 +1,4 @@
+import 'package:agrigres/features/authentication/screens/welcome/welcome.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -47,7 +48,7 @@ class AuthenticationRepository extends GetxController {
       //local storage
       deviceStorage.writeIfNull('isFirstTime', true);
       deviceStorage.read('isFirstTime') != true
-          ? Get.offAll(() => const LoginScreen())
+          ? Get.offAll(() => const WelcomeScreen())
           : Get.offAll(const OnBoardingScreen());
     }
   }
