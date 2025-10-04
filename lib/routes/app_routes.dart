@@ -24,6 +24,7 @@ import '../features/agri_info/screens/monthly_detail_agri_info_screen.dart';
 import '../features/agri_info/screens/table_detail_agri_info_screen.dart';
 import '../features/agri_info/screens/province_detail_agri_info_screen.dart';
 import '../features/agrimart/screens/agrimart_screen.dart';
+import '../features/calculator/screens/calculator_results_screen.dart';
 
 class AppRoutes {
   static final pages = [
@@ -50,6 +51,7 @@ class AppRoutes {
     GetPage(name: TRoutes.tableDetailAgriInfo, page: () => const TableDetailAgriInfoScreen()),
     GetPage(name: TRoutes.provinceDetailAgriInfo, page: () => const ProvinceDetailAgriInfoScreen()),
     GetPage(name: TRoutes.agriMart, page: () => const AgriMartScreen()),
+    GetPage(name: TRoutes.calculatorResults, page: () => const CalculatorResultsScreen()),
 
   ];
 }
