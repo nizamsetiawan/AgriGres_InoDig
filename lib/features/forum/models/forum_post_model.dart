@@ -9,6 +9,7 @@ class ForumPostModel {
   String? imageUrl;
   List<String>? imageUrls;
   String? location;
+  List<String> tags;
   bool isAnonymous;
   bool disableComments;
   List<String> likes;
@@ -25,6 +26,7 @@ class ForumPostModel {
     this.imageUrl,
     this.imageUrls,
     this.location,
+    this.tags = const [],
     this.isAnonymous = false,
     this.disableComments = false,
     required this.likes,
@@ -55,6 +57,7 @@ class ForumPostModel {
       'image_url': imageUrl,
       'image_urls': imageUrls,
       'location': location,
+      'tags': tags,
       'is_anonymous': isAnonymous,
       'disable_comments': disableComments,
       'likes': likes,
@@ -74,6 +77,7 @@ class ForumPostModel {
       imageUrl: json['image_url'],
       imageUrls: json['image_urls'] != null ? List<String>.from(json['image_urls']) : null,
       location: json['location'],
+      tags: List<String>.from(json['tags'] ?? []),
       isAnonymous: json['is_anonymous'] ?? false,
       disableComments: json['disable_comments'] ?? false,
       likes: List<String>.from(json['likes'] ?? []),
@@ -97,6 +101,7 @@ class ForumPostModel {
         imageUrl: data['image_url'],
         imageUrls: data['image_urls'] != null ? List<String>.from(data['image_urls']) : null,
         location: data['location'],
+        tags: List<String>.from(data['tags'] ?? []),
         isAnonymous: data['is_anonymous'] ?? false,
         disableComments: data['disable_comments'] ?? false,
         likes: List<String>.from(data['likes'] ?? []),
@@ -120,6 +125,7 @@ class ForumPostModel {
     String? imageUrl,
     List<String>? imageUrls,
     String? location,
+    List<String>? tags,
     bool? isAnonymous,
     bool? disableComments,
     List<String>? likes,
@@ -136,6 +142,7 @@ class ForumPostModel {
       imageUrl: imageUrl ?? this.imageUrl,
       imageUrls: imageUrls ?? this.imageUrls,
       location: location ?? this.location,
+      tags: tags ?? this.tags,
       isAnonymous: isAnonymous ?? this.isAnonymous,
       disableComments: disableComments ?? this.disableComments,
       likes: likes ?? this.likes,

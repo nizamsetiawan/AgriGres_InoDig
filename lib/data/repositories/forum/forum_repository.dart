@@ -1,4 +1,5 @@
 import 'package:agrigres/features/forum/models/forum_post_model.dart';
+import 'package:agrigres/features/forum/repositories/tag_post_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -138,6 +139,7 @@ class ForumRepository extends GetxController {
     String? imageUrl,
     List<String>? imageUrls,
     String? location,
+    List<String> tags = const [],
     bool isAnonymous = false,
     bool disableComments = false,
   }) async {
@@ -163,6 +165,7 @@ class ForumRepository extends GetxController {
         imageUrl: imageUrl,
         imageUrls: imageUrls,
         location: location,
+        tags: tags,
         isAnonymous: isAnonymous,
         disableComments: disableComments,
         likes: [],
@@ -172,6 +175,13 @@ class ForumRepository extends GetxController {
       );
 
       await _db.collection('ForumPosts').doc(postId).set(forumPost.toJson());
+      
+      // Update tag usage counts
+      if (tags.isNotEmpty) {
+        for (String tag in tags) {
+          await TagPostRepository.instance.createOrUpdateTag(tag);
+        }
+      }
       
       TLoggerHelper.info('Successfully created forum post with ID: $postId');
       return postId;

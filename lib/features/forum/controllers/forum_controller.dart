@@ -1,34 +1,43 @@
-import 'package:agrigres/data/repositories/forum/forum_repository.dart';
-import 'package:agrigres/features/forum/models/forum_post_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../../utils/helpers/loaders.dart';
-import '../../../utils/logging/logger.dart';
+import 'package:agrigres/data/repositories/forum/forum_repository.dart';
+import 'package:agrigres/features/forum/models/forum_post_model.dart';
+import 'package:agrigres/utils/helpers/loaders.dart';
+import 'package:agrigres/utils/logging/logger.dart';
 
 class ForumController extends GetxController {
   static ForumController get instance => Get.find();
 
+  // Repository
   final forumRepository = Get.put(ForumRepository());
 
+  // Loading states
   RxBool isLoading = false.obs;
   RxBool isCreatingPost = false.obs;
   RxBool isLiking = false.obs;
   RxBool isCommenting = false.obs;
   RxBool isUploadingImage = false.obs;
   RxDouble uploadProgress = 0.0.obs;
+
+  // Data
   final RxList<ForumPostModel> forumPosts = <ForumPostModel>[].obs;
   final RxList<ForumPostModel> filteredPosts = <ForumPostModel>[].obs;
   final RxString errorMessage = ''.obs;
 
   // Search and filter
   final RxString searchQuery = ''.obs;
-  final RxString selectedFilter = 'Semua'.obs;
+  final RxList<String> selectedTagFilters = <String>[].obs;
   final searchController = TextEditingController();
 
   // Text controllers
   final postContentController = TextEditingController();
   final commentController = TextEditingController();
+  final tagController = TextEditingController();
+  
+  // Tags for creating posts
+  final RxList<String> selectedTags = <String>[].obs;
 
   @override
   void onInit() {
@@ -118,6 +127,7 @@ class ForumController extends GetxController {
     String? imageUrl, 
     List<String>? imageUrls, 
     String? location,
+    List<String> tags = const [],
     bool isAnonymous = false,
     bool disableComments = false,
   }) async {
@@ -136,12 +146,14 @@ class ForumController extends GetxController {
         imageUrl: imageUrl,
         imageUrls: imageUrls,
         location: location,
+        tags: selectedTags.toList(),
         isAnonymous: isAnonymous,
         disableComments: disableComments,
       );
 
       // Clear form
       postContentController.clear();
+      clearTags();
 
       // Reload posts
       await loadForumPosts();
@@ -277,11 +289,6 @@ class ForumController extends GetxController {
     applyFilters();
   }
 
-  // Filter by category
-  void filterByCategory(String category) {
-    selectedFilter.value = category;
-    applyFilters();
-  }
 
   // Apply both search and filter
   void applyFilters() {
@@ -295,11 +302,14 @@ class ForumController extends GetxController {
       }).toList();
     }
 
-    // Apply category filter (for now, just return all posts)
-    // You can add category field to ForumPostModel later if needed
-    if (selectedFilter.value != 'Semua') {
-      // For now, just return all posts since we don't have category field
-      // You can implement category filtering here when you add category to the model
+    // Apply tag filter
+    if (selectedTagFilters.isNotEmpty) {
+      filtered = filtered.where((post) {
+        // Check if post has any of the selected tags
+        return selectedTagFilters.any((selectedTag) => 
+          post.tags.any((postTag) => postTag.toLowerCase() == selectedTag.toLowerCase())
+        );
+      }).toList();
     }
 
     filteredPosts.assignAll(filtered);
@@ -316,8 +326,82 @@ class ForumController extends GetxController {
   void clearAllFilters() {
     searchController.clear();
     searchQuery.value = '';
-    selectedFilter.value = 'Semua';
+    selectedTagFilters.clear();
     applyFilters();
+  }
+
+  // Tag filter methods
+  void toggleTagFilter(String tag) {
+    if (selectedTagFilters.contains(tag)) {
+      selectedTagFilters.remove(tag);
+    } else {
+      selectedTagFilters.add(tag);
+    }
+    applyFilters();
+  }
+
+  void clearTagFilters() {
+    selectedTagFilters.clear();
+    applyFilters();
+  }
+
+  // Get all unique tags from posts
+  List<String> getAllTags() {
+    Set<String> allTags = {};
+    for (var post in forumPosts) {
+      allTags.addAll(post.tags);
+    }
+    return allTags.toList()..sort();
+  }
+
+  // Refresh comments for a specific post
+  Future<void> refreshPostComments(String postId) async {
+    try {
+      TLoggerHelper.info('Refreshing comments for post: $postId');
+      
+      // Fetch the updated post from Firebase
+      final snapshot = await FirebaseFirestore.instance
+          .collection('ForumPosts')
+          .doc(postId)
+          .get();
+      
+      if (snapshot.exists) {
+        final updatedPost = ForumPostModel.fromSnapshot(snapshot);
+        
+        // Update the specific post in the lists
+        final forumIndex = forumPosts.indexWhere((post) => post.id == postId);
+        if (forumIndex != -1) {
+          forumPosts[forumIndex] = updatedPost;
+        }
+        
+        final filteredIndex = filteredPosts.indexWhere((post) => post.id == postId);
+        if (filteredIndex != -1) {
+          filteredPosts[filteredIndex] = updatedPost;
+        }
+        
+        TLoggerHelper.info('Updated comments for post: $postId with ${updatedPost.comments.length} comments');
+      }
+    } catch (e) {
+      TLoggerHelper.error('Error refreshing comments: $e');
+    }
+  }
+
+  // Add tag
+  void addTag(String tag) {
+    if (tag.trim().isNotEmpty && !selectedTags.contains(tag.trim())) {
+      selectedTags.add(tag.trim());
+      tagController.clear();
+    }
+  }
+
+  // Remove tag
+  void removeTag(String tag) {
+    selectedTags.remove(tag);
+  }
+
+  // Clear all tags
+  void clearTags() {
+    selectedTags.clear();
   }
 
   @override
@@ -325,6 +409,7 @@ class ForumController extends GetxController {
     postContentController.dispose();
     commentController.dispose();
     searchController.dispose();
+    tagController.dispose();
     super.onClose();
   }
 }

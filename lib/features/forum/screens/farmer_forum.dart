@@ -4,7 +4,7 @@ import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:agrigres/features/forum/controllers/forum_controller.dart';
 import 'package:agrigres/features/forum/screens/widgets/forum_post_card.dart';
 import 'package:agrigres/features/forum/screens/create_post_screen.dart';
-import 'package:agrigres/common/widgets/loaders/article_shimmer.dart';
+import 'package:agrigres/common/widgets/loaders/shimmer.dart';
 import 'package:agrigres/features/forum/screens/widgets/forum_search_bar.dart';
 
 class FarmerForum extends StatelessWidget {
@@ -17,122 +17,192 @@ class FarmerForum extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // AppBar
-            SliverAppBar(
-              title: const Text('Forum Petani'),
-              floating: false,
-              pinned: true,
-              snap: false,
-              backgroundColor: Colors.grey[50],
-              foregroundColor: Colors.black,
-              elevation: 0,
-              automaticallyImplyLeading: false,
-            ),
-            
-            // Search Bar
-            SliverAppBar(
-              title: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: TForumSearchBar(),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await controller.loadForumPosts();
+          },
+          color: TColors.primary,
+          backgroundColor: Colors.white,
+          child: CustomScrollView(
+            slivers: [
+              // AppBar
+              SliverAppBar(
+                title: const Text('Forum Petani'),
+                floating: false,
+                pinned: true,
+                snap: false,
+                backgroundColor: Colors.grey[50],
+                foregroundColor: Colors.black,
+                elevation: 0,
+                automaticallyImplyLeading: false,
               ),
-              floating: false,
-              pinned: true,
-              snap: false,
-              backgroundColor: Colors.grey[50],
-              elevation: 0,
-              automaticallyImplyLeading: false,
-              toolbarHeight: 70,
-            ),
-            
-            // Forum Stats
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Obx(() => Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: TColors.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.forum, color: TColors.primary, size: 16),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${controller.filteredPosts.length} Postingan',
-                            style: TextStyle(
-                              color: TColors.primary,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.people, color: Colors.green[600], size: 16),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Aktif',
-                            style: TextStyle(
-                              color: Colors.green[600],
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                )),
+              
+              // Search Bar
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  child: const TForumSearchBar(),
+                ),
               ),
-            ),
+              
 
-            // Forum Posts
-            Obx(() {
-              if (controller.isLoading.value) {
-                return const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: TArticleShimmer(),
+              // Related Posts Section
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.trending_up,
+                        color: TColors.primary,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Postingan Terkait',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: () {
+                          // Navigate to all posts or implement filter
+                        },
+                        child: Text(
+                          'Lihat Semua',
+                          style: TextStyle(
+                            color: TColors.primary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Forum Posts List
+              Obx(() {
+                if (controller.isLoading.value) {
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => const TShimmerEffect(
+                        width: double.infinity,
+                        height: 200,
+                      ),
+                      childCount: 5,
+                    ),
+                  );
+                }
+
+                if (controller.filteredPosts.isEmpty) {
+                  return SliverToBoxAdapter(
+                    child: Container(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.forum_outlined,
+                            size: 64,
+                            color: Colors.grey[400],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Belum ada postingan',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Jadilah yang pertama berbagi pengalaman di forum ini',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[500],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final post = controller.filteredPosts[index];
+                      return ForumPostCard(post: post);
+                    },
+                    childCount: controller.filteredPosts.length,
                   ),
                 );
-              }
+              }),
 
-              if (controller.filteredPosts.isEmpty) {
-                return SliverToBoxAdapter(
-                  child: _buildEmptyState(context),
-                );
-              }
-
-              return SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final post = controller.filteredPosts[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: ForumPostCard(post: post),
-                    );
-                  },
-                  childCount: controller.filteredPosts.length,
+              // Additional Info Section
+              SliverToBoxAdapter(
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: TColors.primary.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: TColors.primary.withOpacity(0.1),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.lightbulb_outline,
+                            color: TColors.primary,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Tips Berbagi di Forum',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: TColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Bagikan pengalaman, tips, dan pengetahuan Anda dengan komunitas petani lainnya.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          _buildTipChip('Gunakan foto yang jelas'),
+                          _buildTipChip('Jelaskan lokasi'),
+                          _buildTipChip('Tulis dengan detail'),
+                          _buildTipChip('Respon komentar'),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              );
-            }),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: Obx(() {
@@ -149,60 +219,25 @@ class FarmerForum extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: TColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(60),
-              ),
-              child: Icon(
-                Icons.forum_outlined,
-                size: 64,
-                color: TColors.primary,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Belum Ada Postingan',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[800],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Jadilah yang pertama berbagi cerita atau pertanyaan di forum ini',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () => Get.to(() => const CreatePostScreen()),
-              icon: const Icon(Icons.add),
-              label: const Text('Buat Postingan'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: TColors.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-          ],
+  Widget _buildTipChip(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: TColors.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: TColors.primary.withOpacity(0.2),
+          width: 0.5,
+        ),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 10,
+          color: TColors.primary,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
   }
-} 
+}

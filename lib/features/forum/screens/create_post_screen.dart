@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:agrigres/features/forum/controllers/forum_controller.dart';
+import 'package:agrigres/features/forum/utils/tag_colors.dart';
 import 'package:agrigres/features/detection/controllers/location_controller.dart';
 import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:agrigres/common/widgets/loaders/shimmer.dart';
@@ -177,7 +178,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           _uploadedImageUrls = uploadedUrls;
           _isUploadingImage = false;
         });
-        Get.snackbar('Success', 'Gambar Berhasl diUpload', snackPosition: SnackPosition.BOTTOM,
+        Get.snackbar('Success', 'Gambar Berhasil diUpload', snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
           colorText: Colors.white,);
 
@@ -425,6 +426,137 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       ),
                     ),
                   ),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Tags Input Card
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey[200]!),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.tag,
+                        color: TColors.primary,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Tags (Opsional)',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  
+                  // Tag Input
+                  TextField(
+                    controller: controller.tagController,
+                    decoration: InputDecoration(
+                      hintText: 'Masukkan tag (contoh: jagung panen)',
+                      hintStyle: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: TColors.primary),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          if (controller.tagController.text.trim().isNotEmpty) {
+                            controller.addTag(controller.tagController.text.trim());
+                          }
+                        },
+                        icon: Icon(
+                          Icons.add,
+                          color: TColors.primary,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                    style: const TextStyle(fontSize: 12),
+                    onSubmitted: (value) {
+                      if (value.trim().isNotEmpty) {
+                        controller.addTag(value.trim());
+                      }
+                    },
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  // Selected Tags
+                  Obx(() {
+                    if (controller.selectedTags.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    
+                    return Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: controller.selectedTags.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final tag = entry.value;
+                        
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: TagColors.getBackgroundColor(index),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: TagColors.getBorderColor(index),
+                              width: 0.5,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '#$tag',
+                                style: TextStyle(
+                                  color: TagColors.getTextColor(index),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              GestureDetector(
+                                onTap: () => controller.removeTag(tag),
+                                child: Icon(
+                                  Icons.close,
+                                  color: TagColors.getTextColor(index),
+                                  size: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  }),
                 ],
               ),
             ),
