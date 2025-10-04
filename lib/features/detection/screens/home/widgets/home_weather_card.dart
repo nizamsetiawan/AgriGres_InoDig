@@ -33,8 +33,13 @@ class THomeWeatherCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Obx(() => Row(
-        children: [
+      child: Obx(() {
+        if (weatherController.isLoading.value) {
+          return _buildWeatherShimmer();
+        }
+        
+        return Row(
+          children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -329,7 +334,8 @@ class THomeWeatherCard extends StatelessWidget {
             ),
           ),
         ],
-      )),
+      );
+      }),
     );
   }
 
@@ -768,6 +774,86 @@ class THomeWeatherCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildWeatherShimmer() {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Date and Time shimmer
+              Row(
+                children: [
+                  Container(
+                    width: 14,
+                    height: 14,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Container(
+                    height: 12,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              
+              // Temperature shimmer
+              Container(
+                height: 24,
+                width: 80,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(height: 4),
+              
+              // Weather condition shimmer
+              Container(
+                height: 16,
+                width: 120,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(height: 8),
+              
+              // Location shimmer
+              Container(
+                height: 14,
+                width: 100,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        
+        // Weather icon shimmer
+        Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+      ],
     );
   }
 } 

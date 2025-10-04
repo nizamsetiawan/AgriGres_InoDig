@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:agrigres/features/detection/controllers/location_controller.dart';
 
 class THomeLocationCard extends StatelessWidget {
@@ -13,6 +12,10 @@ class THomeLocationCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     
     return Obx(() {
+      if (controller.loading.value) {
+        return _buildLocationShimmer();
+      }
+      
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
@@ -41,5 +44,37 @@ class THomeLocationCard extends StatelessWidget {
         ),
       );
     });
+  }
+
+  Widget _buildLocationShimmer() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 16,
+            height: 16,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Container(
+              height: 16,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 } 

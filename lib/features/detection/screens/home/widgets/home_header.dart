@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:agrigres/utils/constraints/sizes.dart';
+import 'package:get/get.dart';
+import 'package:agrigres/features/notification/screens/notification_list_screen.dart';
 
 class THomeHeader extends StatelessWidget {
   const THomeHeader({super.key});
@@ -32,16 +32,19 @@ class THomeHeader extends StatelessWidget {
             ],
           ),
         ),
-        Container(
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: Colors.orange[100],
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Icon(
-            Icons.notifications,
-            color: Colors.orange[600],
-            size: 16,
+        GestureDetector(
+          onTap: () => Get.to(() => const NotificationListScreen()),
+          child: Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: Colors.orange[100],
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(
+              Icons.notifications,
+              color: Colors.orange[600],
+              size: 16,
+            ),
           ),
         ),
       ],
