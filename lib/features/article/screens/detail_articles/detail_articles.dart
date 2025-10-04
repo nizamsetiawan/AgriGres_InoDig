@@ -1,12 +1,47 @@
 import 'package:agrigres/common/widgets/appbar/appbar.dart';
 import 'package:agrigres/features/article/models/article_model.dart';
-import 'package:agrigres/utils/constraints/colors.dart';
+import 'package:agrigres/features/article/controllers/favorite_articles_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class DetailArticlesScreen extends StatelessWidget {
+class DetailArticlesScreen extends StatefulWidget {
   const DetailArticlesScreen({super.key, required this.articleModel});
 
   final ArticleModel articleModel;
+
+  @override
+  State<DetailArticlesScreen> createState() => _DetailArticlesScreenState();
+}
+
+class _DetailArticlesScreenState extends State<DetailArticlesScreen> {
+  final favoriteController = Get.put(FavoriteArticlesController());
+  bool isFavorite = false;
+  bool isLoadingFavorite = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkFavoriteStatus();
+  }
+
+  Future<void> _checkFavoriteStatus() async {
+    try {
+      final status = await favoriteController.isFavoriteAsync(widget.articleModel.title);
+      if (mounted) {
+        setState(() {
+          isFavorite = status;
+          isLoadingFavorite = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isFavorite = false;
+          isLoadingFavorite = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +70,9 @@ class DetailArticlesScreen extends StatelessWidget {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: articleModel.imageUrl.isNotEmpty
+                    child: widget.articleModel.imageUrl.isNotEmpty
                         ? Image.network(
-                            articleModel.imageUrl,
+                            widget.articleModel.imageUrl,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
@@ -66,7 +101,7 @@ class DetailArticlesScreen extends StatelessWidget {
                     children: [
                       // Article Title
                       Text(
-                        articleModel.title,
+                        widget.articleModel.title,
                         style: textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -76,7 +111,7 @@ class DetailArticlesScreen extends StatelessWidget {
 
                       // Article Content
                       Text(
-                        articleModel.content,
+                        widget.articleModel.content,
                         style: textTheme.bodyMedium?.copyWith(
                           height: 1.5,
                           color: Colors.grey[700],
@@ -98,38 +133,53 @@ class DetailArticlesScreen extends StatelessWidget {
             bottom: 20,
             right: 20,
             child: Container(
-              width: 48,
-              height: 48,
+              width: 56,
+              height: 56,
               decoration: BoxDecoration(
-                color: Colors.red[500],
-                borderRadius: BorderRadius.circular(12),
+                color: isLoadingFavorite 
+                    ? Colors.grey[300] 
+                    : (isFavorite ? Colors.red[500] : Colors.white),
+                borderRadius: BorderRadius.circular(16),
+                border: isLoadingFavorite 
+                    ? Border.all(color: Colors.grey[300]!, width: 2)
+                    : (isFavorite 
+                        ? Border.all(color: Colors.red[500]!, width: 2)
+                        : null),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.red.withOpacity(0.2),
+                    color: isLoadingFavorite 
+                        ? Colors.grey.withOpacity(0.2)
+                        : (isFavorite 
+                            ? Colors.red.withOpacity(0.3) 
+                            : Colors.grey.withOpacity(0.2)),
                     spreadRadius: 0,
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
+                    blurRadius: isLoadingFavorite ? 4 : 12,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () {
-                    // Handle favorite action
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Artikel ditambahkan ke favorit'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                  onTap: isLoadingFavorite ? null : () async {
+                    await favoriteController.toggleFavorite(widget.articleModel);
+                    _checkFavoriteStatus(); // Refresh status
                   },
-                  borderRadius: BorderRadius.circular(12),
-                  child: const Icon(
-                    Icons.favorite,
-                    color: Colors.white,
-                    size: 20,
-                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  child: isLoadingFavorite
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite ? Colors.white : Colors.grey[600],
+                          size: 24,
+                        ),
                 ),
               ),
             ),

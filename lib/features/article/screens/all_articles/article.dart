@@ -5,7 +5,7 @@ import 'package:agrigres/features/article/screens/all_articles/widgets/article_s
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../../common/widgets/loaders/vertical_product_shimmer.dart';
+import '../../../../common/widgets/loaders/article_shimmer.dart';
 
 class ArticleScreen extends StatelessWidget {
   const ArticleScreen({super.key});
@@ -30,6 +30,13 @@ class ArticleScreen extends StatelessWidget {
               foregroundColor: Colors.black,
               elevation: 0,
               automaticallyImplyLeading: false,
+              actions: [
+                IconButton(
+                  onPressed: () => Get.toNamed('/favorite-articles'),
+                  icon: const Icon(Icons.favorite, color: Colors.red),
+                  tooltip: 'Artikel Favorit',
+                ),
+              ],
             ),
             
             // Sticky Search Bar
@@ -170,7 +177,7 @@ class ArticleScreen extends StatelessWidget {
                     // Articles List
                     Obx(() {
                       if (articleController.isLoading.value) {
-                        return const TVVerticalArticleShimmer();
+                        return const TArticleShimmer();
                       }
                       
                       final articles = articleController.filteredArticles.isNotEmpty 

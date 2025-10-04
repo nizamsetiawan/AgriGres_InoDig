@@ -31,4 +31,5 @@ class TRoutes {
   static const provinceDetailAgriInfo = '/province-detail-agri-info';
   static const agriMart = '/agri-mart';
   static const calculatorResults = '/calculator-results';
+  static const favoriteArticles = '/favorite-articles';
 }
