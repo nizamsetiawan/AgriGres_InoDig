@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:agrigres/common/widgets/appbar/appbar.dart';
 import 'package:agrigres/features/personalization/controllers/feedback_controller.dart';
 import 'package:agrigres/features/personalization/controllers/user_controller.dart';
+import 'package:new_ui_kit/new_ui_kit.dart';
 
 class FeedbackForm extends StatelessWidget {
   const FeedbackForm({Key? key}) : super(key: key);

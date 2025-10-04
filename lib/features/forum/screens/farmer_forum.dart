@@ -4,6 +4,7 @@ import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:agrigres/features/forum/screens/widgets/forum_header.dart';
 import 'package:agrigres/features/forum/screens/widgets/forum_search_bar.dart';
 import 'package:agrigres/features/forum/screens/widgets/forum_posts_list.dart';
+import 'package:new_ui_kit/new_ui_kit.dart';
 
 import '../../../common/widgets/appbar/appbar.dart';
 
@@ -45,6 +46,7 @@ class FarmerForum extends StatelessWidget {
               automaticallyImplyLeading: false,
               toolbarHeight: 70,
             ),
+
             
             // Forum Content
             SliverToBoxAdapter(
@@ -57,6 +59,7 @@ class FarmerForum extends StatelessWidget {
                     const TForumPostsList(),
 
                     const SizedBox(height: TSizes.spaceBtwSections),
+
 
                     // Add Question Button
                     SizedBox(

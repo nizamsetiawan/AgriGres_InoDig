@@ -4,6 +4,8 @@ import 'package:agrigres/features/agri_info/screens/detail_agri_info_screen.dart
 import 'package:agrigres/features/agri_info/screens/monthly_detail_agri_info_screen.dart';
 import 'package:agrigres/features/agri_info/screens/table_detail_agri_info_screen.dart';
 import 'package:agrigres/features/agri_info/screens/province_detail_agri_info_screen.dart';
+import 'package:agrigres/features/agri_info/screens/rekapitulasi_screen.dart';
+import 'package:agrigres/features/agri_info/screens/komoditas_rekapitulasi_screen.dart';
 
 class AgriInfoController extends GetxController {
   static AgriInfoController get instance => Get.find();
@@ -99,6 +101,12 @@ class AgriInfoController extends GetxController {
         break;
       case '4': // Tabel Harga Pangan Antar Wilayah
         Get.to(() => const ProvinceDetailAgriInfoScreen());
+        break;
+      case '5': // Tabel Perkembangan Harga (Rekapitulasi)
+        Get.to(() => const RekapitulasiScreen());
+        break;
+      case '6': // Tabel Perkembangan Harga Komoditas (Rekapitulasi Komoditas)
+        Get.to(() => const KomoditasRekapitulasiScreen());
         break;
       default:
         Get.snackbar(
