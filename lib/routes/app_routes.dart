@@ -20,6 +20,8 @@ import '../features/forum/screens/farmer_forum.dart';
 import '../features/calculator/screens/calculator_screen.dart';
 import '../features/agri_info/screens/agri_info_screen.dart';
 import '../features/agri_info/screens/detail_agri_info_screen.dart';
+import '../features/agri_info/screens/monthly_detail_agri_info_screen.dart';
+import '../features/agri_info/screens/table_detail_agri_info_screen.dart';
 
 class AppRoutes {
   static final pages = [
@@ -42,6 +44,8 @@ class AppRoutes {
     GetPage(name: TRoutes.calculator, page: () => const CalculatorScreen()),
     GetPage(name: TRoutes.agriInfo, page: () => const AgriInfoScreen()),
     GetPage(name: TRoutes.detailAgriInfo, page: () => const DetailAgriInfoScreen()),
+    GetPage(name: TRoutes.monthlyDetailAgriInfo, page: () => const MonthlyDetailAgriInfoScreen()),
+    GetPage(name: TRoutes.tableDetailAgriInfo, page: () => const TableDetailAgriInfoScreen()),
 
   ];
 }

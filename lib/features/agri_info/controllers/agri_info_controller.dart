@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:agrigres/features/agri_info/models/agri_info_model.dart';
 import 'package:agrigres/features/agri_info/screens/detail_agri_info_screen.dart';
+import 'package:agrigres/features/agri_info/screens/monthly_detail_agri_info_screen.dart';
+import 'package:agrigres/features/agri_info/screens/table_detail_agri_info_screen.dart';
 
 class AgriInfoController extends GetxController {
   static AgriInfoController get instance => Get.find();
@@ -87,6 +89,12 @@ class AgriInfoController extends GetxController {
     switch (agriInfoId) {
       case '1': // Informasi Harga Pangan Strategis
         Get.to(() => const DetailAgriInfoScreen());
+        break;
+      case '2': // Infografis Harga Pangan
+        Get.to(() => const MonthlyDetailAgriInfoScreen());
+        break;
+      case '3': // Tabel Harga Pangan Antar Waktu
+        Get.to(() => const TableDetailAgriInfoScreen());
         break;
       default:
         Get.snackbar(

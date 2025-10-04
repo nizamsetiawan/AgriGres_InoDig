@@ -26,4 +26,6 @@ class TRoutes {
   static const calculator = '/calculator';
   static const agriInfo = '/agri-info';
   static const detailAgriInfo = '/detail-agri-info';
+  static const monthlyDetailAgriInfo = '/monthly-detail-agri-info';
+  static const tableDetailAgriInfo = '/table-detail-agri-info';
 }
