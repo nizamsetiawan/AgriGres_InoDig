@@ -32,4 +32,5 @@ class TRoutes {
   static const agriMart = '/agri-mart';
   static const calculatorResults = '/calculator-results';
   static const favoriteArticles = '/favorite-articles';
+  static const createPost = '/create-post';
 }
