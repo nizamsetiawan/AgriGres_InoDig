@@ -6,6 +6,8 @@ import 'package:agrigres/features/agri_info/screens/table_detail_agri_info_scree
 import 'package:agrigres/features/agri_info/screens/province_detail_agri_info_screen.dart';
 import 'package:agrigres/features/agri_info/screens/rekapitulasi_screen.dart';
 import 'package:agrigres/features/agri_info/screens/komoditas_rekapitulasi_screen.dart';
+import 'package:agrigres/features/agri_info/screens/lahan_screen.dart';
+import 'package:agrigres/features/agri_info/screens/sawah_screen.dart';
 
 class AgriInfoController extends GetxController {
   static AgriInfoController get instance => Get.find();
@@ -107,6 +109,12 @@ class AgriInfoController extends GetxController {
         break;
       case '6': // Tabel Perkembangan Harga Komoditas (Rekapitulasi Komoditas)
         Get.to(() => const KomoditasRekapitulasiScreen());
+        break;
+      case '7': // Luas Penggunaan Lahan menurut Desa/Kelurahan di Kecamatan (Ha)
+        Get.to(() => const LahanScreen());
+        break;
+      case '8': // Luas Sawah Menurut Desa/Kelurahan di Kecamatan (Ha)
+        Get.to(() => const SawahScreen());
         break;
       default:
         Get.snackbar(
