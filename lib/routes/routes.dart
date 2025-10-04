@@ -24,4 +24,6 @@ class TRoutes {
   static const resultAnalysis = '/result-analysis';
   static const farmerForum = '/farmer-forum';
   static const calculator = '/calculator';
+  static const agriInfo = '/agri-info';
+  static const detailAgriInfo = '/detail-agri-info';
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:agrigres/utils/constraints/sizes.dart';
+import 'package:get/get.dart';
+import 'package:agrigres/features/agri_info/screens/agri_info_screen.dart';
 
 class THomeMenuGrid extends StatelessWidget {
   const THomeMenuGrid({super.key});
@@ -42,7 +43,20 @@ class THomeMenuGrid extends StatelessWidget {
               Colors.blue[100]!,
               Colors.blue[600]!,
               Icons.info_outline,
-              () {},
+              () {
+                print('AgriInfo clicked!'); // Debug log
+                try {
+                  Get.to(() => const AgriInfoScreen());
+                  print('Navigation successful!');
+                } catch (e) {
+                  print('Navigation error: $e');
+                  Get.snackbar(
+                    'Error',
+                    'Gagal membuka AgriInfo: $e',
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
+                }
+              },
             ),
             _buildMenuCard(
               context,
