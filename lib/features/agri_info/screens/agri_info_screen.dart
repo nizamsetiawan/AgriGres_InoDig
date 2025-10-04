@@ -11,11 +11,9 @@ class AgriInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('AgriInfoScreen build called'); // Debug log
-    
+
     final controller = Get.put(AgriInfoController());
-    print('AgriInfoController initialized successfully'); // Debug log
-    
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: const TAppBar(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:agrigres/features/agri_info/screens/agri_info_screen.dart';
+import 'package:agrigres/routes/routes.dart';
 
 class THomeMenuGrid extends StatelessWidget {
   const THomeMenuGrid({super.key});
@@ -83,7 +84,7 @@ class THomeMenuGrid extends StatelessWidget {
               Colors.pink[100]!,
               Colors.pink[600]!,
               Icons.store_outlined,
-              () {},
+              () => Get.toNamed(TRoutes.agriMart),
             ),
           ],
         ),
