@@ -178,23 +178,87 @@ class UserController extends GetxController {
           imageQuality: 70,
           maxHeight: 512,
           maxWidth: 512);
+      
       if (image != null) {
         imageUploading.value = true;
 
-        final imageUrl = await userRepository.uploadImage('Users/Images/Profile/', image);
-        Map<String, dynamic> json = {'ProfilePicture': imageUrl};
-        await userRepository.updateSingleField(json);
+        // Check internet connectivity
+        final isConnected = await NetworkManager.instance.isConnected();
+        if (!isConnected) {
+          TLoaders.warningSnackBar(
+            title: 'Tidak Ada Koneksi', 
+            message: 'Periksa koneksi internet Anda'
+          );
+          return;
+        }
 
-        user.value.profilePicture = imageUrl;
-        user.refresh();
-        TLoaders.successSnackBar(
-            title: 'Selamat',
-            message: 'Profil anda berhasil diperbarui');
-            }
+        final imageUrl = await userRepository.uploadImage('Users/Images/Profile/', image);
+        
+        if (imageUrl.isNotEmpty) {
+          Map<String, dynamic> json = {'ProfilePicture': imageUrl};
+          await userRepository.updateSingleField(json);
+
+          user.value.profilePicture = imageUrl;
+          user.refresh();
+          TLoaders.successSnackBar(
+              title: 'Selamat',
+              message: 'Foto profil berhasil diperbarui');
+        } else {
+          TLoaders.errorSnackBar(
+            title: 'Gagal Upload', 
+            message: 'URL gambar tidak valid'
+          );
+        }
+      }
     } catch (e) {
-      TLoaders.errorSnackBar(title: 'Oh tidak...', message: '$e');
+      TLoaders.errorSnackBar(
+        title: 'Gagal Upload Foto', 
+        message: e.toString()
+      );
     } finally {
       imageUploading.value = false;
+    }
+  }
+
+  /// Update user profile data
+  Future<void> updateUserProfile({
+    required String firstName,
+    required String lastName,
+    required String phoneNumber,
+  }) async {
+    try {
+      TFullScreenLoader.openLoadingDialog('Memperbarui profil...', TImages.docerAnimation);
+
+      // Check internet connectivity
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        TFullScreenLoader.stopLoading();
+        return;
+      }
+
+      // Update user data in Firebase
+      Map<String, dynamic> userData = {
+        'FirstName': firstName.trim(),
+        'LastName': lastName.trim(),
+        'PhoneNumber': phoneNumber.trim(),
+      };
+      
+      await userRepository.updateSingleField(userData);
+
+      // Update local user data
+      user.value.firstName = firstName.trim();
+      user.value.lastName = lastName.trim();
+      user.value.phoneNumber = phoneNumber.trim();
+      user.refresh();
+
+      TFullScreenLoader.stopLoading();
+      TLoaders.successSnackBar(
+        title: 'Berhasil', 
+        message: 'Profil berhasil diperbarui'
+      );
+    } catch (e) {
+      TFullScreenLoader.stopLoading();
+      TLoaders.errorSnackBar(title: 'Oh tidak...', message: e.toString());
     }
   }
 

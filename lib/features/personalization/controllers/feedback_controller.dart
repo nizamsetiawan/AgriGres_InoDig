@@ -28,8 +28,12 @@ class FeedbackController extends GetxController {
   }
 
   Future<void> _initializeFeedbackData() async {
-   usernameController.text = userController.user.value.username;
-   emailController.text = userController.user.value.email;
+   usernameController.text = userController.user.value.username.isNotEmpty 
+       ? userController.user.value.username 
+       : 'Muhammad Nizam Setiawan';
+   emailController.text = userController.user.value.email.isNotEmpty 
+       ? userController.user.value.email 
+       : 'takat89@gmail.com';
   }
 
   Future<void> submitFeedback() async {

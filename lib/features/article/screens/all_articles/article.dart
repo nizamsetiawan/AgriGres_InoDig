@@ -58,6 +58,114 @@ class ArticleScreen extends StatelessWidget {
                     const TArticleSectionTitle(),
                     
                     const SizedBox(height: 16),
+                    
+                    // Active Filters Indicator
+                    Obx(() {
+                      if (articleController.searchQuery.value.isEmpty && 
+                          articleController.selectedFilter.value == 'Semua') {
+                        return const SizedBox.shrink();
+                      }
+                      
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: Row(
+                          children: [
+                            if (articleController.searchQuery.value.isNotEmpty) ...[
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue[100],
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.search,
+                                      size: 16,
+                                      color: Colors.blue[700],
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '"${articleController.searchQuery.value}"',
+                                      style: TextStyle(
+                                        color: Colors.blue[700],
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    GestureDetector(
+                                      onTap: () => articleController.clearSearch(),
+                                      child: Icon(
+                                        Icons.close,
+                                        size: 16,
+                                        color: Colors.blue[700],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            if (articleController.selectedFilter.value != 'Semua') ...[
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange[100],
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.filter_list,
+                                      size: 16,
+                                      color: Colors.orange[700],
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      articleController.selectedFilter.value,
+                                      style: TextStyle(
+                                        color: Colors.orange[700],
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    GestureDetector(
+                                      onTap: () => articleController.filterByCategory('Semua'),
+                                      child: Icon(
+                                        Icons.close,
+                                        size: 16,
+                                        color: Colors.orange[700],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                            const Spacer(),
+                            TextButton(
+                              onPressed: () => articleController.clearAllFilters(),
+                              child: Text(
+                                'Hapus Semua',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
 
                     // Articles List
                     Obx(() {
@@ -65,15 +173,45 @@ class ArticleScreen extends StatelessWidget {
                         return const TVVerticalArticleShimmer();
                       }
                       
-                      if (articleController.allArticles.isEmpty) {
+                      final articles = articleController.filteredArticles.isNotEmpty 
+                          ? articleController.filteredArticles 
+                          : articleController.allArticles;
+                      
+                      if (articles.isEmpty) {
                         return Center(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 40),
-                            child: Text(
-                              'Tidak ada artikel tersedia',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.grey[600],
-                              ),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.search_off,
+                                  size: 64,
+                                  color: Colors.grey[400],
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  articleController.searchQuery.value.isNotEmpty || 
+                                  articleController.selectedFilter.value != 'Semua'
+                                      ? 'Tidak ada artikel yang sesuai dengan filter'
+                                      : 'Tidak ada artikel tersedia',
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                if (articleController.searchQuery.value.isNotEmpty || 
+                                    articleController.selectedFilter.value != 'Semua') ...[
+                                  const SizedBox(height: 16),
+                                  ElevatedButton(
+                                    onPressed: () => articleController.clearAllFilters(),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.orange,
+                                      foregroundColor: Colors.white,
+                                    ),
+                                    child: const Text('Hapus Filter'),
+                                  ),
+                                ],
+                              ],
                             ),
                           ),
                         );
@@ -82,9 +220,9 @@ class ArticleScreen extends StatelessWidget {
                       return ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: articleController.allArticles.length,
+                        itemCount: articles.length,
                         itemBuilder: (_, index) => TArticleCard(
-                          article: articleController.allArticles[index],
+                          article: articles[index],
                         ),
                       );
                     }),

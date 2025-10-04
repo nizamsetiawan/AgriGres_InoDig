@@ -79,7 +79,7 @@ class SettingsScreen extends StatelessWidget {
                     
                     TSettingsMenuItem(
                       icon: Iconsax.security_card,
-                      title: 'Syarat & Ketentuan',
+                      title: 'Syart & Ketentuan',
                       onTap: () => Get.to(() => PrivacyAndSecurityPage()),
                     ),
                     

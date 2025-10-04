@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:agrigres/common/widgets/appbar/appbar.dart';
 import 'package:agrigres/features/personalization/controllers/feedback_controller.dart';
 import 'package:agrigres/features/personalization/controllers/user_controller.dart';
-import 'package:agrigres/utils/constraints/colors.dart';
 
 class FeedbackForm extends StatelessWidget {
   const FeedbackForm({Key? key}) : super(key: key);
@@ -24,9 +22,11 @@ class FeedbackForm extends StatelessWidget {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+          child: Form(
+            key: controller.feedbackFormKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               // Header Description
               Text(
                 'Berikan Feedback Anda',
@@ -76,7 +76,7 @@ class FeedbackForm extends StatelessWidget {
               _buildInputField(
                 context,
                 'Subject',
-                'Bug',
+                '',
                 isEnabled: true,
                 controller: controller.subjectController,
                 hintText: 'Masukkan subjek feedback',
@@ -88,7 +88,7 @@ class FeedbackForm extends StatelessWidget {
               _buildInputField(
                 context,
                 'Pesan',
-                'Server masih lambat untuk memproses',
+                '',
                 isEnabled: true,
                 controller: controller.messageController,
                 hintText: 'Jelaskan feedback Anda secara detail',
@@ -119,6 +119,7 @@ class FeedbackForm extends StatelessWidget {
                 ),
               ),
             ],
+            ),
           ),
         ),
       ),
@@ -166,6 +167,12 @@ class FeedbackForm extends StatelessWidget {
               ? TextFormField(
                   controller: controller,
                   maxLines: maxLines,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Field ini wajib diisi';
+                    }
+                    return null;
+                  },
                   style: textTheme.bodyMedium?.copyWith(
                     color: Colors.black87,
                   ),

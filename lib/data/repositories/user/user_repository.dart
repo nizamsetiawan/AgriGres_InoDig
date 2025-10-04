@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -120,25 +120,80 @@ class UserRepository extends GetxController {
   }
 
   Future<String> uploadImage(String path, XFile image) async {
+    // Try Cloudinary first
+    try {
+      return await _uploadToCloudinary(image);
+    } catch (e) {
+      // If Cloudinary fails, try Firebase Storage as fallback
+      try {
+        return await _uploadToFirebaseStorage(path, image);
+      } catch (firebaseError) {
+        throw 'Upload failed: Cloudinary error: ${e.toString()}, Firebase error: ${firebaseError.toString()}';
+      }
+    }
+  }
+
+  Future<String> _uploadToCloudinary(XFile image) async {
     String cloudName = dotenv.env["CLOUDINARY_CLOUD_NAME"] ?? '';
     String apiKey = dotenv.env["CLOUDINARY_API_KEY"] ?? '';
+    String apiSecret = dotenv.env["CLOUDINARY_API_SECRET"] ?? '';
+    
+    // List of presets to try in order
+    List<String> presets = ['profile_agroai', 'kenongotask_img'];
+    
+    for (String preset in presets) {
+      try {
+        var uri = Uri.parse("https://api.cloudinary.com/v1_1/$cloudName/image/upload");
+        var request = http.MultipartRequest("POST", uri);
+
+        request.files.add(await http.MultipartFile.fromPath('file', image.path));
+        request.fields['upload_preset'] = preset;
+        request.fields['resource_type'] = "image";
+        
+        // Add API key and secret for signed uploads if available
+        if (apiKey.isNotEmpty) {
+          request.fields['api_key'] = apiKey;
+        }
+        if (apiSecret.isNotEmpty && preset != 'unsigned') {
+          request.fields['api_secret'] = apiSecret;
+        }
+
+        var response = await request.send();
+        var responseData = await response.stream.toBytes();
+        var responseString = String.fromCharCodes(responseData);
+
+        var jsonResponse = json.decode(responseString);
+        
+        // Check if response is successful and contains secure_url
+        if (response.statusCode == 200 && jsonResponse['secure_url'] != null) {
+          return jsonResponse['secure_url'] as String;
+        } else if (response.statusCode == 400 && jsonResponse['error'] != null) {
+          // If this preset fails, try the next one
+          continue;
+        } else {
+          throw 'Failed to uploa image: ${jsonResponse['error']?.toString() ?? 'Unknown error'}';
+        }
+      } catch (e) {
+        // If this preset fails, try the next one
+        if (preset == presets.last) {
+          rethrow;
+        }
+        continue;
+      }
+    }
+    
+    throw 'All Cloudinary upload presets failed';
+  }
+
+  Future<String> _uploadToFirebaseStorage(String path, XFile image) async {
     try {
-      var uri = Uri.parse("https://api.cloudinary.com/v1_1/$cloudName/image/upload");
-      var request = http.MultipartRequest("POST", uri);
-
-      request.files.add(await http.MultipartFile.fromPath('file', image.path));
-      request.fields['upload_preset'] = 'profile_agrigres';
-      request.fields['resource_type'] = "image";
-      request.fields['api_key'] = apiKey;
-
-      var response = await request.send();
-      var responseData = await response.stream.toBytes();
-      var responseString = String.fromCharCodes(responseData);
-
-      var jsonResponse = json.decode(responseString);
-      return jsonResponse['secure_url'];
+      final ref = FirebaseStorage.instance.ref().child(path).child(image.name);
+      final uploadTask = ref.putFile(File(image.path));
+      final snapshot = await uploadTask;
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
     } catch (e) {
-      throw e.toString();
+      throw 'Firebase Storage upload failed: ${e.toString()}';
     }
   }
 
