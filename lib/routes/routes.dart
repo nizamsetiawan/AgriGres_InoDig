@@ -28,4 +28,5 @@ class TRoutes {
   static const detailAgriInfo = '/detail-agri-info';
   static const monthlyDetailAgriInfo = '/monthly-detail-agri-info';
   static const tableDetailAgriInfo = '/table-detail-agri-info';
+  static const provinceDetailAgriInfo = '/province-detail-agri-info';
 }

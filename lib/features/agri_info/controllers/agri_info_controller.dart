@@ -3,6 +3,7 @@ import 'package:agrigres/features/agri_info/models/agri_info_model.dart';
 import 'package:agrigres/features/agri_info/screens/detail_agri_info_screen.dart';
 import 'package:agrigres/features/agri_info/screens/monthly_detail_agri_info_screen.dart';
 import 'package:agrigres/features/agri_info/screens/table_detail_agri_info_screen.dart';
+import 'package:agrigres/features/agri_info/screens/province_detail_agri_info_screen.dart';
 
 class AgriInfoController extends GetxController {
   static AgriInfoController get instance => Get.find();
@@ -95,6 +96,9 @@ class AgriInfoController extends GetxController {
         break;
       case '3': // Tabel Harga Pangan Antar Waktu
         Get.to(() => const TableDetailAgriInfoScreen());
+        break;
+      case '4': // Tabel Harga Pangan Antar Wilayah
+        Get.to(() => const ProvinceDetailAgriInfoScreen());
         break;
       default:
         Get.snackbar(
