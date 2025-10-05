@@ -287,6 +287,7 @@ class VideoDetailScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
+            textAlign: TextAlign.justify,
             videoDetail.description,
             style: textTheme.bodyMedium?.copyWith(
               color: Colors.grey[600],

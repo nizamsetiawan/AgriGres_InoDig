@@ -8,7 +8,7 @@ import '../../../utils/logging/logger.dart';
 
 class YouTubeRepository {
   static const String _baseUrl = 'https://www.googleapis.com/youtube/v3';
-  static const String _apiKey = 'AIzaSyDBeNyGQ3XWZuxPeHDGuWqFkafH8S63J3M';
+  static const String _apiKey = 'AIzaSyCavpqOztfbwYlhbytBk5xVMVSOausVQIs';
   static const String _channelId = 'UCrOkSpB5JDBCUrZaOzbsUcw';
   
   // List of 12 channel IDs

@@ -110,6 +110,7 @@ class WelcomeScreen extends StatelessWidget {
                   label: const Text('Lanjutkan dengan Apple'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: TColors.secondary,
+                    // side: TColors.secondary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
