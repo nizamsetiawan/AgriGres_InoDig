@@ -5,8 +5,6 @@ import '../widgets/search_bar.dart' as custom;
 import '../widgets/channel_categories_widget.dart';
 import '../widgets/promotional_banner_widget.dart';
 import '../widgets/featured_content_widget.dart';
-import '../widgets/popular_course_widget.dart';
-import '../widgets/popular_video_lesson_widget.dart';
 
 class AgriEduScreen extends StatelessWidget {
   const AgriEduScreen({Key? key}) : super(key: key);
@@ -14,7 +12,9 @@ class AgriEduScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final controller = Get.put(AgriEduController());
+    final controller = Get.isRegistered<AgriEduController>()
+        ? Get.find<AgriEduController>()
+        : Get.put(AgriEduController());
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -57,32 +57,25 @@ class AgriEduScreen extends StatelessWidget {
               // Search Bar
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: custom.SearchBar(
-                  hintText: 'Cari Materi / Kursus',
+                child: Obx(() => custom.SearchBar(
+                  hintText: 'Cari Materi Pertanian... ',
                   initialValue: controller.searchQuery.value,
+                  controller: controller.searchTextController,
                   onChanged: (value) {
+                    controller.searchQuery.value = value;
                     if (value.trim().isEmpty) {
                       controller.clearSearch();
                     } else {
-                      // Debounce search
-                      Future.delayed(const Duration(milliseconds: 500), () {
+                      Future.delayed(const Duration(milliseconds: 300), () {
                         if (value == controller.searchQuery.value) {
-                          controller.searchVideos(value);
+                          controller.searchVideosLocal(value);
                         }
                       });
                     }
                   },
                   onClear: () => controller.clearSearch(),
-                  onFilter: () {
-                    // TODO: Show filter dialog
-                    Get.snackbar(
-                      'Filter',
-                      'Fitur filter akan segera tersedia',
-                      snackPosition: SnackPosition.BOTTOM,
-                    );
-                  },
-                  isLoading: controller.isLoading.value,
-                ),
+                  onFilter: () => _showFilterBottomSheet(context, controller),
+                )),
               ),
               
               // Channel Categories
@@ -90,24 +83,18 @@ class AgriEduScreen extends StatelessWidget {
               
               const SizedBox(height: 24),
               
-              // Promotional Banner
-              const PromotionalBannerWidget(),
-              
-              const SizedBox(height: 24),
+
               
               // Featured Content
               const FeaturedContentWidget(),
               
               const SizedBox(height: 24),
-              
-              // Popular Course Section
-              const PopularCourseWidget(),
-              
+              // Promotional Banner
+              const PromotionalBannerWidget(),
+
               const SizedBox(height: 24),
               
-              // Popular Video Lesson Section
-              const PopularVideoLessonWidget(),
-              
+              // Removed Popular Course & Popular Video Lesson per request
               const SizedBox(height: 16),
             ],
           ),
@@ -116,4 +103,80 @@ class AgriEduScreen extends StatelessWidget {
     );
   }
 
+  void _showFilterBottomSheet(BuildContext context, AgriEduController controller) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Filter Materi',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    controller.clearAllFilters();
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Reset'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Kategori',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Obx(() {
+              final categories = controller.categories;
+              return Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: categories.map((category) {
+                  final isSelected = controller.selectedFilter.value == category;
+                  return GestureDetector(
+                    onTap: () {
+                      controller.filterByCategory(category);
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.orange : Colors.grey[100],
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: isSelected ? Colors.orange : Colors.grey[300]!),
+                      ),
+                      child: Text(
+                        category,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.grey[700],
+                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              );
+            }),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
 }

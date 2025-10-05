@@ -9,13 +9,32 @@ class AgriEduController extends GetxController {
   final YouTubeRepository _youtubeRepository = YouTubeRepository();
   
   final RxList<YouTubeVideoModel> videos = <YouTubeVideoModel>[].obs;
+  final RxList<YouTubeVideoModel> allVideos = <YouTubeVideoModel>[].obs;
   final RxList<YouTubeVideoModel> featuredVideos = <YouTubeVideoModel>[].obs;
+  // Featured per selected channel
+  final RxString selectedFeaturedChannelId = ''.obs;
+  final RxList<YouTubeVideoModel> featuredChannelVideos = <YouTubeVideoModel>[].obs;
+  final RxBool isLoadingFeaturedChannel = false.obs;
   final RxList<YouTubeChannelModel> channels = <YouTubeChannelModel>[].obs;
   final RxBool isLoading = false.obs;
   final RxBool isLoadingFeaturedVideos = false.obs;
   final RxBool isLoadingChannels = false.obs;
   final RxString searchQuery = ''.obs;
   final RxString errorMessage = ''.obs;
+  final TextEditingController searchTextController = TextEditingController();
+  // Search filters
+  final RxList<String> categories = <String>[
+    'Pertanian',
+    'Hidroponik',
+    'Organik',
+    'Urban',
+    'Aquaponik',
+    'Teknologi',
+    'Tips',
+    'Greenhouse',
+    'Pascapanen',
+  ].obs;
+  final RxString selectedFilter = ''.obs;
 
   @override
   void onInit() {
@@ -28,6 +47,12 @@ class AgriEduController extends GetxController {
     });
   }
 
+  @override
+  void onClose() {
+    searchTextController.dispose();
+    super.onClose();
+  }
+
   Future<void> fetchVideos() async {
     try {
       isLoading.value = true;
@@ -36,6 +61,7 @@ class AgriEduController extends GetxController {
       TLoggerHelper.info("Fetching AgriEdu videos...");
       final response = await _youtubeRepository.getVideos(maxResults: 10);
       
+      allVideos.value = response.items;
       videos.value = response.items;
       TLoggerHelper.info("Successfully loaded ${videos.length} videos");
     } catch (e) {
@@ -51,41 +77,50 @@ class AgriEduController extends GetxController {
     }
   }
 
-  Future<void> searchVideos(String query) async {
-    if (query.trim().isEmpty) {
-      fetchVideos();
+  void searchVideosLocal(String query) {
+    searchQuery.value = query;
+    final lowerQuery = query.toLowerCase();
+    if (lowerQuery.isEmpty) {
+      videos.value = List<YouTubeVideoModel>.from(allVideos);
       return;
     }
+    final filtered = allVideos.where((v) {
+      final title = v.title.toLowerCase();
+      final channel = v.channelTitle.toLowerCase();
+      return title.contains(lowerQuery) || channel.contains(lowerQuery);
+    }).toList();
+    filtered.sort((a, b) {
+      int score(String text) {
+        if (text.startsWith(lowerQuery)) return 0;
+        final idx = text.indexOf(lowerQuery);
+        return idx >= 0 ? 1 : 2;
+      }
+      final aTitle = a.title.toLowerCase();
+      final bTitle = b.title.toLowerCase();
+      final aScore = score(aTitle);
+      final bScore = score(bTitle);
+      if (aScore != bScore) return aScore.compareTo(bScore);
+      final aDate = DateTime.tryParse(a.publishedAt) ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bDate = DateTime.tryParse(b.publishedAt) ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return bDate.compareTo(aDate);
+    });
+    videos.value = filtered;
+  }
 
-    try {
-      isLoading.value = true;
-      errorMessage.value = '';
-      searchQuery.value = query;
-      
-      TLoggerHelper.info("Searching videos for: $query");
-      final response = await _youtubeRepository.searchVideos(
-        query: query,
-        maxResults: 10,
-      );
-      
-      videos.value = response.items;
-      TLoggerHelper.info("Successfully searched ${videos.length} videos");
-    } catch (e) {
-      TLoggerHelper.error("Error searching videos", e);
-      errorMessage.value = 'Gagal mencari video. Silakan coba lagi.';
-      Get.snackbar(
-        'Error',
-        'Gagal mencari video: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } finally {
-      isLoading.value = false;
-    }
+  void filterByCategory(String category) {
+    selectedFilter.value = category;
+    searchVideosLocal(category);
+  }
+
+  void clearAllFilters() {
+    selectedFilter.value = '';
+    clearSearch();
   }
 
   void clearSearch() {
     searchQuery.value = '';
-    fetchVideos();
+    searchTextController.clear();
+    videos.value = List<YouTubeVideoModel>.from(allVideos);
   }
 
   void refreshVideos() {
@@ -105,6 +140,15 @@ class AgriEduController extends GetxController {
       print('📋 Channel titles: ${response.items.map((c) => c.title).toList()}');
       
       channels.value = response.items;
+      // Initialize featured channel selection (prefer 'Pemkab gresik' if available)
+      if (channels.isNotEmpty && selectedFeaturedChannelId.value.isEmpty) {
+        final preferred = channels.firstWhere(
+          (c) => c.title.toLowerCase().contains('pemkab gresik'),
+          orElse: () => channels.first,
+        );
+        selectedFeaturedChannelId.value = preferred.id;
+        await fetchFeaturedChannelVideos(preferred.id);
+      }
       print('✅ Successfully loaded ${channels.length} channels');
       TLoggerHelper.info("Successfully loaded ${channels.length} channels");
     } catch (e) {
@@ -166,6 +210,41 @@ class AgriEduController extends GetxController {
 
   Future<void> refreshChannels() {
     return fetchChannels();
+  }
+
+  Future<void> setFeaturedChannel(String channelId) async {
+    if (selectedFeaturedChannelId.value == channelId) return;
+    selectedFeaturedChannelId.value = channelId;
+    await fetchFeaturedChannelVideos(channelId);
+  }
+
+  Future<void> fetchFeaturedChannelVideos(String channelId) async {
+    try {
+      isLoadingFeaturedChannel.value = true;
+      errorMessage.value = '';
+      TLoggerHelper.info("Fetching featured videos for channel: $channelId");
+      final response = await _youtubeRepository.getChannelVideos(
+        channelId: channelId,
+        maxResults: 10,
+        order: 'date',
+      );
+      featuredChannelVideos.value = response.items;
+      TLoggerHelper.info("Loaded ${featuredChannelVideos.length} featured videos for $channelId");
+    } catch (e) {
+      TLoggerHelper.error("Error fetching featured channel videos", e);
+      Get.snackbar(
+        'Error',
+        'Gagal memuat video unggulan channel: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoadingFeaturedChannel.value = false;
+    }
+  }
+
+  void clearFeaturedSelection() {
+    selectedFeaturedChannelId.value = '';
+    featuredChannelVideos.clear();
   }
 
   Future<void> fetchFeaturedVideos() async {

@@ -70,6 +70,7 @@ dependencies:
   geocoding: ^3.0.0
   app_settings: ^5.2.0
   google_generative_ai: ^0.4.6
+  youtube_player_flutter: ^9.1.2
   tflite:
     git:
       url: https://github.com/sumn2u/flutter_tflite.git
