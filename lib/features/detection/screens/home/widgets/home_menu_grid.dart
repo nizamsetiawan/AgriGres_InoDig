@@ -66,7 +66,7 @@ class THomeMenuGrid extends StatelessWidget {
               Colors.orange[100]!,
               Colors.orange[600]!,
               Icons.school_outlined,
-              () {},
+              () => Get.toNamed(TRoutes.agriEdu),
             ),
             _buildMenuCard(
               context,
@@ -75,7 +75,7 @@ class THomeMenuGrid extends StatelessWidget {
               Colors.green[100]!,
               Colors.green[600]!,
               Icons.health_and_safety_outlined,
-              () {},
+              () => Get.toNamed(TRoutes.agriCare),
             ),
             _buildMenuCard(
               context,

@@ -33,4 +33,8 @@ class TRoutes {
   static const calculatorResults = '/calculator-results';
   static const favoriteArticles = '/favorite-articles';
   static const createPost = '/create-post';
+  static const agriCare = '/agri-care';
+  static const agriEdu = '/agri-edu';
+  static const videoDetail = '/video-detail';
+  static const channelDetail = '/channel-detail';
 }

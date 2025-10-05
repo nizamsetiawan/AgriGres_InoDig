@@ -3,65 +3,113 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../../../../common/widgets/appbar/appbar.dart';
-import '../../../../../common/widgets/texts/option_menu_text.dart';
 import '../../../../../navigation_menu.dart';
 import '../../../../../utils/constraints/colors.dart';
-import '../../../../../utils/constraints/sizes.dart';
 import '../../../../../utils/constraints/text_strings.dart';
-import '../../../../../utils/helpers/helper_functions.dart';
 
 class DetectionFailedScreen extends StatelessWidget {
   const DetectionFailedScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final isDark = THelperFunctions.isDarkMode(context);
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: TAppBar(
-        title: const Text("Hasil Analisis"),
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text(
+          "Hasil Analisis",
+          style: textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(TSizes.defaultSpace),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Center(
-                child: Lottie.asset(
-                  TImages.failedAnalyze,
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  fit: BoxFit.cover,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Failed Animation
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Lottie.asset(
+                        TImages.failedAnalyze,
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        height: MediaQuery.of(context).size.height * 0.25,
+                        fit: BoxFit.cover,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        TTexts.failedAnalyzeTitle,
+                        style: textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: TColors.error,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        TTexts.failedAnalyzeSUbTitle,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey[600],
+                          height: 1.5,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 10,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Text(
-                TTexts.failedAnalyzeTitle,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: TColors.error,
+                
+                const SizedBox(height: 24),
+                
+                // Retry Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Get.offAll(NavigationMenu());
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: TColors.primary,
+                      side: const BorderSide(color: TColors.primary),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      TTexts.btnRetry,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: TSizes.spaceBtwItems),
-              TOptionMenuText(
-                title: TTexts.failedAnalyzeSUbTitle,
-                maxLines: 10,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: TSizes.spaceBtwSections),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Get.offAll(NavigationMenu());
-                  },
-                  child: const Text(TTexts.btnRetry),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

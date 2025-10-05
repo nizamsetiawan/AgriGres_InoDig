@@ -27,6 +27,10 @@ import '../features/agrimart/screens/agrimart_screen.dart';
 import '../features/calculator/screens/calculator_results_screen.dart';
 import '../features/article/screens/favorite_articles/favorite_articles_screen.dart';
 import '../features/forum/screens/create_post_screen.dart';
+import '../features/detection/screens/agri_care/agri_care_screen.dart';
+import '../features/agri_edu/screens/agri_edu_screen.dart';
+import '../features/agri_edu/screens/video_detail_screen.dart';
+import '../features/agri_edu/screens/channel_detail_screen.dart';
 
 class AppRoutes {
   static final pages = [
@@ -56,6 +60,21 @@ class AppRoutes {
     GetPage(name: TRoutes.calculatorResults, page: () => const CalculatorResultsScreen()),
     GetPage(name: TRoutes.favoriteArticles, page: () => const FavoriteArticlesScreen()),
     GetPage(name: TRoutes.createPost, page: () => const CreatePostScreen()),
+    GetPage(name: TRoutes.agriCare, page: () => const AgriCareScreen()),
+    GetPage(name: TRoutes.agriEdu, page: () => const AgriEduScreen()),
+    GetPage(
+      name: TRoutes.videoDetail,
+      page: () => VideoDetailScreen(
+        videoId: Get.arguments['videoId'] ?? '',
+        title: Get.arguments['title'] ?? '',
+      ),
+    ),
+    GetPage(
+      name: TRoutes.channelDetail,
+      page: () => ChannelDetailScreen(
+        channel: Get.arguments['channel'],
+      ),
+    ),
 
   ];
 }
