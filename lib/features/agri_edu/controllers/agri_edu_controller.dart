@@ -9,8 +9,10 @@ class AgriEduController extends GetxController {
   final YouTubeRepository _youtubeRepository = YouTubeRepository();
   
   final RxList<YouTubeVideoModel> videos = <YouTubeVideoModel>[].obs;
+  final RxList<YouTubeVideoModel> featuredVideos = <YouTubeVideoModel>[].obs;
   final RxList<YouTubeChannelModel> channels = <YouTubeChannelModel>[].obs;
   final RxBool isLoading = false.obs;
+  final RxBool isLoadingFeaturedVideos = false.obs;
   final RxBool isLoadingChannels = false.obs;
   final RxString searchQuery = ''.obs;
   final RxString errorMessage = ''.obs;
@@ -20,6 +22,10 @@ class AgriEduController extends GetxController {
     super.onInit();
     fetchVideos();
     fetchChannels();
+    // Fetch featured videos after channels are loaded
+    Future.delayed(const Duration(milliseconds: 500), () {
+      fetchFeaturedVideos();
+    });
   }
 
   Future<void> fetchVideos() async {
@@ -160,5 +166,53 @@ class AgriEduController extends GetxController {
 
   Future<void> refreshChannels() {
     return fetchChannels();
+  }
+
+  Future<void> fetchFeaturedVideos() async {
+    try {
+      isLoadingFeaturedVideos.value = true;
+      errorMessage.value = '';
+      
+      TLoggerHelper.info("Fetching featured videos from all channels...");
+      
+      // Get videos from all channels
+      final List<YouTubeVideoModel> allVideos = [];
+      
+      for (int i = 0; i < channels.length; i++) {
+        final channel = channels[i];
+        try {
+          TLoggerHelper.info("🌐 Fetching channel videos for: ${channel.id}");
+          final response = await _youtubeRepository.getChannelVideos(
+            channelId: channel.id,
+            maxResults: 5,
+          );
+          allVideos.addAll(response.items);
+          
+          // Add delay between requests to avoid rate limiting
+          if (i < channels.length - 1) {
+            await Future.delayed(const Duration(milliseconds: 300));
+          }
+        } catch (e) {
+          TLoggerHelper.error("⚠️ Failed to fetch videos for channel ${channel.id}: $e");
+          // Continue with other channels
+        }
+      }
+      
+      // Sort by published date (newest first) and take first 10
+      allVideos.sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
+      featuredVideos.value = allVideos.take(10).toList();
+      
+      TLoggerHelper.info("💡 Successfully loaded ${featuredVideos.length} featured videos");
+    } catch (e) {
+      TLoggerHelper.error("Error fetching featured videos", e);
+      errorMessage.value = 'Gagal memuat video unggulan. Silakan coba lagi.';
+      Get.snackbar(
+        'Error',
+        'Gagal memuat video unggulan: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoadingFeaturedVideos.value = false;
+    }
   }
 }

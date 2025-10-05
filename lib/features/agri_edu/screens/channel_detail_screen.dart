@@ -5,6 +5,7 @@ import '../controllers/channel_detail_controller.dart';
 import '../widgets/video_list_card.dart';
 import '../widgets/playlist_card.dart';
 import '../widgets/shimmer_loading.dart';
+import '../widgets/load_more_indicator.dart';
 
 class ChannelDetailScreen extends StatefulWidget {
   final YouTubeChannelModel channel;
@@ -21,6 +22,15 @@ class ChannelDetailScreen extends StatefulWidget {
 class _ChannelDetailScreenState extends State<ChannelDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  // Scroll controllers per tab to detect bottom reach
+  final ScrollController _latestScrollController = ScrollController();
+  final ScrollController _popularScrollController = ScrollController();
+  final ScrollController _playlistsScrollController = ScrollController();
+
+  // Show LoadMoreIndicator only when at bottom
+  bool _showLatestLoadMore = false;
+  bool _showPopularLoadMore = false;
+  bool _showPlaylistsLoadMore = false;
 
   @override
   void initState() {
@@ -30,11 +40,39 @@ class _ChannelDetailScreenState extends State<ChannelDetailScreen>
     // Initialize controller and fetch data
     final controller = Get.put(ChannelDetailController());
     controller.refreshAllData(widget.channel.id);
+
+    // Attach listeners to show load more only when scrolled to bottom
+    _latestScrollController.addListener(() {
+      final max = _latestScrollController.position.maxScrollExtent;
+      final atBottom = _latestScrollController.position.pixels >= (max - 16);
+      if (_showLatestLoadMore != atBottom) {
+        setState(() => _showLatestLoadMore = atBottom);
+      }
+    });
+
+    _popularScrollController.addListener(() {
+      final max = _popularScrollController.position.maxScrollExtent;
+      final atBottom = _popularScrollController.position.pixels >= (max - 16);
+      if (_showPopularLoadMore != atBottom) {
+        setState(() => _showPopularLoadMore = atBottom);
+      }
+    });
+
+    _playlistsScrollController.addListener(() {
+      final max = _playlistsScrollController.position.maxScrollExtent;
+      final atBottom = _playlistsScrollController.position.pixels >= (max - 16);
+      if (_showPlaylistsLoadMore != atBottom) {
+        setState(() => _showPlaylistsLoadMore = atBottom);
+      }
+    });
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _latestScrollController.dispose();
+    _popularScrollController.dispose();
+    _playlistsScrollController.dispose();
     super.dispose();
   }
 
@@ -316,16 +354,30 @@ class _ChannelDetailScreenState extends State<ChannelDetailScreen>
         );
       }
       
-      return ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        itemCount: controller.latestVideos.length,
-        itemBuilder: (context, index) {
-          final video = controller.latestVideos[index];
-          return VideoListCard(
-            video: video,
-            type: 'latest',
-          );
-        },
+      return Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              controller: _latestScrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              itemCount: controller.latestVideos.length,
+              itemBuilder: (context, index) {
+                final video = controller.latestVideos[index];
+                return VideoListCard(
+                  video: video,
+                  type: 'latest',
+                );
+              },
+            ),
+          ),
+          if (_showLatestLoadMore)
+            Obx(() => LoadMoreIndicator(
+              isLoading: controller.isLoadingMoreLatestVideos.value,
+              hasMore: controller.hasMoreLatestVideos.value,
+              onLoadMore: () => controller.loadMoreLatestVideos(widget.channel.id),
+              type: 'videos',
+            )),
+        ],
       );
     });
   }
@@ -361,16 +413,30 @@ class _ChannelDetailScreenState extends State<ChannelDetailScreen>
         );
       }
       
-      return ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        itemCount: controller.popularVideos.length,
-        itemBuilder: (context, index) {
-          final video = controller.popularVideos[index];
-          return VideoListCard(
-            video: video,
-            type: 'popular',
-          );
-        },
+      return Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              controller: _popularScrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              itemCount: controller.popularVideos.length,
+              itemBuilder: (context, index) {
+                final video = controller.popularVideos[index];
+                return VideoListCard(
+                  video: video,
+                  type: 'popular',
+                );
+              },
+            ),
+          ),
+          if (_showPopularLoadMore)
+            Obx(() => LoadMoreIndicator(
+              isLoading: controller.isLoadingMorePopularVideos.value,
+              hasMore: controller.hasMorePopularVideos.value,
+              onLoadMore: () => controller.loadMorePopularVideos(),
+              type: 'videos',
+            )),
+        ],
       );
     });
   }
@@ -406,13 +472,27 @@ class _ChannelDetailScreenState extends State<ChannelDetailScreen>
         );
       }
       
-      return ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        itemCount: controller.playlists.length,
-        itemBuilder: (context, index) {
-          final playlist = controller.playlists[index];
-          return PlaylistCard(playlist: playlist);
-        },
+      return Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              controller: _playlistsScrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              itemCount: controller.playlists.length,
+              itemBuilder: (context, index) {
+                final playlist = controller.playlists[index];
+                return PlaylistCard(playlist: playlist);
+              },
+            ),
+          ),
+          if (_showPlaylistsLoadMore)
+            Obx(() => LoadMoreIndicator(
+              isLoading: controller.isLoadingMorePlaylists.value,
+              hasMore: controller.hasMorePlaylists.value,
+              onLoadMore: () => controller.loadMorePlaylists(widget.channel.id),
+              type: 'playlists',
+            )),
+        ],
       );
     });
   }

@@ -74,12 +74,14 @@ class YouTubePlaylistResponse {
   final String etag;
   final channel.YouTubePageInfo pageInfo;
   final List<YouTubePlaylistModel> items;
+  final String? nextPageToken;
 
   YouTubePlaylistResponse({
     required this.kind,
     required this.etag,
     required this.pageInfo,
     required this.items,
+    this.nextPageToken,
   });
 
   factory YouTubePlaylistResponse.fromJson(Map<String, dynamic> json) {
@@ -90,6 +92,7 @@ class YouTubePlaylistResponse {
       items: (json['items'] as List<dynamic>?)
           ?.map((item) => YouTubePlaylistModel.fromJson(item))
           .toList() ?? [],
+      nextPageToken: json['nextPageToken'],
     );
   }
 
@@ -184,12 +187,14 @@ class YouTubePlaylistItemsResponse {
   final String etag;
   final channel.YouTubePageInfo pageInfo;
   final List<YouTubePlaylistItemModel> items;
+  final String? nextPageToken;
 
   YouTubePlaylistItemsResponse({
     required this.kind,
     required this.etag,
     required this.pageInfo,
     required this.items,
+    this.nextPageToken,
   });
 
   factory YouTubePlaylistItemsResponse.fromJson(Map<String, dynamic> json) {
@@ -200,6 +205,7 @@ class YouTubePlaylistItemsResponse {
       items: (json['items'] as List<dynamic>?)
           ?.map((item) => YouTubePlaylistItemModel.fromJson(item))
           .toList() ?? [],
+      nextPageToken: json['nextPageToken'],
     );
   }
 
