@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:agrigres/features/agri_info/models/table_food_price_model.dart';
+import 'package:agrigres/utils/constraints/api_constants.dart';
+import 'package:agrigres/utils/logging/logger.dart';
 
 class TableDetailAgriInfoController extends GetxController {
   static TableDetailAgriInfoController get instance => Get.find();
@@ -65,14 +67,14 @@ class TableDetailAgriInfoController extends GetxController {
 
       // Build API URL
       final url = Uri.parse(
-        'https://api-panelhargav2.badanpangan.go.id/api/front/harga-pangan-table-v2?'
+        '${APIConstants.agriInfoBaseUrl}/harga-pangan-table-v2?'
         'period_date=${Uri.encodeComponent(periodDate)}&'
         'level_harga_id=${selectedLevelHargaId.value}&'
-        'province_id=15&' // Jawa Timur
-        'city_id=250', // Kab. Gresik
+        'province_id=${APIConstants.agriInfoDefaultProvinceId}&'
+        'city_id=${APIConstants.agriInfoDefaultCityId}',
       );
 
-      print('Fetching table data from: $url');
+      TLoggerHelper.debug('Fetching table data from: $url');
       final request = http.Request('GET', url);
       final response = await request.send();
 
@@ -84,18 +86,18 @@ class TableDetailAgriInfoController extends GetxController {
           final tableResponse = TableFoodPriceResponse.fromJson(jsonResponse);
           responseData.value = tableResponse;
           tableData.assignAll(tableResponse.data);
-          print('Successfully fetched ${tableData.length} commodities');
+          TLoggerHelper.info('Successfully fetched ${tableData.length} commodities');
         } else {
           errorMessage.value = jsonResponse['message'] ?? 'Gagal mendapatkan data tabel';
-          print('API Error: ${errorMessage.value}');
+          TLoggerHelper.error('API Error: ${errorMessage.value}', null);
         }
       } else {
         errorMessage.value = 'Gagal memuat data tabel: ${response.reasonPhrase}';
-        print('HTTP Error: ${response.statusCode} - ${response.reasonPhrase}');
+        TLoggerHelper.error('HTTP Error: ${response.statusCode} - ${response.reasonPhrase}', null);
       }
     } catch (e) {
       errorMessage.value = 'Terjadi kesalahan: ${e.toString()}';
-      print('Error fetching table data: $e');
+      TLoggerHelper.error('Error fetching table data', e);
     } finally {
       isLoading.value = false;
     }

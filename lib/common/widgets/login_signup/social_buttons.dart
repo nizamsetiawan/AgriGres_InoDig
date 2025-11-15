@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:agrigres/features/authentication/controllers/login/login_controller.dart';
 import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:agrigres/utils/constraints/image_strings.dart';
-import 'package:agrigres/utils/constraints/sizes.dart';
 
 class TSocialButtons extends StatelessWidget {
   const TSocialButtons({

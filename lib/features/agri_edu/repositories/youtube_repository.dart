@@ -5,27 +5,20 @@ import '../models/youtube_video_detail_model.dart' as detail;
 import '../models/youtube_channel_model.dart' as channel;
 import '../models/youtube_playlist_model.dart' as playlist;
 import '../../../utils/logging/logger.dart';
+import '../../../utils/constraints/api_constants.dart';
 
 class YouTubeRepository {
-  static const String _baseUrl = 'https://www.googleapis.com/youtube/v3';
-  static const String _apiKey = 'AIzaSyCavpqOztfbwYlhbytBk5xVMVSOausVQIs';
-  static const String _channelId = 'UCrOkSpB5JDBCUrZaOzbsUcw';
+  // Get base URL from environment variables
+  static String get _baseUrl => APIConstants.youtubeBaseUrl;
   
-  // List of 12 channel IDs
-  static const List<String> _channelIds = [
-    'UCrOkSpB5JDBCUrZaOzbsUcw',
-    'UCdPDUMhCqE6hW2Ja39EJQOw',
-    'UCPtpZkU1fNgdW2VUZz6boHw',
-    'UC757MLmzhe5QXlr9yWyHcpQ',
-    'UCB0IUuzY203wj7jPLDlBsRg',
-    'UC2M0KWQ7_e3oCqnWL4urUVQ',
-    'UCNnCpWr9yvBiHwNlHpSNgSA',
-    'UCBStUYo5AKwqVP_iPANSqsw',
-    'UCVo4uXlUX14ra051-i3AbMg',
-    'UCb1C-wSCygELT8P294qocHw',
-    'UCpv_DdfS-_HIbJmE4va8MPg',
-    'UCXzOJru703AhCJXikZEEmsw',
-  ];
+  // Get API key from environment variables
+  static String get _apiKey => APIConstants.youtubeApiKey;
+  
+  // Get default channel ID from environment variables
+  static String get _channelId => APIConstants.youtubeDefaultChannelId;
+  
+  // Get list of channel IDs from environment variables
+  static List<String> get _channelIds => APIConstants.youtubeChannelIds;
 
   Future<video.YouTubeSearchResponse> getVideos({
     int maxResults = 10,
@@ -114,7 +107,6 @@ class YouTubeRepository {
 
   Future<channel.YouTubeChannelListResponse> getChannels() async {
     try {
-      print('🌐 Fetching YouTube channels...');
       TLoggerHelper.info("Fetching YouTube channels...");
       
       // Fetch channels in batches to avoid quota limits
@@ -125,35 +117,34 @@ class YouTubeRepository {
         final batch = _channelIds.skip(i).take(batchSize).toList();
         final channelIdsString = batch.join(',');
         
-        print('📝 Fetching batch ${(i ~/ batchSize) + 1}: $channelIdsString');
+        TLoggerHelper.debug('Fetching batch ${(i ~/ batchSize) + 1}: $channelIdsString');
         
         final uri = Uri.parse(
           '$_baseUrl/channels?part=snippet,statistics,brandingSettings&id=$channelIdsString&key=$_apiKey',
         );
-        print('🔗 API URL: $uri');
+        TLoggerHelper.debug('API URL: $uri');
 
         final response = await http.get(uri);
-        print('📡 Response status: ${response.statusCode}');
+        TLoggerHelper.debug('Response status: ${response.statusCode}');
 
         if (response.statusCode == 200) {
           final Map<String, dynamic> data = json.decode(response.body);
           final channelResponse = channel.YouTubeChannelListResponse.fromJson(data);
           allChannels.addAll(channelResponse.items);
           
-          print('✅ Successfully fetched ${channelResponse.items.length} channels in batch');
+          TLoggerHelper.debug('Successfully fetched ${channelResponse.items.length} channels in batch');
           
           // Add delay between batches to avoid rate limiting
           if (i + batchSize < _channelIds.length) {
             await Future.delayed(const Duration(milliseconds: 500));
           }
         } else {
-          print('❌ Failed to fetch channels batch: ${response.statusCode}');
-          print('❌ Response body: ${response.body}');
+          TLoggerHelper.warning('Failed to fetch channels batch: ${response.statusCode}');
+          TLoggerHelper.debug('Response body: ${response.body}');
           // Continue with next batch instead of throwing error
         }
       }
       
-      print('✅ Successfully fetched ${allChannels.length} total channels');
       TLoggerHelper.info("Successfully fetched ${allChannels.length} total channels");
       
       return channel.YouTubeChannelListResponse(
@@ -163,7 +154,6 @@ class YouTubeRepository {
         items: allChannels,
       );
     } catch (e) {
-      print('💥 Error fetching YouTube channels: $e');
       TLoggerHelper.error("Error fetching YouTube channels", e);
       throw Exception('Error fetching channels: $e');
     }
@@ -207,7 +197,6 @@ class YouTubeRepository {
     String? pageToken,
   }) async {
     try {
-      print('🌐 Fetching channel videos for: $channelId');
       TLoggerHelper.info("Fetching channel videos for: $channelId");
       
       String url = '$_baseUrl/search?part=snippet&channelId=$channelId&maxResults=$maxResults&order=$order&type=video&key=$_apiKey';
@@ -216,25 +205,22 @@ class YouTubeRepository {
       }
       
       final uri = Uri.parse(url);
-      print('🔗 API URL: $uri');
+      TLoggerHelper.debug('API URL: $uri');
 
       final response = await http.get(uri);
-      print('📡 Response status: ${response.statusCode}');
+      TLoggerHelper.debug('Response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         final videoResponse = video.YouTubeSearchResponse.fromJson(data);
         
-        print('✅ Successfully fetched ${videoResponse.items.length} channel videos');
         TLoggerHelper.info("Successfully fetched ${videoResponse.items.length} channel videos");
         return videoResponse;
       } else {
-        print('❌ Failed to fetch channel videos: ${response.statusCode}');
-        TLoggerHelper.error("Failed to fetch channel videos: ${response.statusCode}");
+        TLoggerHelper.error("Failed to fetch channel videos: ${response.statusCode}", null);
         throw Exception('Failed to fetch channel videos: ${response.statusCode}');
       }
     } catch (e) {
-      print('💥 Error fetching channel videos: $e');
       TLoggerHelper.error("Error fetching channel videos", e);
       throw Exception('Error fetching channel videos: $e');
     }
@@ -247,7 +233,6 @@ class YouTubeRepository {
     String? pageToken,
   }) async {
     try {
-      print('🌐 Fetching popular videos for region: $regionCode');
       TLoggerHelper.info("Fetching popular videos for region: $regionCode");
       
       String url = '$_baseUrl/videos?part=snippet,statistics,contentDetails&chart=mostPopular&regionCode=$regionCode&maxResults=$maxResults&key=$_apiKey';
@@ -256,25 +241,22 @@ class YouTubeRepository {
       }
       
       final uri = Uri.parse(url);
-      print('🔗 API URL: $uri');
+      TLoggerHelper.debug('API URL: $uri');
 
       final response = await http.get(uri);
-      print('📡 Response status: ${response.statusCode}');
+      TLoggerHelper.debug('Response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         final videoResponse = detail.YouTubeVideoDetailResponse.fromJson(data);
         
-        print('✅ Successfully fetched ${videoResponse.items.length} popular videos');
         TLoggerHelper.info("Successfully fetched ${videoResponse.items.length} popular videos");
         return videoResponse;
       } else {
-        print('❌ Failed to fetch popular videos: ${response.statusCode}');
-        TLoggerHelper.error("Failed to fetch popular videos: ${response.statusCode}");
+        TLoggerHelper.error("Failed to fetch popular videos: ${response.statusCode}", null);
         throw Exception('Failed to fetch popular videos: ${response.statusCode}');
       }
     } catch (e) {
-      print('💥 Error fetching popular videos: $e');
       TLoggerHelper.error("Error fetching popular videos", e);
       throw Exception('Error fetching popular videos: $e');
     }
@@ -287,7 +269,6 @@ class YouTubeRepository {
     String? pageToken,
   }) async {
     try {
-      print('🌐 Fetching channel playlists for: $channelId');
       TLoggerHelper.info("Fetching channel playlists for: $channelId");
       
       String url = '$_baseUrl/playlists?part=snippet,contentDetails&channelId=$channelId&maxResults=$maxResults&key=$_apiKey';
@@ -296,25 +277,22 @@ class YouTubeRepository {
       }
       
       final uri = Uri.parse(url);
-      print('🔗 API URL: $uri');
+      TLoggerHelper.debug('API URL: $uri');
 
       final response = await http.get(uri);
-      print('📡 Response status: ${response.statusCode}');
+      TLoggerHelper.debug('Response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         final playlistResponse = playlist.YouTubePlaylistResponse.fromJson(data);
         
-        print('✅ Successfully fetched ${playlistResponse.items.length} playlists');
         TLoggerHelper.info("Successfully fetched ${playlistResponse.items.length} playlists");
         return playlistResponse;
       } else {
-        print('❌ Failed to fetch playlists: ${response.statusCode}');
-        TLoggerHelper.error("Failed to fetch playlists: ${response.statusCode}");
+        TLoggerHelper.error("Failed to fetch playlists: ${response.statusCode}", null);
         throw Exception('Failed to fetch playlists: ${response.statusCode}');
       }
     } catch (e) {
-      print('💥 Error fetching playlists: $e');
       TLoggerHelper.error("Error fetching playlists", e);
       throw Exception('Error fetching playlists: $e');
     }
@@ -327,7 +305,6 @@ class YouTubeRepository {
     String? pageToken,
   }) async {
     try {
-      print('🌐 Fetching playlist videos for: $playlistId');
       TLoggerHelper.info("Fetching playlist videos for: $playlistId");
       
       String url = '$_baseUrl/playlistItems?part=snippet&playlistId=$playlistId&maxResults=$maxResults&key=$_apiKey';
@@ -336,25 +313,22 @@ class YouTubeRepository {
       }
       
       final uri = Uri.parse(url);
-      print('🔗 API URL: $uri');
+      TLoggerHelper.debug('API URL: $uri');
 
       final response = await http.get(uri);
-      print('📡 Response status: ${response.statusCode}');
+      TLoggerHelper.debug('Response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         final playlistItemsResponse = playlist.YouTubePlaylistItemsResponse.fromJson(data);
         
-        print('✅ Successfully fetched ${playlistItemsResponse.items.length} playlist videos');
         TLoggerHelper.info("Successfully fetched ${playlistItemsResponse.items.length} playlist videos");
         return playlistItemsResponse;
       } else {
-        print('❌ Failed to fetch playlist videos: ${response.statusCode}');
-        TLoggerHelper.error("Failed to fetch playlist videos: ${response.statusCode}");
+        TLoggerHelper.error("Failed to fetch playlist videos: ${response.statusCode}", null);
         throw Exception('Failed to fetch playlist videos: ${response.statusCode}');
       }
     } catch (e) {
-      print('💥 Error fetching playlist videos: $e');
       TLoggerHelper.error("Error fetching playlist videos", e);
       throw Exception('Error fetching playlist videos: $e');
     }

@@ -4,7 +4,6 @@ import 'package:agrigres/features/personalization/screens/settings/widgets/priva
 import 'package:agrigres/features/personalization/screens/settings/widgets/settings_profile_header.dart';
 import 'package:agrigres/features/personalization/screens/settings/widgets/settings_menu_item.dart';
 import 'package:agrigres/features/personalization/screens/settings/widgets/settings_section_header.dart';
-import 'package:agrigres/features/personalization/controllers/user_controller.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,8 +20,6 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(UserController());
-    
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(

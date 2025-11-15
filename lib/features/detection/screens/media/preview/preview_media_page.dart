@@ -6,9 +6,10 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../../utils/constraints/colors.dart';
 import '../../../../../utils/constraints/text_strings.dart';
 import '../../../../../utils/helpers/loaders.dart';
+import '../../../../../utils/popups/full_screen_loader.dart';
 import '../../../controllers/model_controller.dart';
 
-class ImagePreviewScreen extends StatelessWidget {
+class ImagePreviewScreen extends StatefulWidget {
   const ImagePreviewScreen({
     Key? key,
     required this.imageFile,
@@ -19,23 +20,46 @@ class ImagePreviewScreen extends StatelessWidget {
   final bool isFromCamera;
 
   @override
+  State<ImagePreviewScreen> createState() => _ImagePreviewScreenState();
+}
+
+class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
+  bool _isAnalyzing = false;
+
+  @override
   Widget build(BuildContext context) {
     final modelController = Get.put(ModelController());
     final textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-            size: 20,
+    return WillPopScope(
+      onWillPop: () async {
+        // Cancel analysis if in progress
+        if (_isAnalyzing) {
+          modelController.cancelAnalysis();
+          TFullScreenLoader.stopLoading();
+        }
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () {
+              // Cancel analysis if in progress
+              if (_isAnalyzing) {
+                modelController.cancelAnalysis();
+                TFullScreenLoader.stopLoading();
+              }
+              Get.back();
+            },
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+              size: 20,
+            ),
           ),
-        ),
         title: Text(
           'Pratinjau Gambar',
           style: textTheme.titleLarge?.copyWith(
@@ -73,7 +97,7 @@ class ImagePreviewScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 // Image Preview
-                if (imageFile != null)
+                if (widget.imageFile != null)
                   Container(
                     width: double.infinity,
                     height: 250,
@@ -91,7 +115,7 @@ class ImagePreviewScreen extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.file(
-                        File(imageFile!.path),
+                        File(widget.imageFile!.path),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -185,8 +209,8 @@ class ImagePreviewScreen extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () async {
-                      if (imageFile != null) {
+                    onPressed: _isAnalyzing ? null : () async {
+                      if (widget.imageFile != null) {
                         if (modelController.selectedModel.value.isEmpty) {
                           TLoaders.errorSnackBar(
                             title: 'Oh tidak...', 
@@ -194,8 +218,24 @@ class ImagePreviewScreen extends StatelessWidget {
                           );
                           return;
                         }
-                        await modelController.loadModel();
-                        await modelController.runInference(imageFile!.path, isFromCamera: isFromCamera);
+                        setState(() {
+                          _isAnalyzing = true;
+                        });
+                        try {
+                          await modelController.loadModel();
+                          await modelController.runInference(
+                            widget.imageFile!.path, 
+                            isFromCamera: widget.isFromCamera
+                          );
+                        } catch (e) {
+                          // Error already handled in controller
+                        } finally {
+                          if (mounted) {
+                            setState(() {
+                              _isAnalyzing = false;
+                            });
+                          }
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -220,6 +260,18 @@ class ImagePreviewScreen extends StatelessWidget {
           ),
         ),
       ),
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    // Cancel analysis if still in progress when widget is disposed
+    if (_isAnalyzing) {
+      final modelController = Get.find<ModelController>();
+      modelController.cancelAnalysis();
+      TFullScreenLoader.stopLoading();
+    }
+    super.dispose();
   }
 }

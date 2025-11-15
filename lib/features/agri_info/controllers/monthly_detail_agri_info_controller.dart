@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:agrigres/features/agri_info/models/monthly_food_price_model.dart';
+import 'package:agrigres/utils/constraints/api_constants.dart';
+import 'package:agrigres/utils/logging/logger.dart';
 
 class MonthlyDetailAgriInfoController extends GetxController {
   static MonthlyDetailAgriInfoController get instance => Get.find();
@@ -83,16 +85,16 @@ class MonthlyDetailAgriInfoController extends GetxController {
 
       // Build API URL
       final url = Uri.parse(
-        'https://api-panelhargav2.badanpangan.go.id/api/front/harga-pangan-bulanan-v2?'
+        '${APIConstants.agriInfoBaseUrl}/harga-pangan-bulanan-v2?'
         'start_year=${startYear.value}&'
         'end_year=${endYear.value}&'
         'period_date=${Uri.encodeComponent(periodDate)}&'
-        'province_id=15&'
+        'province_id=${APIConstants.agriInfoDefaultProvinceId}&'
         'level_harga_id=${selectedLevelHargaId.value}&'
-        'city_id=250'
+        'city_id=${APIConstants.agriInfoDefaultCityId}'
       );
 
-      print('Fetching monthly data from: $url');
+      TLoggerHelper.debug('Fetching monthly data from: $url');
 
       // Make API request
       final response = await http.get(url);
@@ -102,14 +104,14 @@ class MonthlyDetailAgriInfoController extends GetxController {
         final monthlyResponse = MonthlyFoodPriceResponse.fromJson(jsonData);
         
         monthlyData.assignAll(monthlyResponse.data);
-        print('Successfully fetched monthly data for ${monthlyResponse.data.keys.length} years');
+        TLoggerHelper.info('Successfully fetched monthly data for ${monthlyResponse.data.keys.length} years');
       } else {
         errorMessage.value = 'Gagal mengambil data: ${response.reasonPhrase}';
-        print('API Error: ${response.statusCode} - ${response.reasonPhrase}');
+        TLoggerHelper.error('API Error: ${response.statusCode} - ${response.reasonPhrase}', null);
       }
     } catch (e) {
       errorMessage.value = 'Terjadi kesalahan: ${e.toString()}';
-      print('Error fetching monthly data: $e');
+      TLoggerHelper.error('Error fetching monthly data', e);
     } finally {
       isLoading.value = false;
     }

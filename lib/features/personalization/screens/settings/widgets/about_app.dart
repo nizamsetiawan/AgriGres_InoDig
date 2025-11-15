@@ -2,9 +2,23 @@ import 'package:agrigres/utils/constraints/image_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:agrigres/common/widgets/appbar/appbar.dart';
 import 'package:agrigres/utils/constraints/colors.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
-class AboutAPPPage extends StatelessWidget {
+class AboutAPPPage extends StatefulWidget {
   const AboutAPPPage({super.key});
+
+  @override
+  State<AboutAPPPage> createState() => _AboutAPPPageState();
+}
+
+class _AboutAPPPageState extends State<AboutAPPPage> {
+  Future<PackageInfo>? _packageInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    _packageInfo = PackageInfo.fromPlatform();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,12 +75,25 @@ class AboutAPPPage extends StatelessWidget {
               
               const SizedBox(height: 8),
               
-              // Version
-              Text(
-                'Versi 1.0.0',
-                style: textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
+              // Version (from pubspec.yaml)
+              FutureBuilder<PackageInfo>(
+                future: _packageInfo,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(
+                      'Versi ${snapshot.data!.version}',
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                    );
+                  }
+                  return Text(
+                    'Versi 1.0.0',
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey[600],
+                    ),
+                  );
+                },
               ),
               
               const SizedBox(height: 32),
@@ -233,6 +260,37 @@ class AboutAPPPage extends StatelessWidget {
               ),
               
               const SizedBox(height: 32),
+              
+              // Credit Line
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Column(
+                  children: [
+                    Divider(
+                      color: Colors.grey[300],
+                      thickness: 1,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Powered by GenZ',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[500],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'M Nizam Setiawan & Eka Aninda A',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              const SizedBox(height: 16),
             ],
           ),
         ),

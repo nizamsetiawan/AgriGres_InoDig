@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:agrigres/common/styles/spacing_styles.dart';
 import 'package:agrigres/utils/constraints/sizes.dart';
 import 'package:agrigres/utils/constraints/text_strings.dart';
-import 'package:agrigres/utils/helpers/helper_functions.dart';
 import 'package:lottie/lottie.dart';
 
 class SuccessScreen extends StatelessWidget {

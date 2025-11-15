@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:agrigres/utils/constraints/image_strings.dart';
-import 'package:agrigres/utils/constraints/sizes.dart';
 import 'package:agrigres/utils/constraints/text_strings.dart';
-import 'package:agrigres/utils/helpers/helper_functions.dart';
 
 class TLoginHeader extends StatelessWidget {
   const TLoginHeader({
@@ -14,7 +11,6 @@ class TLoginHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = THelperFunctions.isDarkMode(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

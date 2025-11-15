@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:agrigres/features/agri_info/models/sawah_model.dart';
+import 'package:agrigres/utils/constraints/api_constants.dart';
+import 'package:agrigres/utils/logging/logger.dart';
 
 class SawahController extends GetxController {
   static SawahController get instance => Get.find();
@@ -100,13 +102,13 @@ class SawahController extends GetxController {
       errorMessage.value = '';
 
       final url = Uri.parse(
-        'https://satudata.gresikkab.go.id/api/3/action/datastore_search?resource_id=6558d003-413c-11f0-8b48-005056016148'
+        '${APIConstants.satuDataBaseUrl}/datastore_search?resource_id=${APIConstants.satuDataSawahResourceId}'
       );
 
-      print('Fetching sawah data from: $url');
+      TLoggerHelper.debug('Fetching sawah data from: $url');
 
       final headers = {
-        'Cookie': 'cookie-satudata_2024=u9528obkpk99sg3sa6b23psaln6ma26f'
+        'Cookie': APIConstants.satuDataCookieSawah
       };
 
       final response = await http.get(url, headers: headers);
@@ -117,17 +119,17 @@ class SawahController extends GetxController {
         
         if (sawahModel.success) {
           sawahData.value = sawahModel;
-          print('Successfully fetched ${sawahModel.result.records.length} sawah records');
+          TLoggerHelper.info('Successfully fetched ${sawahModel.result.records.length} sawah records');
         } else {
           errorMessage.value = 'Gagal mengambil data dari server';
         }
       } else {
         errorMessage.value = 'Gagal mengambil data: ${response.statusCode}';
-        print('Error: ${response.statusCode} - ${response.body}');
+        TLoggerHelper.error('Error: ${response.statusCode} - ${response.body}', null);
       }
     } catch (e) {
       errorMessage.value = 'Terjadi kesalahan: $e';
-      print('Exception: $e');
+      TLoggerHelper.error('Exception', e);
     } finally {
       isLoading.value = false;
     }

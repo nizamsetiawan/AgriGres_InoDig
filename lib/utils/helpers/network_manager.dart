@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:agrigres/utils/logging/logger.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';

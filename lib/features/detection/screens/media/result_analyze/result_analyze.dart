@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 
 import '../../../../../navigation_menu.dart';
 import '../../../../../utils/constraints/colors.dart';
+import '../../../../../utils/popups/full_screen_loader.dart';
 import '../../../controllers/model_controller.dart';
 
 class ResultScreen extends StatefulWidget {
@@ -40,19 +41,33 @@ class _ResultScreenState extends State<ResultScreen> {
     final modelController = Get.put(ModelController());
     final textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: widget.isFromHistory! ? IconButton(
-          onPressed: () => Get.back(),
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-            size: 20,
+    return WillPopScope(
+      onWillPop: () async {
+        // Ensure loading is stopped when going back
+        TFullScreenLoader.stopLoading();
+        // Cancel any ongoing analysis
+        modelController.cancelAnalysis();
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () {
+              // Ensure loading is stopped
+              TFullScreenLoader.stopLoading();
+              // Cancel any ongoing analysis
+              modelController.cancelAnalysis();
+              Get.back();
+            },
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+              size: 20,
+            ),
           ),
-        ) : null,
         title: Text(
           "Hasil Analisis",
           style: textTheme.titleLarge?.copyWith(
@@ -545,6 +560,7 @@ class _ResultScreenState extends State<ResultScreen> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

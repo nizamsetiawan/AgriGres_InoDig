@@ -1,24 +1,17 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import '../../../utils/constraints/api_constants.dart';
+import '../../../utils/logging/logger.dart';
 
 class WeatherService {
-  static const String _baseUrl = 'https://api.openweathermap.org/data/2.5';
+  // Get base URL from environment variables
+  String get _baseUrl => APIConstants.openWeatherBaseUrl;
   
-  // Get API key from environment or use hardcoded key
-  String get apiKey {
-    final envApiKey = dotenv.env['OPENWEATHER_API_KEY'];
-    if (envApiKey?.isNotEmpty == true) {
-      return envApiKey!;
-    }
-    // Fallback to hardcoded key if env not set
-    return 'b8d0c21b738d80868ff12799740ec161';
-  }
+  // Get API key from environment variables
+  String get apiKey => APIConstants.openWeatherApiKey;
 
   // Check if API key is configured
-  bool get isApiKeyConfigured {
-    return apiKey.isNotEmpty;
-  }
+  bool get isApiKeyConfigured => APIConstants.isOpenWeatherConfigured;
 
   // Get current weather by city name
   Future<Map<String, dynamic>?> getCurrentWeatherByCity(String cityName) async {
@@ -51,11 +44,7 @@ class WeatherService {
 
     try {
       final url = '$_baseUrl/weather?lat=$latitude&lon=$longitude&appid=$apiKey&units=metric&lang=id';
-      print('Weather API URL: $url'); // Debug log
       final response = await http.get(Uri.parse(url));
-
-      print('Weather API Response Status: ${response.statusCode}'); // Debug log
-      print('Weather API Response Body: ${response.body}'); // Debug log
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
@@ -63,12 +52,11 @@ class WeatherService {
         throw Exception('Failed to load weather data: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print('Weather API Error: $e'); // Debug log
+      TLoggerHelper.error('Weather API Error', e);
       throw Exception('Error fetching weather data: $e');
     }
   }
 
-  // Get weather forecast (5 days)
   Future<Map<String, dynamic>?> getWeatherForecast(String cityName) async {
     if (!isApiKeyConfigured) {
       throw Exception('OpenWeatherMap API key not configured');
@@ -88,7 +76,6 @@ class WeatherService {
     }
   }
 
-  // Parse weather data to our format
   Map<String, dynamic> parseWeatherData(Map<String, dynamic> data) {
     final main = data['main'] as Map<String, dynamic>;
     final weather = (data['weather'] as List).first as Map<String, dynamic>;
@@ -105,7 +92,7 @@ class WeatherService {
       'icon': weather['icon'] ?? '01d',
       'wind_speed': wind['speed']?.toDouble() ?? 0.0,
       'wind_direction': wind['deg']?.toInt() ?? 0,
-      'city_name': data['name'] ?? 'Unkown',
+      'city_name': data['name'] ?? 'Unknown',
       'country': sys['country'] ?? 'Unknown',
       'sunrise': sys['sunrise']?.toInt() ?? 0,
       'sunset': sys['sunset']?.toInt() ?? 0,
@@ -145,7 +132,6 @@ class WeatherService {
     }
   }
 
-  // Get weather color based on condition
   String getWeatherColor(String condition) {
     switch (condition.toLowerCase()) {
       case 'clear':

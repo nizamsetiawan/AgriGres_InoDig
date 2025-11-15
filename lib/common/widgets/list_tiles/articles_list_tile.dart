@@ -4,7 +4,6 @@ import 'package:agrigres/features/article/screens/detail_articles/detail_article
 import 'package:agrigres/utils/constraints/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../utils/constraints/colors.dart';
 import '../../../utils/constraints/sizes.dart';

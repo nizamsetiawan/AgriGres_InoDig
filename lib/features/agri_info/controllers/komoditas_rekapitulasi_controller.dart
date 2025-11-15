@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:agrigres/features/agri_info/models/komoditas_rekapitulasi_model.dart';
+import 'package:agrigres/utils/constraints/api_constants.dart';
+import 'package:agrigres/utils/logging/logger.dart';
 
 class KomoditasRekapitulasiController extends GetxController {
   static KomoditasRekapitulasiController get instance => Get.find();
@@ -105,14 +107,14 @@ class KomoditasRekapitulasiController extends GetxController {
       final periodDate = '$startDateStr - $endDateStr';
 
       final url = Uri.parse(
-        'https://api-panelhargav2.badanpangan.go.id/api/front/table-rekapitulasi-komoditas'
+        '${APIConstants.agriInfoBaseUrl}/table-rekapitulasi-komoditas'
         '?period_date=${Uri.encodeComponent(periodDate)}'
         '&level_harga_id=${selectedLevelHargaId.value}'
-        '&province_id=15'
+        '&province_id=${APIConstants.agriInfoDefaultProvinceId}'
         '&komoditas_id=${selectedKomoditasId.value}'
       );
 
-      print('Fetching komoditas rekapitulasi data from: $url');
+      TLoggerHelper.debug('Fetching komoditas rekapitulasi data from: $url');
 
       final response = await http.get(url);
 
@@ -123,17 +125,17 @@ class KomoditasRekapitulasiController extends GetxController {
         if (komoditasModel.status == 'success') {
           komoditasData.value = komoditasModel.data;
           rataRataProvinsi.value = komoditasModel.rataRataProvinsi;
-          print('Successfully fetched ${komoditasData.length} komoditas rekapitulasi items');
+          TLoggerHelper.info('Successfully fetched ${komoditasData.length} komoditas rekapitulasi items');
         } else {
           errorMessage.value = komoditasModel.message;
         }
       } else {
         errorMessage.value = 'Gagal mengambil data: ${response.statusCode}';
-        print('Error: ${response.statusCode} - ${response.body}');
+        TLoggerHelper.error('Error: ${response.statusCode} - ${response.body}', null);
       }
     } catch (e) {
       errorMessage.value = 'Terjadi kesalahan: $e';
-      print('Exception: $e');
+      TLoggerHelper.error('Exception', e);
     } finally {
       isLoading.value = false;
     }

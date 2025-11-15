@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:agrigres/data/services/weather_service.dart';
 import 'package:agrigres/features/detection/controllers/location_controller.dart';
+import 'package:agrigres/utils/logging/logger.dart';
 
 class WeatherController extends GetxController {
   static WeatherController get instance => Get.find();
@@ -78,10 +79,10 @@ class WeatherController extends GetxController {
   void _tryFindLocationController() {
     try {
       _locationController = Get.find<GeoTaggingController>();
-      print('✅ GeoTaggingController found');
+      TLoggerHelper.info('GeoTaggingController found');
       _listenToLocationChanges();
     } catch (e) {
-      print('⏳ GeoTaggingController not found yet, retrying in 1 second...');
+      TLoggerHelper.debug('GeoTaggingController not found yet, retrying in 1 second...');
       // Retry after 1 second
       Future.delayed(const Duration(seconds: 1), () {
         _tryFindLocationController();
@@ -106,26 +107,24 @@ class WeatherController extends GetxController {
   // Update location from GPS coordinates
   Future<void> _updateLocationFromGPS() async {
     try {
-      print('=== GPS UPDATE DEBUG ===');
-      print('Location controller: ${_locationController != null}');
-      print('GPS mode: ${_useGPSLocation.value}');
+      TLoggerHelper.debug('GPS UPDATE: Location controller: ${_locationController != null}, GPS mode: ${_useGPSLocation.value}');
       
       if (_locationController != null && _useGPSLocation.value) {
-        print('Getting GPS position...');
+        TLoggerHelper.debug('Getting GPS position...');
         // Get current position
         final position = await _locationController!.geoTaggingRepository.getGeoLocationPosition();
         _latitude.value = position.latitude;
         _longitude.value = position.longitude;
         
-        print('✅ GPS Location set: ${_latitude.value}, ${_longitude.value}');
+        TLoggerHelper.info('GPS Location set: ${_latitude.value}, ${_longitude.value}');
         
         // Update weather with GPS coordinates
         await _fetchWeatherByCoordinates();
       } else {
-        print('❌ Cannot get GPS: controller=${_locationController != null}, GPS=${_useGPSLocation.value}');
+        TLoggerHelper.warning('Cannot get GPS: controller=${_locationController != null}, GPS=${_useGPSLocation.value}');
       }
     } catch (e) {
-      print('❌ GPS location error: $e');
+      TLoggerHelper.error('GPS location error', e);
       // Fallback to city name
       _useGPSLocation.value = false;
     }
@@ -183,31 +182,25 @@ class WeatherController extends GetxController {
   // Fetch real weather data from OpenWeatherMap API
   Future<void> _fetchRealWeatherData() async {
     try {
-      print('=== WEATHER DEBUG ===');
-      print('Current location: ${currentLocation.value}');
-      print('GPS mode enabled: ${_useGPSLocation.value}');
-      print('Latitude: ${_latitude.value}');
-      print('Longitude: ${_longitude.value}');
-      print('Location controller available: ${_locationController != null}');
+      TLoggerHelper.debug('WEATHER DEBUG: Current location: ${currentLocation.value}, GPS mode: ${_useGPSLocation.value}, Lat: ${_latitude.value}, Lng: ${_longitude.value}, Controller: ${_locationController != null}');
       
       Map<String, dynamic>? weatherData;
       
       // Try GPS coordinates first if available
       if (_useGPSLocation.value && _latitude.value != 0.0 && _longitude.value != 0.0) {
-        print('✅ Using GPS coordinates: ${_latitude.value}, ${_longitude.value}');
+        TLoggerHelper.info('Using GPS coordinates: ${_latitude.value}, ${_longitude.value}');
         weatherData = await _weatherService.getCurrentWeatherByCoordinates(
           _latitude.value, 
           _longitude.value
         );
       } else {
         // Fallback to city name
-        print('❌ Using city name: ${currentLocation.value}');
-        print('Reason: GPS=${_useGPSLocation.value}, Lat=${_latitude.value}, Lng=${_longitude.value}');
+        TLoggerHelper.debug('Using city name: ${currentLocation.value}, Reason: GPS=${_useGPSLocation.value}, Lat=${_latitude.value}, Lng=${_longitude.value}');
         weatherData = await _weatherService.getCurrentWeatherByCity(currentLocation.value);
       }
       
       if (weatherData != null) {
-        print('Weather data received: $weatherData'); // Debug log
+        TLoggerHelper.debug('Weather data received: $weatherData');
         final parsedData = _weatherService.parseWeatherData(weatherData);
         
         temperature.value = parsedData['temperature'] ?? 0.0;
@@ -220,10 +213,10 @@ class WeatherController extends GetxController {
         final iconCode = parsedData['icon'] ?? '01d';
         weatherIcon.value = _weatherService.getWeatherIconCode(iconCode);
         
-        print('Weather updated: ${weatherCondition.value}, ${temperature.value}°C'); // Debug log
+        TLoggerHelper.info('Weather updated: ${weatherCondition.value}, ${temperature.value}°C');
       }
     } catch (e) {
-      print('Weather API failed: $e'); // Debug log
+      TLoggerHelper.error('Weather API failed', e);
       // If API fails, fallback to mock data
       await _fetchMockWeatherData();
     }
@@ -233,7 +226,7 @@ class WeatherController extends GetxController {
   Future<void> _fetchWeatherByCoordinates() async {
     try {
       if (_latitude.value != 0.0 && _longitude.value != 0.0) {
-        print('Fetching weather by coordinates: ${_latitude.value}, ${_longitude.value}'); // Debug log
+        TLoggerHelper.debug('Fetching weather by coordinates: ${_latitude.value}, ${_longitude.value}');
         
         final weatherData = await _weatherService.getCurrentWeatherByCoordinates(
           _latitude.value, 
@@ -241,7 +234,7 @@ class WeatherController extends GetxController {
         );
         
         if (weatherData != null) {
-          print('Weather data received by coordinates: $weatherData'); // Debug log
+          TLoggerHelper.debug('Weather data received by coordinates: $weatherData');
           final parsedData = _weatherService.parseWeatherData(weatherData);
           
           temperature.value = parsedData['temperature'] ?? 0.0;
@@ -255,18 +248,18 @@ class WeatherController extends GetxController {
           final apiLocationName = parsedData['city_name'] ?? 'Unknown';
           if (apiLocationName != 'Unknown') {
             currentLocation.value = apiLocationName;
-            print('📍 Location updated to: $apiLocationName');
+            TLoggerHelper.info('Location updated to: $apiLocationName');
           }
           
           // Set weather icon and color
           final iconCode = parsedData['icon'] ?? '01d';
           weatherIcon.value = _weatherService.getWeatherIconCode(iconCode);
           
-          print('Weather updated by GPS: ${weatherCondition.value}, ${temperature.value}°C at $apiLocationName'); // Debug log
+          TLoggerHelper.info('Weather updated by GPS: ${weatherCondition.value}, ${temperature.value}°C at $apiLocationName');
         }
       }
     } catch (e) {
-      print('Weather API by coordinates failed: $e'); // Debug log
+      TLoggerHelper.error('Weather API by coordinates failed', e);
       // Fallback to city name
       _useGPSLocation.value = false;
       await _fetchRealWeatherData();
@@ -350,7 +343,7 @@ class WeatherController extends GetxController {
 
   // Update location (can be called from location controller)
   void updateLocation(String location) {
-    print('Updating location to: $location'); // Debug log
+    TLoggerHelper.debug('Updating location to: $location');
     currentLocation.value = location;
     _useGPSLocation.value = false; // Disable GPS when manually selecting location
     fetchWeatherData(); // Fetch weather for new location
@@ -359,7 +352,7 @@ class WeatherController extends GetxController {
   // Toggle between GPS and manual location
   void toggleLocationMode() {
     _useGPSLocation.value = !_useGPSLocation.value;
-    print('Location mode: ${_useGPSLocation.value ? "GPS" : "Manual"}'); // Debug log
+    TLoggerHelper.debug('Location mode: ${_useGPSLocation.value ? "GPS" : "Manual"}');
     
     if (_useGPSLocation.value) {
       _updateLocationFromGPS();
@@ -375,7 +368,7 @@ class WeatherController extends GetxController {
   void setLocationController(GeoTaggingController controller) {
     _locationController = controller;
     _listenToLocationChanges();
-    print('✅ Location controller set externally');
+    TLoggerHelper.info('Location controller set externally');
   }
 
   // Set location from popular cities
@@ -392,7 +385,7 @@ class WeatherController extends GetxController {
 
   // Force refresh weather data
   void refreshWeather() {
-    print('Refreshing weather data...'); // Debug log
+    TLoggerHelper.debug('Refreshing weather data...');
     
     // If GPS mode is enabled, try to get fresh GPS coordinates
     if (_useGPSLocation.value && _locationController != null) {
@@ -404,12 +397,12 @@ class WeatherController extends GetxController {
 
   // Force update GPS coordinates
   Future<void> forceUpdateGPS() async {
-    print('=== FORCE GPS UPDATE ===');
+    TLoggerHelper.debug('FORCE GPS UPDATE');
     _useGPSLocation.value = true;
     
     // Try to find controller if not available
     if (_locationController == null) {
-      print('⏳ GeoTaggingController not available, trying to find...');
+      TLoggerHelper.debug('GeoTaggingController not available, trying to find...');
       _tryFindLocationController();
       
       // Wait a bit for controller to be found

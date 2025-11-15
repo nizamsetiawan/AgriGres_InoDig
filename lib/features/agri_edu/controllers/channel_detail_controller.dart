@@ -53,7 +53,6 @@ class ChannelDetailController extends GetxController {
       }
       errorMessage.value = '';
       
-      print('🔄 Fetching latest videos for channel: $channelId (loadMore: $isLoadMore)');
       TLoggerHelper.info("Fetching latest videos for channel: $channelId (loadMore: $isLoadMore)");
       
       final response = await _youtubeRepository.getChannelVideos(
@@ -72,10 +71,8 @@ class ChannelDetailController extends GetxController {
       latestVideosNextPageToken.value = response.nextPageToken ?? '';
       hasMoreLatestVideos.value = response.nextPageToken != null;
       
-      print('✅ Successfully loaded ${latestVideos.length} latest videos (hasMore: ${hasMoreLatestVideos.value})');
       TLoggerHelper.info("Successfully loaded ${latestVideos.length} latest videos (hasMore: ${hasMoreLatestVideos.value})");
     } catch (e) {
-      print('❌ Error fetching latest videos: $e');
       TLoggerHelper.error("Error fetching latest videos", e);
       errorMessage.value = 'Gagal memuat video terbaru. Silakan coba lagi.';
       Get.snackbar(
@@ -105,7 +102,6 @@ class ChannelDetailController extends GetxController {
       }
       errorMessage.value = '';
       
-      print('🔄 Fetching popular videos for region: $regionCode (loadMore: $isLoadMore)');
       TLoggerHelper.info("Fetching popular videos for region: $regionCode (loadMore: $isLoadMore)");
       
       final response = await _youtubeRepository.getPopularVideos(
@@ -123,10 +119,8 @@ class ChannelDetailController extends GetxController {
       popularVideosNextPageToken.value = ''; // Popular videos API doesn't support pagination
       hasMorePopularVideos.value = false; // No more data available
       
-      print('✅ Successfully loaded ${popularVideos.length} popular videos (hasMore: ${hasMorePopularVideos.value})');
       TLoggerHelper.info("Successfully loaded ${popularVideos.length} popular videos (hasMore: ${hasMorePopularVideos.value})");
     } catch (e) {
-      print('❌ Error fetching popular videos: $e');
       TLoggerHelper.error("Error fetching popular videos", e);
       errorMessage.value = 'Gagal memuat video populer. Silakan coba lagi.';
       Get.snackbar(
@@ -156,7 +150,6 @@ class ChannelDetailController extends GetxController {
       }
       errorMessage.value = '';
       
-      print('🔄 Fetching playlists for channel: $channelId (loadMore: $isLoadMore)');
       TLoggerHelper.info("Fetching playlists for channel: $channelId (loadMore: $isLoadMore)");
       
       final response = await _youtubeRepository.getChannelPlaylists(
@@ -174,10 +167,8 @@ class ChannelDetailController extends GetxController {
       playlistsNextPageToken.value = response.nextPageToken ?? '';
       hasMorePlaylists.value = response.nextPageToken != null;
       
-      print('✅ Successfully loaded ${playlists.length} playlists (hasMore: ${hasMorePlaylists.value})');
       TLoggerHelper.info("Successfully loaded ${playlists.length} playlists (hasMore: ${hasMorePlaylists.value})");
     } catch (e) {
-      print('❌ Error fetching playlists: $e');
       TLoggerHelper.error("Error fetching playlists", e);
       errorMessage.value = 'Gagal memuat playlist. Silakan coba lagi.';
       Get.snackbar(
@@ -208,7 +199,6 @@ class ChannelDetailController extends GetxController {
       selectedPlaylistId.value = playlistId;
       errorMessage.value = '';
       
-      print('🔄 Fetching videos from playlist: $playlistId (loadMore: $isLoadMore)');
       TLoggerHelper.info("Fetching videos from playlist: $playlistId (loadMore: $isLoadMore)");
       
       final response = await _youtubeRepository.getPlaylistVideos(
@@ -226,10 +216,8 @@ class ChannelDetailController extends GetxController {
       playlistVideosNextPageToken.value = response.nextPageToken ?? '';
       hasMorePlaylistVideos.value = response.nextPageToken != null;
       
-      print('✅ Successfully loaded ${playlistVideos.length} playlist videos (hasMore: ${hasMorePlaylistVideos.value})');
       TLoggerHelper.info("Successfully loaded ${playlistVideos.length} playlist videos (hasMore: ${hasMorePlaylistVideos.value})");
     } catch (e) {
-      print('❌ Error fetching playlist videos: $e');
       TLoggerHelper.error("Error fetching playlist videos", e);
       errorMessage.value = 'Gagal memuat video playlist. Silakan coba lagi.';
       Get.snackbar(

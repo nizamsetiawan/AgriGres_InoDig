@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:agrigres/utils/formatters/formatter.dart';
 
 ///model class representing user data
 class FeedbackModel {

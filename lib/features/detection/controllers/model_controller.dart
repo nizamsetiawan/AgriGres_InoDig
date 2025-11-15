@@ -17,6 +17,7 @@ class ModelController extends GetxController {
   final  selectedLabel = ''.obs;
   final handlingInstructions = <String, Map<String, String>>{}.obs;
   final selectedModel =''.obs;
+  bool _isAnalysisCancelled = false;
 
   @override
   void onInit() {
@@ -31,7 +32,7 @@ class ModelController extends GetxController {
         return; // Berhenti eksekusi jika model belum dipilih
       }
       TLoggerHelper.info("Attempting to load model...");
-      String? res = await modelRepository.loadModel(selectedModel.value!);
+      String? res = await modelRepository.loadModel(selectedModel.value);
       if (res != null) {
         TLoggerHelper.info("Model loaded successfully: $res");
         isModelLoaded.value = true;
@@ -47,12 +48,30 @@ class ModelController extends GetxController {
 
   Future<void> fetchResultAnalyzeDisease(String label, double confidence) async {
     try {
+      // Check if cancelled before starting
+      if (_isAnalysisCancelled) {
+        return;
+      }
+
       TFullScreenLoader.openLoadingDialog('Sedang Analisis...', TImages.docerAnimation);
 
       isModelLoaded.value = true;
       selectedLabel.value = label;
 
+      // Check if cancelled before API call
+      if (_isAnalysisCancelled) {
+        TFullScreenLoader.stopLoading();
+        return;
+      }
+
       final resultAnalyze = await modelRepository.getResultAnalyzeDisease(label);
+      
+      // Check if cancelled after API call
+      if (_isAnalysisCancelled) {
+        TFullScreenLoader.stopLoading();
+        return;
+      }
+
       resultAnalyzeModel.assignAll(resultAnalyze);
 
       if (resultAnalyze.isNotEmpty) {
@@ -70,22 +89,42 @@ class ModelController extends GetxController {
         resultAnalyzeModel.first.probability = (confidence * 100).toStringAsFixed(1) + '%';
 
       }
+      
+      // Check if cancelled before delay
+      if (_isAnalysisCancelled) {
+        TFullScreenLoader.stopLoading();
+        return;
+      }
+      
       await Future.delayed(Duration(seconds: 5));
 
     } catch (e) {
-      TLoggerHelper.error('Error while fetching result analyze', e);
-      TLoaders.errorSnackBar(title: 'Oh snap', message: e.toString());
+      if (!_isAnalysisCancelled) {
+        TLoggerHelper.error('Error while fetching result analyze', e);
+        TLoaders.errorSnackBar(title: 'Oh snap', message: e.toString());
+      }
     } finally {
-      isModelLoaded.value = false;
+      if (!_isAnalysisCancelled) {
+        isModelLoaded.value = false;
+      }
       TFullScreenLoader.stopLoading();
     }
   }
 
   Future<void> runInference(String imagePath, {required bool isFromCamera}) async {
     try {
+      // Reset cancellation flag
+      _isAnalysisCancelled = false;
+
       if (selectedModel.value.isEmpty) {
         throw "Silakan pilih tanaman terlebih dahulu.";
       }
+      
+      // Check if cancelled before starting
+      if (_isAnalysisCancelled) {
+        return;
+      }
+
       TFullScreenLoader.openLoadingDialog('Sedang Menganalisis...', TImages.docerAnimation);
 
       List<dynamic>? recognitionsResult;
@@ -97,18 +136,39 @@ class ModelController extends GetxController {
         // recognitionsResult = await modelRepository.runGeminiInference(imagePath);
       }
 
+      // Check if cancelled after inference
+      if (_isAnalysisCancelled) {
+        TFullScreenLoader.stopLoading();
+        return;
+      }
+
       if (recognitionsResult != null) {
         String label = recognitionsResult.first['label'];
         double confidence = recognitionsResult.first['confidence'];
         String confidencePercentage = (confidence * 100).toStringAsFixed(1) + '%';
 
         if (confidence < 0.7 || label == "Bukan Tanaman") {
+          if (_isAnalysisCancelled) {
+            TFullScreenLoader.stopLoading();
+            return;
+          }
           await Future.delayed(Duration(seconds: 3));
+          
+          if (_isAnalysisCancelled) {
+            TFullScreenLoader.stopLoading();
+            return;
+          }
+          
           TFullScreenLoader.stopLoading();
 
           Get.to(() => const DetectionFailedScreen());
         } else {
           await fetchResultAnalyzeDisease(label, confidence);
+
+          // Check if cancelled before navigation
+          if (_isAnalysisCancelled) {
+            return;
+          }
 
           Get.to(() => ResultScreen(
             label: label,
@@ -119,8 +179,17 @@ class ModelController extends GetxController {
         }
       }
     } catch (e) {
-      TLoggerHelper.error("Error running inference", e);
+      if (!_isAnalysisCancelled) {
+        TLoggerHelper.error("Error running inference", e);
+        TFullScreenLoader.stopLoading();
+      }
     }
+  }
+
+  /// Cancel ongoing analysis process
+  void cancelAnalysis() {
+    _isAnalysisCancelled = true;
+    TLoggerHelper.info("Analysis cancelled by user");
   }
 
   Future<void> releaseModel() async {

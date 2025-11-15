@@ -1,5 +1,4 @@
 import 'package:agrigres/common/widgets/texts/option_menu_text.dart';
-import 'package:agrigres/common/widgets/texts/product_title_text.dart';
 import 'package:agrigres/utils/constraints/enums.dart';
 import 'package:flutter/material.dart';
 

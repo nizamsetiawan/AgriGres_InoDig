@@ -1,15 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-import 'package:get/get.dart';
-import 'package:agrigres/common/styles/spacing_styles.dart';
 import 'package:agrigres/common/widgets/login_signup/social_buttons.dart';
 import 'package:agrigres/features/authentication/screens/signup/widgets/signup_form.dart';
-import 'package:agrigres/utils/constraints/sizes.dart';
 import 'package:agrigres/utils/constraints/text_strings.dart';
-import 'package:agrigres/utils/constraints/image_strings.dart';
-import 'package:agrigres/utils/constraints/colors.dart';
-import 'package:agrigres/utils/helpers/helper_functions.dart';
-import 'package:agrigres/routes/routes.dart';
 
 import '../../../../common/widgets/appbar/appbar.dart';
 
@@ -19,7 +11,6 @@ class SignupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final dark = THelperFunctions.isDarkMode(context);
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -52,6 +43,34 @@ class SignupScreen extends StatelessWidget {
 
               /// footer social buttons (matching login)
               const TSocialButtons(),
+              
+              const SizedBox(height: 24),
+              
+              // Credit Line
+              Column(
+                children: [
+                  Divider(
+                    color: Colors.grey[300],
+                    thickness: 1,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Powered by GenZ',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: Colors.grey[400],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'M Nizam Setiawan & Eka Aninda A',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: Colors.grey[500],
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:agrigres/features/agri_info/models/lahan_model.dart';
+import 'package:agrigres/utils/constraints/api_constants.dart';
+import 'package:agrigres/utils/logging/logger.dart';
 
 class LahanController extends GetxController {
   static LahanController get instance => Get.find();
@@ -100,13 +102,13 @@ class LahanController extends GetxController {
       errorMessage.value = '';
 
       final url = Uri.parse(
-        'https://satudata.gresikkab.go.id/api/3/action/datastore_search?resource_id=919459eb-413b-11f0-8b48-005056016148'
+        '${APIConstants.satuDataBaseUrl}/datastore_search?resource_id=${APIConstants.satuDataLahanResourceId}'
       );
 
-      print('Fetching lahan data from: $url');
+      TLoggerHelper.debug('Fetching lahan data from: $url');
 
       final headers = {
-        'Cookie': 'cookie-satudata_2024=sg6l3o4jqu0ie91ii0p7912rc8sdm515'
+        'Cookie': APIConstants.satuDataCookieLahan
       };
 
       final response = await http.get(url, headers: headers);
@@ -117,17 +119,17 @@ class LahanController extends GetxController {
         
         if (lahanModel.success) {
           lahanData.value = lahanModel;
-          print('Successfully fetched ${lahanModel.result.records.length} lahan records');
+          TLoggerHelper.info('Successfully fetched ${lahanModel.result.records.length} lahan records');
         } else {
           errorMessage.value = 'Gagal mengambil data dari server';
         }
       } else {
         errorMessage.value = 'Gagal mengambil data: ${response.statusCode}';
-        print('Error: ${response.statusCode} - ${response.body}');
+        TLoggerHelper.error('Error: ${response.statusCode} - ${response.body}', null);
       }
     } catch (e) {
       errorMessage.value = 'Terjadi kesalahan: $e';
-      print('Exception: $e');
+      TLoggerHelper.error('Exception', e);
     } finally {
       isLoading.value = false;
     }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:agrigres/common/widgets/images/t_circular_image.dart';
 import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:agrigres/utils/constraints/sizes.dart';
-import 'package:agrigres/utils/helpers/helper_functions.dart';
 
 class TVerticalImageText extends StatelessWidget {
   const TVerticalImageText({
@@ -23,7 +22,6 @@ class TVerticalImageText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = THelperFunctions.isDarkMode(context);
     return GestureDetector(
       onTap: onTap,
       child: Padding(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:get/get.dart';
 import 'package:agrigres/utils/constraints/image_strings.dart';
-import 'package:agrigres/utils/constraints/sizes.dart';
 import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:agrigres/routes/routes.dart';
 
@@ -24,7 +23,6 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Header logo
               Align(
                 alignment: Alignment.centerLeft,
                 child: Image.asset(
@@ -37,7 +35,6 @@ class WelcomeScreen extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              // Illustration + tagline
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -77,7 +74,6 @@ class WelcomeScreen extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // Google outlined button (full-width)
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
@@ -101,11 +97,13 @@ class WelcomeScreen extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // Apple button (orange)
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    // TODO: Implement Apple Sign In
+                    // Get.snackbar('Info', 'Apple Sign In belum tersedia');
+                  },
                   icon: const Icon(Icons.apple, size: 18),
                   label: const Text('Lanjutkan dengan Apple'),
                   style: ElevatedButton.styleFrom(
@@ -120,7 +118,6 @@ class WelcomeScreen extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Login link with clickable 'Masuk'
               Center(
                 child: RichText(
                   text: TextSpan(
@@ -163,6 +160,34 @@ class WelcomeScreen extends StatelessWidget {
                     const TextSpan(text: ' aplikasi.'),
                   ],
                 ),
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // Credit Line
+              Column(
+                children: [
+                  Divider(
+                    color: Colors.grey[300],
+                    thickness: 1,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Powered by GenZ',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: Colors.grey[400],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'M Nizam Setiawan & Eka Aninda A',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: Colors.grey[500],
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

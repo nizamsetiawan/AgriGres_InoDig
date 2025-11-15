@@ -3,8 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:agrigres/features/notification/models/notification_model.dart';
 import 'package:agrigres/utils/exceptions/firebase_exceptions.dart';
 import 'package:get/get.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:agrigres/utils/constraints/api_constants.dart';
 
 class NotificationRepository extends GetxController {
   static NotificationRepository get instance => Get.find();
@@ -30,16 +30,16 @@ class NotificationRepository extends GetxController {
   }
 
   Future<String> _uploadToCloudinary(String imagePath) async {
-    String cloudName = dotenv.env["CLOUDINARY_CLOUD_NAME"] ?? '';
-    String apiKey = dotenv.env["CLOUDINARY_API_KEY"] ?? '';
-    String apiSecret = dotenv.env["CLOUDINARY_API_SECRET"] ?? '';
+    String cloudName = APIConstants.cloudinaryCloudName;
+    String apiKey = APIConstants.cloudinaryApiKey;
+    String apiSecret = APIConstants.cloudinaryApiSecret;
     
-    // List of presets to try in order
-    List<String> presets = ['profile_agroai', 'kenongotask_img'];
+    // List of presets to try in order (from .env)
+    List<String> presets = APIConstants.cloudinaryUploadPresets;
     
     for (String preset in presets) {
       try {
-        var uri = Uri.parse("https://api.cloudinary.com/v1_1/$cloudName/image/upload");
+        var uri = Uri.parse("${APIConstants.cloudinaryBaseUrl}/$cloudName/image/upload");
         var request = http.MultipartRequest("POST", uri);
 
         request.files.add(await http.MultipartFile.fromPath('file', imagePath));

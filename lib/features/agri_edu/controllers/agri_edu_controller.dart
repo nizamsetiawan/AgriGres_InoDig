@@ -132,12 +132,11 @@ class AgriEduController extends GetxController {
       isLoadingChannels.value = true;
       errorMessage.value = '';
       
-      print('🔄 Fetching AgriEdu channels...');
       TLoggerHelper.info("Fetching AgriEdu channels...");
       final response = await _youtubeRepository.getChannels();
       
-      print('📊 API Response: ${response.items.length} channels received');
-      print('📋 Channel titles: ${response.items.map((c) => c.title).toList()}');
+      TLoggerHelper.debug('API Response: ${response.items.length} channels received');
+      TLoggerHelper.debug('Channel titles: ${response.items.map((c) => c.title).toList()}');
       
       channels.value = response.items;
       // Initialize featured channel selection (prefer 'Pemkab gresik' if available)
@@ -149,14 +148,12 @@ class AgriEduController extends GetxController {
         selectedFeaturedChannelId.value = preferred.id;
         await fetchFeaturedChannelVideos(preferred.id);
       }
-      print('✅ Successfully loaded ${channels.length} channels');
       TLoggerHelper.info("Successfully loaded ${channels.length} channels");
     } catch (e) {
-      print('❌ Error fetching channels: $e');
       TLoggerHelper.error("Error fetching channels", e);
       
       // Fallback: Create dummy data for testing
-      print('🔄 Creating fallback channel data...');
+      TLoggerHelper.debug('Creating fallback channel data...');
       _createFallbackChannels();
       
       errorMessage.value = 'Gagal memuat channel. Menggunakan data fallback.';
@@ -205,7 +202,7 @@ class AgriEduController extends GetxController {
     ];
     
     channels.value = fallbackChannels;
-    print('✅ Created ${fallbackChannels.length} fallback channels');
+    TLoggerHelper.info('Created ${fallbackChannels.length} fallback channels');
   }
 
   Future<void> refreshChannels() {

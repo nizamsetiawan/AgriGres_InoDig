@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:agrigres/features/agri_info/models/rekapitulasi_model.dart';
+import 'package:agrigres/utils/constraints/api_constants.dart';
+import 'package:agrigres/utils/logging/logger.dart';
 
 class RekapitulasiController extends GetxController {
   static RekapitulasiController get instance => Get.find();
@@ -67,14 +69,14 @@ class RekapitulasiController extends GetxController {
       final periodDate = '$startDateStr - $endDateStr';
 
       final url = Uri.parse(
-        'https://api-panelhargav2.badanpangan.go.id/api/front/table-rekapitulasi'
+        '${APIConstants.agriInfoBaseUrl}/table-rekapitulasi'
         '?period_date=${Uri.encodeComponent(periodDate)}'
         '&level_harga_id=${selectedLevelHargaId.value}'
-        '&province_id=15'
-        '&city_id=250'
+        '&province_id=${APIConstants.agriInfoDefaultProvinceId}'
+        '&city_id=${APIConstants.agriInfoDefaultCityId}'
       );
 
-      print('Fetching rekapitulasi data from: $url');
+      TLoggerHelper.debug('Fetching rekapitulasi data from: $url');
 
       final response = await http.get(url);
 
@@ -84,17 +86,17 @@ class RekapitulasiController extends GetxController {
         
         if (rekapitulasiModel.status == 'success') {
           rekapitulasiData.value = rekapitulasiModel.data;
-          print('Successfully fetched ${rekapitulasiData.length} rekapitulasi items');
+          TLoggerHelper.info('Successfully fetched ${rekapitulasiData.length} rekapitulasi items');
         } else {
           errorMessage.value = rekapitulasiModel.message;
         }
       } else {
         errorMessage.value = 'Gagal mengambil data: ${response.statusCode}';
-        print('Error: ${response.statusCode} - ${response.body}');
+        TLoggerHelper.error('Error: ${response.statusCode} - ${response.body}', null);
       }
     } catch (e) {
       errorMessage.value = 'Terjadi kesalahan: $e';
-      print('Exception: $e');
+      TLoggerHelper.error('Exception', e);
     } finally {
       isLoading.value = false;
     }

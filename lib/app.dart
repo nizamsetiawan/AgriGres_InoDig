@@ -19,7 +19,6 @@ class App extends StatelessWidget {
       initialBinding: GeneralBindings(),
       getPages: AppRoutes.pages,
       
-      // Add localization configuration
       locale: const Locale('id', 'ID'),
       fallbackLocale: const Locale('en', 'US'),
       localizationsDelegates: const [
@@ -32,7 +31,6 @@ class App extends StatelessWidget {
         Locale('en', 'US'),
       ],
       
-      ///show loader or circular progress indicator meanwhile authentication repository is deciding to show relevant screen
       home: const Scaffold(backgroundColor: TColors.primary, body: Center(child: CircularProgressIndicator(color: Colors.white))),
     );
   }

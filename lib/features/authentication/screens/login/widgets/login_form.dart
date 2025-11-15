@@ -1,14 +1,11 @@
-import 'package:agrigres/utils/constraints/image_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:agrigres/features/authentication/controllers/login/login_controller.dart';
 import 'package:agrigres/features/authentication/screens/password_configuration/forget_password.dart';
-import 'package:agrigres/features/authentication/screens/signup/signup.dart';
-import 'package:agrigres/utils/constraints/sizes.dart';
 import 'package:agrigres/utils/constraints/text_strings.dart';
+import 'package:agrigres/utils/constraints/sizes.dart';
 import 'package:agrigres/utils/validators/validation.dart';
-import 'package:new_ui_kit/widgets/widgets.dart';
 
 import '../../../../../utils/constraints/colors.dart';
 import '../../../../../utils/helpers/helper_functions.dart';

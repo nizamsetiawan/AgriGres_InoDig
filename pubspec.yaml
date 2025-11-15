@@ -76,6 +76,7 @@ dependencies:
       url: https://github.com/sumn2u/flutter_tflite.git
       ref: main
   path_provider: ^2.1.5
+  package_info_plus: ^8.1.1
 
 
 

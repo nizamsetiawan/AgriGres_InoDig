@@ -4,6 +4,7 @@ import 'package:shimmer/shimmer.dart';
 import '../models/youtube_channel_model.dart';
 import '../controllers/agri_edu_controller.dart';
 import '../screens/channel_detail_screen.dart';
+import '../../../utils/logging/logger.dart';
 
 class ChannelCategoriesWidget extends StatelessWidget {
   const ChannelCategoriesWidget({Key? key}) : super(key: key);
@@ -103,7 +104,7 @@ class ChannelCategoriesWidget extends StatelessWidget {
             if (controller.channels.isEmpty) {
               return GestureDetector(
                 onTap: () {
-                  print('Refreshing channels...');
+                  TLoggerHelper.debug('Refreshing channels...');
                   controller.refreshChannels();
                 },
                 child: SizedBox(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:agrigres/features/agri_info/screens/agri_info_screen.dart';
 import 'package:agrigres/routes/routes.dart';
+import 'package:agrigres/utils/logging/logger.dart';
 
 class THomeMenuGrid extends StatelessWidget {
   const THomeMenuGrid({super.key});
@@ -45,12 +46,12 @@ class THomeMenuGrid extends StatelessWidget {
               Colors.blue[600]!,
               Icons.info_outline,
               () {
-                print('AgriInfo clicked!'); // Debug log
+                TLoggerHelper.debug('AgriInfo clicked!');
                 try {
                   Get.to(() => const AgriInfoScreen());
-                  print('Navigation successful!');
+                  TLoggerHelper.debug('Navigation successful!');
                 } catch (e) {
-                  print('Navigation error: $e');
+                  TLoggerHelper.error('Navigation error', e);
                   Get.snackbar(
                     'Error',
                     'Gagal membuka AgriInfo: $e',

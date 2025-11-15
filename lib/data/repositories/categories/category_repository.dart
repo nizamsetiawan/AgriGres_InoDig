@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:agrigres/utils/exceptions/firebase_exceptions.dart';
 import 'package:agrigres/utils/exceptions/platform_exceptions.dart';
-import 'package:agrigres/utils/helpers/firebase_storage_service.dart';
 import '../../../features/detection/models/category_model.dart';
 
 class CategoryRepository extends GetxController {

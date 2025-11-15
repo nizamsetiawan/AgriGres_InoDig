@@ -1,7 +1,6 @@
 
 class TValidator {
 
-  /// empty text validation
   static String? validateEmptyText(String? fieldName, String? value) {
     if (value == null || value.isEmpty) {
       return 'Nama wajib diisi';
@@ -13,7 +12,6 @@ class TValidator {
       return 'Email wajib diisi';
     }
 
-    // regex for email validation
     final emailRegExp = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
 
     if (!emailRegExp.hasMatch(value)) {
@@ -27,7 +25,6 @@ class TValidator {
       return 'Kata sandi wajib diisi';
     }
 
-    //check for minimum password length
     if(value.length < 6) {
       return 'Kata sandi minimal 6 karakter';
     }
@@ -55,5 +52,4 @@ class TValidator {
 
 
 
-// add more custom validations as required for your specific requirements
 }

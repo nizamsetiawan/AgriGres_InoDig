@@ -73,7 +73,7 @@ class NavigationMenu extends StatelessWidget {
                   Iconsax.user,
                   color: controller.selectedIndex.value == 4 ? TColors.primary : (darkMode ? Colors.white60 : Colors.black54),
                 ),
-                label: "Proil",
+                label: "Profil",
               ),
             ],
           ),

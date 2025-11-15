@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:agrigres/features/authentication/controllers/signup/signup_controller.dart';
 import 'package:agrigres/features/authentication/screens/signup/widgets/terms_conditions_checkbox.dart';
-import 'package:agrigres/utils/constraints/sizes.dart';
 import 'package:agrigres/utils/constraints/text_strings.dart';
 import 'package:agrigres/utils/validators/validation.dart';
 

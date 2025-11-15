@@ -8,30 +8,27 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'app.dart';
 import 'data/repositories/authentication/authentication_repository.dart';
+import 'data/services/firebase_config_service.dart';
 import 'firebase_options.dart';
 
 void main()  async{
-  ///widgets binding
   final WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-
-  ///load env
   await dotenv.load(fileName: ".env");
-
-  ///Get local storage
   await GetStorage.init();
 
-  ///Initialize locale data for Indonesian
   await initializeDateFormatting('id_ID', null);
 
-  /// await splash until other items load
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  /// initialize firebase and authentication repository
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform).then(
-        (FirebaseApp value) => Get.put(AuthenticationRepository()),
+        (FirebaseApp value) {
+          Get.put(AuthenticationRepository());
+          // Initialize Firebase Config Service (akan fallback ke .env jika gagal)
+          Get.put(FirebaseConfigService());
+          FirebaseConfigService.instance.initialize();
+        },
   );
 
-  //load all material design/localization/themes/bindings
   runApp(const App());
 }
 

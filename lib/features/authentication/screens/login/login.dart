@@ -1,13 +1,9 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:get/get.dart';
-import 'package:agrigres/common/styles/spacing_styles.dart';
-import 'package:agrigres/common/widgets/login_signup/form_divider.dart';
 import 'package:agrigres/common/widgets/login_signup/social_buttons.dart';
 import 'package:agrigres/features/authentication/screens/login/widgets/login_form.dart';
 import 'package:agrigres/features/authentication/screens/login/widgets/login_header.dart';
-import 'package:agrigres/utils/constraints/sizes.dart';
-import 'package:agrigres/utils/constraints/text_strings.dart';
 
 import '../../../../common/widgets/appbar/appbar.dart';
 import '../../../../routes/routes.dart';
@@ -59,6 +55,34 @@ class LoginScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // Credit Line
+              Column(
+                children: [
+                  Divider(
+                    color: Colors.grey[300],
+                    thickness: 1,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Powered by GenZ',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: Colors.grey[400],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'M Nizam Setiawan & Eka Aninda A',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: Colors.grey[500],
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

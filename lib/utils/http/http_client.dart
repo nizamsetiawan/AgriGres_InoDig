@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../constraints/api_constants.dart';
 
 
 class THttpHelper {
-  static const String _baseUrl = 'https://your-api-base-url.com'; //replace with your api base url
+  // Get base URL from environment variables
+  static String get _baseUrl => APIConstants.apiBaseUrl;
 
 //helper method to make a get request
   static Future<Map<String, dynamic>> get(String endpoint) async {

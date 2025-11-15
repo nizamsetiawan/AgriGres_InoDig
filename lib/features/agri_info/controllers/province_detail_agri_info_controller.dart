@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:agrigres/features/agri_info/models/province_food_price_model.dart';
+import 'package:agrigres/utils/constraints/api_constants.dart';
+import 'package:agrigres/utils/logging/logger.dart';
 
 class ProvinceDetailAgriInfoController extends GetxController {
   static ProvinceDetailAgriInfoController get instance => Get.find();
@@ -60,13 +62,13 @@ class ProvinceDetailAgriInfoController extends GetxController {
       final periodDate = '$startDateStr - $endDateStr';
 
       final url = Uri.parse(
-        'https://api-panelhargav2.badanpangan.go.id/api/front/harga-pangan-table-province?'
-        'province_id=15&'
+        '${APIConstants.agriInfoBaseUrl}/harga-pangan-table-province?'
+        'province_id=${APIConstants.agriInfoDefaultProvinceId}&'
         'level_harga_id=${selectedLevelHargaId.value}&'
         'period_date=${Uri.encodeComponent(periodDate)}',
       );
 
-      print('Fetching province data from: $url');
+      TLoggerHelper.debug('Fetching province data from: $url');
       final request = http.Request('GET', url);
       final response = await request.send();
 
@@ -84,18 +86,18 @@ class ProvinceDetailAgriInfoController extends GetxController {
             grandTotalData.assignAll(grandTotalList.map((json) => GrandTotalModel.fromJson(json)).toList());
           }
           
-          print('Successfully fetched ${provinceData.length} provinces');
+          TLoggerHelper.info('Successfully fetched ${provinceData.length} provinces');
         } else {
           errorMessage.value = jsonResponse['message'] ?? 'Gagal mendapatkan data provinsi';
-          print('API Error: ${errorMessage.value}');
+          TLoggerHelper.error('API Error: ${errorMessage.value}', null);
         }
       } else {
         errorMessage.value = 'Gagal memuat data provinsi: ${response.reasonPhrase}';
-        print('HTTP Error: ${response.statusCode} - ${response.reasonPhrase}');
+        TLoggerHelper.error('HTTP Error: ${response.statusCode} - ${response.reasonPhrase}', null);
       }
     } catch (e) {
       errorMessage.value = 'Terjadi kesalahan: ${e.toString()}';
-      print('Error fetching province data: $e');
+      TLoggerHelper.error('Error fetching province data', e);
     } finally {
       isLoading.value = false;
     }

@@ -8,6 +8,7 @@ import 'package:agrigres/features/agri_info/screens/rekapitulasi_screen.dart';
 import 'package:agrigres/features/agri_info/screens/komoditas_rekapitulasi_screen.dart';
 import 'package:agrigres/features/agri_info/screens/lahan_screen.dart';
 import 'package:agrigres/features/agri_info/screens/sawah_screen.dart';
+import 'package:agrigres/utils/logging/logger.dart';
 
 class AgriInfoController extends GetxController {
   static AgriInfoController get instance => Get.find();
@@ -81,14 +82,14 @@ class AgriInfoController extends GetxController {
       
     } catch (e) {
       // Handle error
-      print('Error fetching agri info: $e');
+      TLoggerHelper.error('Error fetching agri info', e);
     } finally {
       isLoading.value = false;
     }
   }
 
   void navigateToDetail(String agriInfoId) {
-    print('Navigate to detail: $agriInfoId');
+    TLoggerHelper.debug('Navigate to detail: $agriInfoId');
     
     // Navigate to detail screen based on agriInfoId
     switch (agriInfoId) {

@@ -5,6 +5,7 @@ import 'package:agrigres/features/forum/utils/tag_colors.dart';
 import 'package:agrigres/features/detection/controllers/location_controller.dart';
 import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:agrigres/common/widgets/loaders/shimmer.dart';
+import 'package:agrigres/utils/logging/logger.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';
@@ -53,7 +54,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         }
       });
     } catch (e) {
-      print('Error setting up location listener: $e');
+      TLoggerHelper.error('Error setting up location listener', e);
     }
   }
 
@@ -887,7 +888,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       ? _buildShimmerButton()
                       : ElevatedButton(
                           onPressed: () {
-                            print('Creating post with location: $_locationText, hideLocation: $_hideLocation');
+                            TLoggerHelper.debug('Creating post with location: $_locationText, hideLocation: $_hideLocation');
                             controller.createForumPost(
                               imageUrl: _uploadedImageUrls.isNotEmpty ? _uploadedImageUrls.first : null,
                               imageUrls: _uploadedImageUrls.isNotEmpty ? _uploadedImageUrls : null,

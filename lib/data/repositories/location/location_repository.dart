@@ -1,5 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import '../../../utils/constraints/api_constants.dart';
 
 class GeoTaggingRepository extends GetxController {
   static GeoTaggingRepository get instance => Get.find();
@@ -26,9 +27,26 @@ class GeoTaggingRepository extends GetxController {
       return Future.error('Location permission denied forever');
     }
 
+    // Get location accuracy from environment variables
+    LocationAccuracy accuracy = _getLocationAccuracy(APIConstants.locationAccuracy);
+
     return await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+      desiredAccuracy: accuracy,
     );
+  }
+
+  /// Convert location accuracy string to LocationAccuracy enum
+  LocationAccuracy _getLocationAccuracy(String accuracy) {
+    switch (accuracy.toLowerCase()) {
+      case 'high':
+        return LocationAccuracy.high;
+      case 'medium':
+        return LocationAccuracy.medium;
+      case 'low':
+        return LocationAccuracy.low;
+      default:
+        return LocationAccuracy.high;
+    }
   }
 
 }
