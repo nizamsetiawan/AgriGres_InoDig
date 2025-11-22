@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:agrigres/features/agri_info/screens/agri_info_screen.dart';
 import 'package:agrigres/routes/routes.dart';
 import 'package:agrigres/utils/logging/logger.dart';
+import 'package:agrigres/utils/helpers/loaders.dart';
 
 class THomeMenuGrid extends StatelessWidget {
   const THomeMenuGrid({super.key});
@@ -52,10 +53,9 @@ class THomeMenuGrid extends StatelessWidget {
                   TLoggerHelper.debug('Navigation successful!');
                 } catch (e) {
                   TLoggerHelper.error('Navigation error', e);
-                  Get.snackbar(
-                    'Error',
-                    'Gagal membuka AgriInfo: $e',
-                    snackPosition: SnackPosition.BOTTOM,
+                  TLoaders.errorSnackBar(
+                    title: 'Kesalahan',
+                    message: 'Gagal membuka AgriInfo: $e',
                   );
                 }
               },

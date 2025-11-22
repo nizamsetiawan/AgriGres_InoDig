@@ -21,7 +21,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeControllers();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final controller = Get.find<UserController>();
+    // Fetch latest user data from Firestore
+    await controller.fetchUserRecord();
+    // Initialize controllers with fetched data (only if not editing)
+    if (!isEditing) {
+      _initializeControllers();
+    }
   }
 
   void _initializeControllers() {
@@ -157,7 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 24),
               
               // Form Fields
-              _buildInputField(
+              Obx(() => _buildInputField(
                 context,
                 'Nama Depan',
                 controller.user.value.firstName.isNotEmpty 
@@ -166,11 +176,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 isEnabled: isEditing,
                 controller: firstNameController,
                 hintText: 'Masukkan Nama Depan',
-              ),
+              )),
               
               const SizedBox(height: 16),
               
-              _buildInputField(
+              Obx(() => _buildInputField(
                 context,
                 'Nama Belakang',
                 controller.user.value.lastName.isNotEmpty 
@@ -179,44 +189,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 isEnabled: isEditing,
                 controller: lastNameController,
                 hintText: 'Masukkan Nama Belakang',
-              ),
+              )),
               
               const SizedBox(height: 16),
               
-              _buildInputField(
+              Obx(() => _buildInputField(
                 context,
                 'Username',
                 controller.user.value.username.isNotEmpty 
                     ? controller.user.value.username 
                     : 'Masukkan Username',
                 isEnabled: false,
-              ),
+              )),
               
               const SizedBox(height: 16),
               
-              _buildInputField(
-                context,
-                'User ID',
-                controller.user.value.id.isNotEmpty 
-                    ? controller.user.value.id 
-                    : '1239-12333-12343',
-                isEnabled: false,
-              ),
-              
-              const SizedBox(height: 16),
-              
-              _buildInputField(
+              Obx(() => _buildInputField(
                 context,
                 'Email',
                 controller.user.value.email.isNotEmpty 
                     ? controller.user.value.email 
-                    : 'takat89@gmail.com',
+                    : 'Masukkan Email',
                 isEnabled: false,
-              ),
+              )),
               
               const SizedBox(height: 16),
               
-              _buildInputField(
+              Obx(() => _buildInputField(
                 context,
                 'Telp',
                 controller.user.value.phoneNumber.isNotEmpty 
@@ -225,7 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 isEnabled: isEditing,
                 controller: phoneNumberController,
                 hintText: 'Masukkan Nomor Telp',
-              ),
+              )),
               
               const SizedBox(height: 32),
               

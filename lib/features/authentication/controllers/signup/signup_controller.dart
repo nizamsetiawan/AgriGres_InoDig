@@ -95,6 +95,9 @@ class SignupController extends GetxController {
       // show success snack bar
       TLoaders.successSnackBar(title: 'Selamat!', message: 'Akun Anda telah berhasil dibuat. Verifikasi email untuk melanjutkan.');
 
+      // Wait a bit for snackbar to show, then navigate
+      await Future.delayed(const Duration(milliseconds: 500));
+      
       // move to verify email screen
       Get.to(() =>  VerifyEmailScreen(email: email.text.trim()));
 

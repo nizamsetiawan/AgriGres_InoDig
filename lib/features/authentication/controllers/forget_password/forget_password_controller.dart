@@ -47,6 +47,9 @@ class ForgetPasswordController extends GetxController {
       //show success screen
       TLoaders.successSnackBar(title: 'Email Terkirim', message: 'Tautan untuk mereset kata sandi telah dikirimkan ke email Anda'.tr);
 
+      // Wait a bit for snackbar to show, then navigate
+      await Future.delayed(const Duration(milliseconds: 500));
+      
       //redirect
       Get.to(() => ResetPasswordScreen(email: email.text.trim()));
     } catch (e) {

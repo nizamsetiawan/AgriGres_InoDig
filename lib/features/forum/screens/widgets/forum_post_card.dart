@@ -4,6 +4,7 @@ import 'package:agrigres/features/forum/controllers/forum_controller.dart';
 import 'package:agrigres/features/forum/models/forum_post_model.dart';
 import 'package:agrigres/features/forum/utils/tag_colors.dart';
 import 'package:agrigres/utils/constraints/colors.dart';
+import 'package:agrigres/utils/helpers/loaders.dart';
 import 'package:intl/intl.dart';
 
 class ForumPostCard extends StatelessWidget {
@@ -640,12 +641,9 @@ class ForumPostCard extends StatelessWidget {
                     Navigator.pop(context);
                     // Copy to clipboard
                     // You can implement clipboard functionality here
-                    Get.snackbar(
-                      'Berhasil',
-                      'Postingan berhasil disalin',
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: Colors.green,
-                      colorText: Colors.white,
+                    TLoaders.successSnackBar(
+                      title: 'Berhasil',
+                      message: 'Postingan berhasil disalin',
                     );
                   },
                 ),
@@ -658,12 +656,9 @@ class ForumPostCard extends StatelessWidget {
                     Navigator.pop(context);
                     // Share functionality
                     // You can implement native share here
-                    Get.snackbar(
-                      'Berhasil',
-                      'Postingan berhasil dibagikan',
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: Colors.green,
-                      colorText: Colors.white,
+                    TLoaders.successSnackBar(
+                      title: 'Berhasil',
+                      message: 'Postingan berhasil dibagikan',
                     );
                   },
                 ),
@@ -1116,12 +1111,9 @@ class ForumPostCard extends StatelessWidget {
   void _showCommentsDialog(BuildContext context, ForumController controller) {
     // Check if comments are disabled
     if (post.disableComments) {
-      Get.snackbar(
-        'Komentar Dinonaktifkan',
-        'Komentar untuk postingan ini telah dinonaktifkan',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
+      TLoaders.warningSnackBar(
+        title: 'Komentar Dinonaktifkan',
+        message: 'Komentar untuk postingan ini telah dinonaktifkan',
       );
       return;
     }

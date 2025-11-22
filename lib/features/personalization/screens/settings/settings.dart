@@ -12,6 +12,7 @@ import 'package:agrigres/data/repositories/authentication/authentication_reposit
 import 'package:agrigres/features/personalization/screens/profile/profile.dart';
 import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
+import 'package:agrigres/routes/routes.dart';
 
 import '../../../../utils/constraints/text_strings.dart';
 
@@ -84,6 +85,18 @@ class SettingsScreen extends StatelessWidget {
                       icon: Iconsax.call,
                       title: 'Masukan Pengguna',
                       onTap: () => Get.to(() => FeedbackForm()),
+                    ),
+                    
+                    const SizedBox(height: 6),
+                    
+                    // Admin Section
+                    const TSettingsSectionHeader(title: 'Admin'),
+                    
+                    TSettingsMenuItem(
+                      icon: Iconsax.shield,
+                      title: 'Admin Panel',
+                      subtitle: 'Akses panel administrasi',
+                      onTap: () => Get.toNamed(TRoutes.adminLogin),
                     ),
                     
                     const SizedBox(height: 6),

@@ -101,7 +101,7 @@ class ModelController extends GetxController {
     } catch (e) {
       if (!_isAnalysisCancelled) {
         TLoggerHelper.error('Error while fetching result analyze', e);
-        TLoaders.errorSnackBar(title: 'Oh snap', message: e.toString());
+        TLoaders.errorSnackBar(title: 'Kesalahan', message: e.toString());
       }
     } finally {
       if (!_isAnalysisCancelled) {
@@ -225,7 +225,7 @@ class ModelController extends GetxController {
       TLoaders.successSnackBar(title: 'Selamat!', message: "Hasil analisis berhasil disimpan");
     } catch (e) {
       TLoggerHelper.error("Error saving result", e);
-      TLoaders.errorSnackBar(title: 'Selamat!', message: "Hasil analisis gagal disimpan");
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: "Hasil analisis gagal disimpan");
 
     }
   }

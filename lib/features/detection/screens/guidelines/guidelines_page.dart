@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:agrigres/utils/constraints/colors.dart';
 
 import '../../../../utils/constraints/text_strings.dart';
+import '../../../../utils/helpers/loaders.dart';
 
 class GuidelinesScreen extends StatelessWidget {
   const GuidelinesScreen({super.key});
@@ -17,7 +18,11 @@ class GuidelinesScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          onPressed: () => Get.back(),
+          onPressed: () {
+            // Close snackbar safely before navigation
+            TLoaders.closeGetSnackbar();
+            Get.back(closeOverlays: false);
+          },
           icon: const Icon(
             Icons.arrow_back_ios,
             color: Colors.black,

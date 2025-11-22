@@ -5,6 +5,7 @@ import 'package:agrigres/features/notification/controllers/notification_controll
 import 'package:agrigres/features/notification/screens/notification_upload_screen.dart';
 import 'package:agrigres/features/personalization/controllers/user_controller.dart';
 import 'package:agrigres/features/detection/controllers/location_controller.dart';
+import 'package:agrigres/utils/helpers/loaders.dart';
 
 class NotificationFormScreen extends StatelessWidget {
   const NotificationFormScreen({super.key});
@@ -281,12 +282,9 @@ class NotificationFormScreen extends StatelessWidget {
           if (controller.isFormValid) {
             Get.to(() => const NotificationUploadScreen());
           } else {
-            Get.snackbar(
-              'Perhatian',
-              'Mohon lengkapi semua  field yang wajib diisi',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.red[400],
-              colorText: Colors.white,
+            TLoaders.warningSnackBar(
+              title: 'Perhatian',
+              message: 'Mohon lengkapi semua  field yang wajib diisi',
             );
           }
         },

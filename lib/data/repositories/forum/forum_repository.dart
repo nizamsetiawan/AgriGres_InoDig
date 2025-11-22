@@ -95,7 +95,7 @@ class ForumRepository extends GetxController {
     throw 'All Cloudinary upload presets failed';
   }
 
-  // Get all forum posts
+  // Get all forum posts (one-time fetch)
   Future<List<ForumPostModel>> getAllForumPosts() async {
     try {
       TLoggerHelper.info('Fetching forum posts from Firebase...');
@@ -130,6 +130,34 @@ class ForumRepository extends GetxController {
     } catch (e) {
       TLoggerHelper.error('Unknown error while fetching forum posts: $e');
       throw 'Something went wrong while fetching forum posts';
+    }
+  }
+
+  // Stream all forum posts (realtime updates)
+  Stream<List<ForumPostModel>> getAllForumPostsStream() {
+    try {
+      TLoggerHelper.info('Setting up realtime stream for forum posts...');
+      
+      return _db
+          .collection('ForumPosts')
+          .orderBy('created_at', descending: true)
+          .snapshots()
+          .map((snapshot) {
+        TLoggerHelper.debug('Realtime update: ${snapshot.docs.length} forum posts');
+        
+        if (snapshot.docs.isEmpty) {
+          return [];
+        }
+        
+        final result = snapshot.docs.map((e) {
+          return ForumPostModel.fromSnapshot(e);
+        }).toList();
+        
+        return result;
+      });
+    } catch (e) {
+      TLoggerHelper.error('Error setting up forum posts stream: $e');
+      return Stream.value([]);
     }
   }
 
@@ -333,5 +361,116 @@ class ForumRepository extends GetxController {
   bool isLiked(String postId, List<String> likes) {
     final userId = _userController.user.value.id;
     return likes.contains(userId);
+  }
+
+  // Update user profile in all forum posts and comments
+  Future<void> updateUserProfileInForumPosts({
+    required String userId,
+    String? userName,
+    String? userImageUrl,
+  }) async {
+    try {
+      TLoggerHelper.info('Updating user profile in forum posts for user: $userId');
+      
+      final batch = _db.batch();
+      final postsSnapshot = await _db
+          .collection('ForumPosts')
+          .where('user_id', isEqualTo: userId)
+          .get();
+
+      int updateCount = 0;
+
+      for (var postDoc in postsSnapshot.docs) {
+        final postData = postDoc.data();
+        final updateData = <String, dynamic>{};
+        
+        // Check if post is anonymous - don't update anonymous posts
+        final isAnonymous = postData['is_anonymous'] ?? false;
+        
+        // Only update post user info if post is NOT anonymous
+        if (!isAnonymous) {
+          if (userName != null) {
+            updateData['user_name'] = userName;
+          }
+          if (userImageUrl != null) {
+            updateData['user_image_url'] = userImageUrl;
+          }
+        }
+
+        // Update user info in comments (comments are never anonymous, so always update)
+        if (postData['comments'] != null) {
+          final comments = List<Map<String, dynamic>>.from(postData['comments']);
+          bool commentsUpdated = false;
+
+          for (var i = 0; i < comments.length; i++) {
+            if (comments[i]['user_id'] == userId) {
+              if (userName != null) {
+                comments[i]['user_name'] = userName;
+              }
+              if (userImageUrl != null) {
+                comments[i]['user_image_url'] = userImageUrl;
+              }
+              commentsUpdated = true;
+            }
+          }
+
+          if (commentsUpdated) {
+            updateData['comments'] = comments;
+          }
+        }
+
+        if (updateData.isNotEmpty) {
+          updateData['updated_at'] = DateTime.now().toIso8601String();
+          batch.update(postDoc.reference, updateData);
+          updateCount++;
+        }
+      }
+
+      // Also update comments in other users' posts
+      final allPostsSnapshot = await _db
+          .collection('ForumPosts')
+          .get();
+
+      for (var postDoc in allPostsSnapshot.docs) {
+        final postData = postDoc.data();
+        if (postData['comments'] != null) {
+          final comments = List<Map<String, dynamic>>.from(postData['comments']);
+          bool commentsUpdated = false;
+
+          for (var i = 0; i < comments.length; i++) {
+            if (comments[i]['user_id'] == userId) {
+              if (userName != null) {
+                comments[i]['user_name'] = userName;
+              }
+              if (userImageUrl != null) {
+                comments[i]['user_image_url'] = userImageUrl;
+              }
+              commentsUpdated = true;
+            }
+          }
+
+          if (commentsUpdated) {
+            batch.update(postDoc.reference, {
+              'comments': comments,
+              'updated_at': DateTime.now().toIso8601String(),
+            });
+            updateCount++;
+          }
+        }
+      }
+
+      if (updateCount > 0) {
+        await batch.commit();
+        TLoggerHelper.info('Successfully updated user profile in $updateCount forum posts');
+      } else {
+        TLoggerHelper.info('No forum posts found to update for user: $userId');
+      }
+    } on FirebaseException catch (e) {
+      TLoggerHelper.error('Firebase error updating user profile: ${e.code} - ${e.message}');
+      throw TFirebaseException(e.code).message;
+    } catch (e) {
+      TLoggerHelper.error('Unknown error updating user profile in forum posts: $e');
+      throw 'Something went wrong while updating user profile in forum posts';
+    }
   }
 }

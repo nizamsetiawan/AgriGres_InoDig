@@ -9,6 +9,7 @@ import 'package:agrigres/features/agri_info/screens/komoditas_rekapitulasi_scree
 import 'package:agrigres/features/agri_info/screens/lahan_screen.dart';
 import 'package:agrigres/features/agri_info/screens/sawah_screen.dart';
 import 'package:agrigres/utils/logging/logger.dart';
+import 'package:agrigres/utils/helpers/loaders.dart';
 
 class AgriInfoController extends GetxController {
   static AgriInfoController get instance => Get.find();
@@ -118,10 +119,9 @@ class AgriInfoController extends GetxController {
         Get.to(() => const SawahScreen());
         break;
       default:
-        Get.snackbar(
-          'Info',
-          'Fitur ini sedang dalam pengembangan',
-          snackPosition: SnackPosition.BOTTOM,
+        TLoaders.warningSnackBar(
+          title: 'Info',
+          message: 'Fitur ini sedang dalam pengembangan',
         );
     }
   }

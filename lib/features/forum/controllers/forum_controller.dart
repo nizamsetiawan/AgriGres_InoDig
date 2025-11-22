@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,13 +40,56 @@ class ForumController extends GetxController {
   // Tags for creating posts
   final RxList<String> selectedTags = <String>[].obs;
 
+  // Stream subscription for realtime updates
+  StreamSubscription<List<ForumPostModel>>? _forumPostsSubscription;
+
   @override
   void onInit() {
     super.onInit();
-    loadForumPosts();
+    startRealtimeListener();
   }
 
-  // Load all forum posts
+  @override
+  void onClose() {
+    _forumPostsSubscription?.cancel();
+    searchController.dispose();
+    postContentController.dispose();
+    commentController.dispose();
+    tagController.dispose();
+    super.onClose();
+  }
+
+  // Start realtime listener for forum posts
+  void startRealtimeListener() {
+    try {
+      TLoggerHelper.info('Starting realtime listener for forum posts...');
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      _forumPostsSubscription?.cancel();
+      _forumPostsSubscription = forumRepository.getAllForumPostsStream().listen(
+        (posts) {
+          TLoggerHelper.debug('Realtime update: ${posts.length} forum posts');
+          forumPosts.assignAll(posts);
+          applyFilters(); // Apply current filters to new data
+          isLoading.value = false;
+        },
+        onError: (error) {
+          TLoggerHelper.error('Error in forum posts stream', error);
+          errorMessage.value = error.toString();
+          TLoaders.errorSnackBar(title: 'Kesalahan', message: error.toString());
+          isLoading.value = false;
+        },
+      );
+    } catch (e) {
+      TLoggerHelper.error('Error starting realtime listener', e);
+      errorMessage.value = e.toString();
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: e.toString());
+      isLoading.value = false;
+    }
+  }
+
+  // Load all forum posts (one-time fetch - kept for backward compatibility)
   Future<void> loadForumPosts() async {
     try {
       TLoggerHelper.info('Loading forum posts...');
@@ -60,7 +104,7 @@ class ForumController extends GetxController {
     } catch (e) {
       TLoggerHelper.error('Error loading forum posts', e);
       errorMessage.value = e.toString();
-      TLoaders.errorSnackBar(title: 'Error', message: e.toString());
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: e.toString());
     } finally {
       isLoading.value = false;
     }
@@ -89,7 +133,7 @@ class ForumController extends GetxController {
       TLoggerHelper.error('Error uploading image', e);
       isUploadingImage.value = false;
       uploadProgress.value = 0.0;
-      TLoaders.errorSnackBar(title: 'Error', message: 'Failed to upload image: $e');
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: 'Gagal mengunggah gambar: $e');
       return null;
     }
   }
@@ -117,7 +161,7 @@ class ForumController extends GetxController {
       TLoggerHelper.error('Error uploading images', e);
       isUploadingImage.value = false;
       uploadProgress.value = 0.0;
-      TLoaders.errorSnackBar(title: 'Error', message: 'Failed to upload images: $e');
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: 'Gagal mengunggah gambar: $e');
       return [];
     }
   }
@@ -133,7 +177,7 @@ class ForumController extends GetxController {
   }) async {
     try {
       if (postContentController.text.trim().isEmpty) {
-        TLoaders.warningSnackBar(title: 'Warning', message: 'Please enter some content');
+        TLoaders.warningSnackBar(title: 'Peringatan', message: 'Mohon masukkan konten');
         return;
       }
 
@@ -155,20 +199,22 @@ class ForumController extends GetxController {
       postContentController.clear();
       clearTags();
 
-      // Reload posts
-      await loadForumPosts();
-
-      // Navigate back to previous screen
-      Get.back();
-
+      // No need to reload - realtime stream will automatically update
+      // Show success message first, then navigate back
       TLoaders.successSnackBar(
-        title: 'Success',
-        message: 'Post created successfully',
+        title: 'Berhasil',
+        message: 'Postingan berhasil dibuat',
       );
+
+      // Wait a bit for snackbar to show, then navigate back
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      // Navigate back to previous screen safely
+      TLoaders.safeBack();
     } catch (e) {
       TLoggerHelper.error('Error creating forum post', e);
       errorMessage.value = e.toString();
-      TLoaders.errorSnackBar(title: 'Error', message: e.toString());
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: e.toString());
     } finally {
       isCreatingPost.value = false;
     }
@@ -200,7 +246,7 @@ class ForumController extends GetxController {
       TLoggerHelper.info('Successfully toggled like for post: $postId');
     } catch (e) {
       TLoggerHelper.error('Error toggling like', e);
-      TLoaders.errorSnackBar(title: 'Error', message: e.toString());
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: e.toString());
     } finally {
       isLiking.value = false;
     }
@@ -210,7 +256,7 @@ class ForumController extends GetxController {
   Future<void> addComment(String postId) async {
     try {
       if (commentController.text.trim().isEmpty) {
-        TLoaders.warningSnackBar(title: 'Warning', message: 'Please enter a comment');
+        TLoaders.warningSnackBar(title: 'Peringatan', message: 'Mohon masukkan komentar');
         return;
       }
 
@@ -222,16 +268,14 @@ class ForumController extends GetxController {
       // Clear comment form
       commentController.clear();
 
-      // Reload posts to get updated comments
-      await loadForumPosts();
-
+      // No need to reload - realtime stream will automatically update
       TLoaders.successSnackBar(
-        title: 'Success',
-        message: 'Comment added successfully',
+        title: 'Berhasil',
+        message: 'Komentar berhasil ditambahkan',
       );
     } catch (e) {
       TLoggerHelper.error('Error adding comment', e);
-      TLoaders.errorSnackBar(title: 'Error', message: e.toString());
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: e.toString());
     } finally {
       isCommenting.value = false;
     }
@@ -244,16 +288,14 @@ class ForumController extends GetxController {
 
       await forumRepository.deleteForumPost(postId);
 
-      // Remove from local state
-      forumPosts.removeWhere((post) => post.id == postId);
-
+      // No need to remove from local state - realtime stream will automatically update
       TLoaders.successSnackBar(
-        title: 'Success',
-        message: 'Post deleted successfully',
+        title: 'Berhasil',
+        message: 'Postingan berhasil dihapus',
       );
     } catch (e) {
       TLoggerHelper.error('Error deleting forum post', e);
-      TLoaders.errorSnackBar(title: 'Error', message: e.toString());
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: e.toString());
     }
   }
 
@@ -404,12 +446,4 @@ class ForumController extends GetxController {
     selectedTags.clear();
   }
 
-  @override
-  void onClose() {
-    postContentController.dispose();
-    commentController.dispose();
-    searchController.dispose();
-    tagController.dispose();
-    super.onClose();
-  }
 }

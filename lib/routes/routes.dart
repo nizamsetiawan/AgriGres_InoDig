@@ -37,4 +37,8 @@ class TRoutes {
   static const agriEdu = '/agri-edu';
   static const videoDetail = '/video-detail';
   static const channelDetail = '/channel-detail';
+  
+  // Admin routes
+  static const adminLogin = '/admin/login';
+  static const adminDashboard = '/admin/dashboard';
 }

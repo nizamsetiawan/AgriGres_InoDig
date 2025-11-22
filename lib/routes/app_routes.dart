@@ -31,6 +31,8 @@ import '../features/detection/screens/agri_care/agri_care_screen.dart';
 import '../features/agri_edu/screens/agri_edu_screen.dart';
 import '../features/agri_edu/screens/video_detail_screen.dart';
 import '../features/agri_edu/screens/channel_detail_screen.dart';
+import '../features/admin/screens/admin_login_screen.dart';
+import '../features/admin/screens/admin_dashboard.dart';
 
 class AppRoutes {
   static final pages = [
@@ -75,6 +77,9 @@ class AppRoutes {
         channel: Get.arguments['channel'],
       ),
     ),
+    // Admin routes
+    GetPage(name: TRoutes.adminLogin, page: () => const AdminLoginScreen()),
+    GetPage(name: TRoutes.adminDashboard, page: () => const AdminDashboard()),
 
   ];
 }

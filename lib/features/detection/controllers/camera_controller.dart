@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../data/repositories/media/media_repository.dart';
 import '../../../utils/logging/logger.dart';
+import '../../../utils/helpers/loaders.dart';
 
 class CameraController extends GetxController {
   final MediaRepository mediaRepository = Get.put(MediaRepository());
@@ -14,7 +15,7 @@ class CameraController extends GetxController {
       TLoggerHelper.info("Image captured successfully.");
     } catch (e) {
       TLoggerHelper.error("Failed to capture image", e);
-      Get.snackbar("Error", "Could not capture image: ${e.toString()}");
+      TLoaders.errorSnackBar(title: "Kesalahan", message: "Gagal mengambil gambar: ${e.toString()}");
     }
   }
 }

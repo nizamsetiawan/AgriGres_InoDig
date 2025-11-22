@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:agrigres/common/widgets/login_signup/social_buttons.dart';
 import 'package:agrigres/features/authentication/screens/login/widgets/login_form.dart';
 import 'package:agrigres/features/authentication/screens/login/widgets/login_header.dart';
@@ -58,6 +59,20 @@ class LoginScreen extends StatelessWidget {
               ),
               
               const SizedBox(height: 24),
+              
+              // Admin Panel Access
+              Center(
+                child: TextButton.icon(
+                  onPressed: () => Get.toNamed(TRoutes.adminLogin),
+                  icon: const Icon(Iconsax.shield, size: 18),
+                  label: const Text('Akses Admin Panel'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: TColors.primary,
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 16),
               
               // Credit Line
               Column(

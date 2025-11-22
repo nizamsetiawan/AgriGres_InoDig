@@ -58,6 +58,9 @@ class LoginController extends GetxController {
       final userCredentials = await AuthenticationRepository.instance.loginWithEmailAndPassword(email.text.trim(), password.text.trim());
       TLoggerHelper.debug('User successfully signed in with email: ${userCredentials}');
 
+      // Fetch user data from Firestore
+      await userController.fetchUserRecord();
+
       //remove loader
       TFullScreenLoader.stopLoading();
 
@@ -87,10 +90,11 @@ class LoginController extends GetxController {
 
       TLoggerHelper.debug('User successfully signed in with google: ${userCredentials}');
 
-      // Save User Record
+      // Save User Record (will create if doesn't exist)
       await userController.saveUserRecord(userCredentials);
 
-
+      // Fetch user data from Firestore to ensure latest data is loaded
+      await userController.fetchUserRecord();
 
       // Remove Loader
       TFullScreenLoader.stopLoading();
@@ -102,7 +106,14 @@ class LoginController extends GetxController {
       // Remove Loader
       TFullScreenLoader.stopLoading();
 
-      TLoaders.errorSnackBar(title: 'Oh tidak...', message: e.toString());
+      // Log the error for debugging
+      TLoggerHelper.error('Google Sign-In Error', e);
+      
+      // Show user-friendly error message
+      TLoaders.errorSnackBar(
+        title: 'Gagal Masuk', 
+        message: e.toString()
+      );
     }
   }
 }

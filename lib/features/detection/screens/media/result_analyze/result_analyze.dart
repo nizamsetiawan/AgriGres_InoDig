@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 
 import '../../../../../navigation_menu.dart';
 import '../../../../../utils/constraints/colors.dart';
+import '../../../../../utils/helpers/loaders.dart';
 import '../../../../../utils/popups/full_screen_loader.dart';
 import '../../../controllers/model_controller.dart';
 
@@ -60,7 +61,9 @@ class _ResultScreenState extends State<ResultScreen> {
               TFullScreenLoader.stopLoading();
               // Cancel any ongoing analysis
               modelController.cancelAnalysis();
-              Get.back();
+              // Close snackbar safely before navigation
+              TLoaders.closeGetSnackbar();
+              Get.back(closeOverlays: false);
             },
             icon: const Icon(
               Icons.arrow_back_ios,

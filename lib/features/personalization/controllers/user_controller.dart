@@ -12,6 +12,8 @@ import 'package:agrigres/utils/constraints/sizes.dart';
 import 'package:agrigres/utils/helpers/loaders.dart';
 import 'package:agrigres/utils/helpers/network_manager.dart';
 import 'package:agrigres/utils/popups/full_screen_loader.dart';
+import 'package:agrigres/data/repositories/forum/forum_repository.dart';
+import 'package:agrigres/utils/logging/logger.dart';
 
 class UserController extends GetxController {
   static UserController get instance => Get.find();
@@ -78,9 +80,9 @@ class UserController extends GetxController {
       }
     } catch (e) {
       TLoaders.warningSnackBar(
-          title: 'Data not saved',
+          title: 'Data Tidak Tersimpan',
           message:
-              'Something went wrong while saving your information.You can re-save your data in your profile');
+              'Terjadi kesalahan saat menyimpan informasi Anda. Anda dapat menyimpan ulang data di profil Anda');
     }
   }
 
@@ -200,6 +202,19 @@ class UserController extends GetxController {
 
           user.value.profilePicture = imageUrl;
           user.refresh();
+
+          // Update user profile picture in forum posts (realtime)
+          try {
+            final forumRepository = Get.find<ForumRepository>();
+            await forumRepository.updateUserProfileInForumPosts(
+              userId: user.value.id,
+              userImageUrl: imageUrl,
+            );
+          } catch (e) {
+            TLoggerHelper.error('Error updating profile picture in forum posts', e);
+            // Don't show error to user, just log it
+          }
+
           TLoaders.successSnackBar(
               title: 'Selamat',
               message: 'Foto profil berhasil diperbarui');
@@ -250,6 +265,18 @@ class UserController extends GetxController {
       user.value.lastName = lastName.trim();
       user.value.phoneNumber = phoneNumber.trim();
       user.refresh();
+
+      // Update user profile in forum posts (realtime)
+      try {
+        final forumRepository = Get.find<ForumRepository>();
+        await forumRepository.updateUserProfileInForumPosts(
+          userId: user.value.id,
+          userName: user.value.fullName,
+        );
+      } catch (e) {
+        TLoggerHelper.error('Error updating profile in forum posts', e);
+        // Don't show error to user, just log it
+      }
 
       TFullScreenLoader.stopLoading();
       TLoaders.successSnackBar(

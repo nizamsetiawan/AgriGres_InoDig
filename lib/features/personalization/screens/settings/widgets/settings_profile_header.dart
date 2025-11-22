@@ -47,7 +47,7 @@ class TSettingsProfileHeader extends StatelessWidget {
                 Text(
                   controller.user.value.fullName.isNotEmpty 
                       ? controller.user.value.fullName 
-                      : 'Muhammad Nizam Setiawan',
+                      : 'Pengguna',
                   style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),

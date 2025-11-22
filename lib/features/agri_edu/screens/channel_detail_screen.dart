@@ -6,6 +6,7 @@ import '../widgets/video_list_card.dart';
 import '../widgets/playlist_card.dart';
 import '../widgets/shimmer_loading.dart';
 import '../widgets/load_more_indicator.dart';
+import '../../../utils/helpers/loaders.dart';
 
 class ChannelDetailScreen extends StatefulWidget {
   final YouTubeChannelModel channel;
@@ -107,10 +108,9 @@ class _ChannelDetailScreenState extends State<ChannelDetailScreen>
           IconButton(
             onPressed: () {
               // TODO: Subscribe to channel
-              Get.snackbar(
-                'Berhasil',
-                'Berhasil subscribe ke ${widget.channel.title}',
-                snackPosition: SnackPosition.BOTTOM,
+              TLoaders.successSnackBar(
+                title: 'Berhasil',
+                message: 'Berhasil subscribe ke ${widget.channel.title}',
               );
             },
             icon: Icon(

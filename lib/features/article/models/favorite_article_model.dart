@@ -92,6 +92,7 @@ class FavoriteArticleModel {
   // Convert to ArticleModel for display
   ArticleModel toArticleModel() {
     return ArticleModel(
+      id: articleId,
       title: articleTitle,
       category: articleCategory,
       imageUrl: articleImageUrl,
@@ -109,7 +110,7 @@ class FavoriteArticleModel {
     return FavoriteArticleModel(
       id: '',
       userId: userId,
-      articleId: article.title, // Using title as unique identifier
+      articleId: article.id.isNotEmpty ? article.id : article.title, // Use ID if available, fallback to title
       articleTitle: article.title,
       articleContent: article.content,
       articleAuthor: article.author,

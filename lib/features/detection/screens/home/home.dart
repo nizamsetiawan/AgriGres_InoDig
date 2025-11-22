@@ -5,11 +5,32 @@ import 'package:agrigres/features/detection/screens/home/widgets/home_header.dar
 import 'package:agrigres/features/detection/screens/home/widgets/home_location_card.dart';
 import 'package:agrigres/features/detection/screens/home/widgets/home_menu_grid.dart';
 import 'package:agrigres/features/detection/screens/home/widgets/home_weather_card.dart';
+import 'package:agrigres/features/personalization/controllers/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Load user data when home screen opens
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final userController = Get.find<UserController>();
+    // Fetch user data from Firestore if not already loaded
+    if (userController.user.value.id.isEmpty) {
+      await userController.fetchUserRecord();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

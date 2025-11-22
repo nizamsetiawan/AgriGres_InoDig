@@ -58,7 +58,7 @@ class ArticleController extends GetxController {
       applyFilters(); // Apply current filters after fetching
     } catch (e) {
       TLoggerHelper.error('Error while fetching featured articles', e);
-      TLoaders.errorSnackBar(title: 'Oh snap', message: e.toString());
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: e.toString());
     } finally {
       isLoading.value = false;
     }
@@ -75,7 +75,7 @@ class ArticleController extends GetxController {
       TLoggerHelper.info('Fetched ${articles.length} articles for category: $category');
     } catch (e) {
       TLoggerHelper.error('Error while fetching articles by category', e);
-      TLoaders.errorSnackBar(title: 'Oh snap', message: e.toString());
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: e.toString());
     } finally {
       isLoading.value = false;
     }

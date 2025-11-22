@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:agrigres/utils/constraints/image_strings.dart';
 import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:agrigres/routes/routes.dart';
+import 'package:agrigres/utils/helpers/loaders.dart';
 
 import '../../controllers/login/login_controller.dart';
 
@@ -102,7 +103,10 @@ class WelcomeScreen extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: () {
                     // TODO: Implement Apple Sign In
-                    // Get.snackbar('Info', 'Apple Sign In belum tersedia');
+                    TLoaders.warningSnackBar(
+                      title: 'Info',
+                      message: 'Apple Sign In belum tersedia',
+                    );
                   },
                   icon: const Icon(Icons.apple, size: 18),
                   label: const Text('Lanjutkan dengan Apple'),

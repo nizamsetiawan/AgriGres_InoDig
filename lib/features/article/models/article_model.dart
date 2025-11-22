@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ArticleModel {
+  String id;
   String category;
   String title;
   String content;
@@ -8,13 +9,15 @@ class ArticleModel {
   String createdAt;
   String imageUrl;
 
-  ArticleModel(
-      {required this.title,
-      required this.category,
-      required this.imageUrl,
-      required this.author,
-      required this.content,
-      required this.createdAt});
+  ArticleModel({
+    this.id = '',
+    required this.title,
+    required this.category,
+    required this.imageUrl,
+    required this.author,
+    required this.content,
+    required this.createdAt,
+  });
 
   static ArticleModel empty() => ArticleModel(
       title: '',
@@ -35,10 +38,11 @@ class ArticleModel {
     };
   }
 
-  factory ArticleModel.fromJson(Map<String, dynamic> document) {
+  factory ArticleModel.fromJson(Map<String, dynamic> document, {String? id}) {
     final data = document;
     if (data.isEmpty) return ArticleModel.empty();
     return ArticleModel(
+      id: id ?? '',
       title: data['title'] ?? '',
       category: data['category'] ?? '',
       content: data['content'] ?? '',
@@ -52,6 +56,7 @@ class ArticleModel {
     if (snapshot.data() != null) {
       final data = snapshot.data()!;
       return ArticleModel(
+          id: snapshot.id,
           title: data['title'] ?? '',
           category: data['category'] ?? '',
           content: data['content'] ?? '',
@@ -68,6 +73,7 @@ class ArticleModel {
   factory ArticleModel.fromQuerySnapshot(QueryDocumentSnapshot<Object?> document) {
     final data = document.data() as Map<String, dynamic>;
     return ArticleModel(
+        id: document.id,
         title: data['title'] ?? '',
         category: data['category'] ?? '',
         content: data['content'] ?? '',

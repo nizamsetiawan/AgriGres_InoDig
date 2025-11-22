@@ -4,6 +4,7 @@ import '../models/youtube_video_model.dart';
 import '../models/youtube_channel_model.dart';
 import '../repositories/youtube_repository.dart';
 import '../../../utils/logging/logger.dart';
+import '../../../utils/helpers/loaders.dart';
 
 class AgriEduController extends GetxController {
   final YouTubeRepository _youtubeRepository = YouTubeRepository();
@@ -67,10 +68,9 @@ class AgriEduController extends GetxController {
     } catch (e) {
       TLoggerHelper.error("Error fetching videos", e);
       errorMessage.value = 'Gagal memuat video. Silakan coba lagi.';
-      Get.snackbar(
-        'Error',
-        'Gagal memuat video: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: 'Gagal memuat video: ${e.toString()}',
       );
     } finally {
       isLoading.value = false;
@@ -157,12 +157,9 @@ class AgriEduController extends GetxController {
       _createFallbackChannels();
       
       errorMessage.value = 'Gagal memuat channel. Menggunakan data fallback.';
-      Get.snackbar(
-        'Warning',
-        'Gagal memuat channel dari API. Menggunakan data fallback.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.orange[100],
-        colorText: Colors.orange[800],
+      TLoaders.warningSnackBar(
+        title: 'Peringatan',
+        message: 'Gagal memuat channel dari API. Menggunakan data fallback.',
       );
     } finally {
       isLoadingChannels.value = false;
@@ -229,10 +226,9 @@ class AgriEduController extends GetxController {
       TLoggerHelper.info("Loaded ${featuredChannelVideos.length} featured videos for $channelId");
     } catch (e) {
       TLoggerHelper.error("Error fetching featured channel videos", e);
-      Get.snackbar(
-        'Error',
-        'Gagal memuat video unggulan channel: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: 'Gagal memuat video unggulan channel: ${e.toString()}',
       );
     } finally {
       isLoadingFeaturedChannel.value = false;
@@ -282,10 +278,9 @@ class AgriEduController extends GetxController {
     } catch (e) {
       TLoggerHelper.error("Error fetching featured videos", e);
       errorMessage.value = 'Gagal memuat video unggulan. Silakan coba lagi.';
-      Get.snackbar(
-        'Error',
-        'Gagal memuat video unggulan: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: 'Gagal memuat video unggulan: ${e.toString()}',
       );
     } finally {
       isLoadingFeaturedVideos.value = false;

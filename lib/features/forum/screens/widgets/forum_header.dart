@@ -16,7 +16,7 @@ class TForumHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Hi Niza Setiawan 👋',
+                'Hi 👋',
                 style: textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),

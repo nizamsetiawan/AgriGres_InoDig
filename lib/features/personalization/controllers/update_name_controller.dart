@@ -70,6 +70,9 @@ class UpdateNameController extends GetxController {
       // show success snack bar
       TLoaders.successSnackBar(title: 'Selamat', message: 'Nama anda berhasil diubah');
 
+      // Wait a bit for snackbar to show, then navigate
+      await Future.delayed(const Duration(milliseconds: 500));
+      
       //move to previous screen
       Get.off(() => const ProfileScreen());
 

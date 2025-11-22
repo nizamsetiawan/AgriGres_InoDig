@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../models/youtube_video_detail_model.dart';
 import '../repositories/youtube_repository.dart';
 import '../../../utils/logging/logger.dart';
+import '../../../utils/helpers/loaders.dart';
 
 class VideoDetailController extends GetxController {
   final YouTubeRepository _youtubeRepository = YouTubeRepository();
@@ -38,10 +39,9 @@ class VideoDetailController extends GetxController {
     } catch (e) {
       TLoggerHelper.error("Error fetching video detail", e);
       errorMessage.value = 'Gagal memuat detail video. Silakan coba lagi.';
-      Get.snackbar(
-        'Error',
-        'Gagal memuat detail video: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: 'Gagal memuat detail video: ${e.toString()}',
       );
     } finally {
       isLoading.value = false;

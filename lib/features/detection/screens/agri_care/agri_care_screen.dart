@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/camera_controller.dart';
 import '../../controllers/gallery_controller.dart';
+import '../../../../utils/helpers/loaders.dart';
 import '../media/preview/preview_media_page.dart';
 import '../history/history_screen.dart';
 import '../guidelines/guidelines_page.dart';
@@ -23,7 +24,11 @@ class AgriCareScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          onPressed: () => Get.back(),
+          onPressed: () {
+            // Close snackbar safely before navigation
+            TLoaders.closeGetSnackbar();
+            Get.back(closeOverlays: false);
+          },
           icon: const Icon(
             Icons.arrow_back_ios,
             color: Colors.black,

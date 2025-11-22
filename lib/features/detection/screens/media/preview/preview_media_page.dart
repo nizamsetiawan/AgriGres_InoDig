@@ -52,7 +52,9 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
                 modelController.cancelAnalysis();
                 TFullScreenLoader.stopLoading();
               }
-              Get.back();
+              // Close snackbar safely before navigation
+              TLoaders.closeGetSnackbar();
+              Get.back(closeOverlays: false);
             },
             icon: const Icon(
               Icons.arrow_back_ios,

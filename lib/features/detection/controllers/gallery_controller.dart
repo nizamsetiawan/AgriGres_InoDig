@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../data/repositories/media/media_repository.dart';
 import '../../../utils/logging/logger.dart';
+import '../../../utils/helpers/loaders.dart';
 
 class GalleryController extends GetxController {
   final MediaRepository mediaRepository = Get.put(MediaRepository());
@@ -15,7 +16,7 @@ class GalleryController extends GetxController {
       TLoggerHelper.info("Image selected successfully.");
     } catch (e) {
       TLoggerHelper.error("Failed to select image from gallery", e);
-      Get.snackbar("Error", "Could not pick image: ${e.toString()}");
+      TLoaders.errorSnackBar(title: "Kesalahan", message: "Gagal memilih gambar: ${e.toString()}");
     }
   }
 }

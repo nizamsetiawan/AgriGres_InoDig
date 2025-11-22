@@ -8,6 +8,7 @@ import 'dart:io';
 import '../../../../utils/constraints/colors.dart';
 import '../../../../utils/constraints/image_strings.dart';
 import '../../../../utils/constraints/text_strings.dart';
+import '../../../../utils/helpers/loaders.dart';
 import '../media/result_analyze/result_analyze.dart';
 
 class HistoryScreen extends StatelessWidget {
@@ -25,7 +26,11 @@ class HistoryScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          onPressed: () => Get.back(),
+          onPressed: () {
+            // Close snackbar safely before navigation
+            TLoaders.closeGetSnackbar();
+            Get.back(closeOverlays: false);
+          },
           icon: const Icon(
             Icons.arrow_back_ios,
             color: Colors.black,

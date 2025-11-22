@@ -6,6 +6,7 @@ import 'package:agrigres/features/detection/controllers/location_controller.dart
 import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:agrigres/common/widgets/loaders/shimmer.dart';
 import 'package:agrigres/utils/logging/logger.dart';
+import 'package:agrigres/utils/helpers/loaders.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';
@@ -136,7 +137,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         await _uploadImages();
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to pick images: $e');
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: 'Gagal memilih gambar: $e');
     }
   }
 
@@ -157,7 +158,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         await _uploadImages();
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to take photo: $e');
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: 'Gagal mengambil foto: $e');
     }
   }
 
@@ -179,9 +180,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           _uploadedImageUrls = uploadedUrls;
           _isUploadingImage = false;
         });
-        Get.snackbar('Success', 'Gambar Berhasil diUpload', snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,);
+        TLoaders.successSnackBar(
+          title: 'Berhasil',
+          message: 'Gambar berhasil diunggah',
+        );
 
       } else {
         setState(() {
@@ -192,9 +194,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       setState(() {
         _isUploadingImage = false;
       });
-      Get.snackbar('Error', 'Gagal Upload Gambar', snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,);
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: 'Gagal mengunggah gambar');
     }
   }
 
@@ -218,7 +218,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       // If location is not available, fetch it
       locationController.fetchGeoLocation();
     } catch (e) {
-      Get.snackbar('Error', 'Failed to get location: $e');
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: 'Gagal mendapatkan lokasi: $e');
     }
   }
 

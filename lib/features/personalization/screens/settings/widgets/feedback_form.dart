@@ -52,7 +52,7 @@ class FeedbackForm extends StatelessWidget {
                 'Nama Pengguna',
                 userController.user.value.fullName.isNotEmpty 
                     ? userController.user.value.fullName 
-                    : 'Muhammad Nizam Setiawan',
+                    : 'Pengguna',
                 isEnabled: false,
                 controller: controller.usernameController,
               ),
@@ -65,7 +65,7 @@ class FeedbackForm extends StatelessWidget {
                 'Email',
                 userController.user.value.email.isNotEmpty 
                     ? userController.user.value.email 
-                    : 'takat89@gmail.com',
+                    : '',
                 isEnabled: false,
                 controller: controller.emailController,
               ),

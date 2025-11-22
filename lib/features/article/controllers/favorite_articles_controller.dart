@@ -38,7 +38,7 @@ class FavoriteArticlesController extends GetxController {
       TLoggerHelper.info('Loaded ${favorites.length} favorite articles');
     } catch (e) {
       TLoggerHelper.error('Error loading favorite articles', e);
-      TLoaders.errorSnackBar(title: 'Error', message: e.toString());
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: e.toString());
     } finally {
       isLoading.value = false;
     }
@@ -65,7 +65,7 @@ class FavoriteArticlesController extends GetxController {
       );
     } catch (e) {
       TLoggerHelper.error('Error adding to favorites', e);
-      TLoaders.errorSnackBar(title: 'Error', message: e.toString());
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: e.toString());
     }
   }
 
@@ -86,7 +86,7 @@ class FavoriteArticlesController extends GetxController {
       );
     } catch (e) {
       TLoggerHelper.error('Error removing from favorites', e);
-      TLoaders.errorSnackBar(title: 'Error', message: e.toString());
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: e.toString());
     }
   }
 

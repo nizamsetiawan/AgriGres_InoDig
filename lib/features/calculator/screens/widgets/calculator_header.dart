@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:agrigres/features/personalization/controllers/user_controller.dart';
 
 class TCalculatorHeader extends StatelessWidget {
   const TCalculatorHeader({super.key});
@@ -7,6 +9,7 @@ class TCalculatorHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final userController = Get.find<UserController>();
     
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -15,12 +18,14 @@ class TCalculatorHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Hai, Nizam Setiawan 👋',
+              Obx(() => Text(
+                userController.user.value.fullName.isNotEmpty
+                    ? 'Hai, ${userController.user.value.fullName} 👋'
+                    : 'Hai, Pengguna 👋',
                 style: textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
-              ),
+              )),
               const SizedBox(height: 4),
               Text(
                 'Semoga selalu dalam keadaan sehat dan panen melimpah 🌾',

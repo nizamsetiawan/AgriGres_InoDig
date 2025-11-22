@@ -59,7 +59,7 @@ class CategoryController extends GetxController {
       TLoggerHelper.info('Final featured categories count: ${featuredCategories.length}');
 
     } catch (e) {
-      TLoaders.errorSnackBar(title: 'Oh snap', message: e.toString());
+      TLoaders.errorSnackBar(title: 'Kesalahan', message: e.toString());
     }finally{
       //remove loader
       isLoading.value = false;

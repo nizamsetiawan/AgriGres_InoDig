@@ -4,6 +4,7 @@ import '../models/youtube_video_detail_model.dart';
 import '../models/youtube_playlist_model.dart';
 import '../repositories/youtube_repository.dart';
 import '../../../utils/logging/logger.dart';
+import '../../../utils/helpers/loaders.dart';
 
 class ChannelDetailController extends GetxController {
   final YouTubeRepository _youtubeRepository = YouTubeRepository();
@@ -75,10 +76,9 @@ class ChannelDetailController extends GetxController {
     } catch (e) {
       TLoggerHelper.error("Error fetching latest videos", e);
       errorMessage.value = 'Gagal memuat video terbaru. Silakan coba lagi.';
-      Get.snackbar(
-        'Error',
-        'Gagal memuat video terbaru: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: 'Gagal memuat video terbaru: ${e.toString()}',
       );
     } finally {
       if (isLoadMore) {
@@ -123,10 +123,9 @@ class ChannelDetailController extends GetxController {
     } catch (e) {
       TLoggerHelper.error("Error fetching popular videos", e);
       errorMessage.value = 'Gagal memuat video populer. Silakan coba lagi.';
-      Get.snackbar(
-        'Error',
-        'Gagal memuat video populer: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: 'Gagal memuat video populer: ${e.toString()}',
       );
     } finally {
       if (isLoadMore) {
@@ -171,10 +170,9 @@ class ChannelDetailController extends GetxController {
     } catch (e) {
       TLoggerHelper.error("Error fetching playlists", e);
       errorMessage.value = 'Gagal memuat playlist. Silakan coba lagi.';
-      Get.snackbar(
-        'Error',
-        'Gagal memuat playlist: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: 'Gagal memuat playlist: ${e.toString()}',
       );
     } finally {
       if (isLoadMore) {
@@ -220,10 +218,9 @@ class ChannelDetailController extends GetxController {
     } catch (e) {
       TLoggerHelper.error("Error fetching playlist videos", e);
       errorMessage.value = 'Gagal memuat video playlist. Silakan coba lagi.';
-      Get.snackbar(
-        'Error',
-        'Gagal memuat video playlist: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: 'Gagal memuat video playlist: ${e.toString()}',
       );
     } finally {
       if (isLoadMore) {

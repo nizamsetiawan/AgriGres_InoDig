@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:agrigres/features/notification/models/notification_model.dart';
 import 'package:agrigres/features/notification/repositories/notification_repository.dart';
 import 'package:agrigres/features/notification/screens/notification_detail_screen.dart';
 import 'package:agrigres/features/personalization/controllers/user_controller.dart';
+import 'package:agrigres/utils/helpers/loaders.dart';
 
 class NotificationController extends GetxController {
   static NotificationController get instance => Get.find();
@@ -140,24 +140,17 @@ class NotificationController extends GetxController {
 
       isUploaded.value = true;
 
-      Get.snackbar(
-        'Berhasil',
-        'Gambar berhasil diupload',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green[600],
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
+      TLoaders.successSnackBar(
+        title: 'Berhasil',
+        message: 'Gambar berhasil diupload',
+        duration: 2,
       );
 
     } catch (e) {
       errorMessage.value = e.toString();
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[600],
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: e.toString(),
       );
     } finally {
       isUploading.value = false;
@@ -208,13 +201,9 @@ class NotificationController extends GetxController {
       resetForm();
 
       // Show success message
-      Get.snackbar(
-        'Berhasil',
-        'Notifikasi darurat berhasil dikirim',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green[600],
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
+      TLoaders.successSnackBar(
+        title: 'Berhasil',
+        message: 'Notifikasi darurat berhasil dikirim',
       );
 
       // Navigate back to navigation menu (home screen with navbar)
@@ -222,13 +211,9 @@ class NotificationController extends GetxController {
 
     } catch (e) {
       errorMessage.value = e.toString();
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[600],
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: e.toString(),
       );
     } finally {
       isLoading.value = false;
@@ -248,13 +233,9 @@ class NotificationController extends GetxController {
       notifications.value = await _repository.getAllNotifications();
     } catch (e) {
       errorMessage.value = e.toString();
-      Get.snackbar(
-        'Error',
-        'Gagal memuat data notifikasi: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[600],
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: 'Gagal memuat data notifikasi: $e',
       );
     } finally {
       isLoading.value = false;
@@ -271,23 +252,16 @@ class NotificationController extends GetxController {
         // Navigate to detail screen
         Get.to(() => NotificationDetailScreen(notification: notification));
       } else {
-        Get.snackbar(
-          'Error',
-          'Notifikasi tidak ditemukan',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red[600],
-          colorText: Colors.white,
+        TLoaders.errorSnackBar(
+          title: 'Kesalahan',
+          message: 'Notifikasi tidak ditemukan',
         );
       }
     } catch (e) {
       errorMessage.value = e.toString();
-      Get.snackbar(
-        'Error',
-        'Gagal memuat detail notifikasi: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[600],
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: 'Gagal memuat detail notifikasi: $e',
       );
     } finally {
       isLoading.value = false;
@@ -310,23 +284,16 @@ class NotificationController extends GetxController {
         );
       }
       
-      Get.snackbar(
-        'Berhasil',
-        'Status notifikasi berhasil diupdate',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green[600],
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
+      TLoaders.successSnackBar(
+        title: 'Berhasil',
+        message: 'Status notifikasi berhasil diperbarui',
+        duration: 2,
       );
     } catch (e) {
       errorMessage.value = e.toString();
-      Get.snackbar(
-        'Error',
-        'Gagal mengupdate status: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[600],
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: 'Gagal memperbarui status: $e',
       );
     } finally {
       isLoading.value = false;
@@ -343,23 +310,16 @@ class NotificationController extends GetxController {
       // Remove from local list
       notifications.removeWhere((n) => n.id == id);
       
-      Get.snackbar(
-        'Berhasil',
-        'Notifikasi berhasil dihapus',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green[600],
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
+      TLoaders.successSnackBar(
+        title: 'Berhasil',
+        message: 'Notifikasi berhasil dihapus',
+        duration: 2,
       );
     } catch (e) {
       errorMessage.value = e.toString();
-      Get.snackbar(
-        'Error',
-        'Gagal menghapus notifikasi: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[600],
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: 'Gagal menghapus notifikasi: $e',
       );
     } finally {
       isLoading.value = false;

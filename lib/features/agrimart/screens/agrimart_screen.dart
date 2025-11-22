@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:agrigres/common/widgets/appbar/appbar.dart';
+import 'package:agrigres/utils/helpers/loaders.dart';
 
 class AgriMartScreen extends StatelessWidget {
   const AgriMartScreen({super.key});
@@ -299,30 +299,18 @@ class AgriMartScreen extends StatelessWidget {
       }
     } catch (e) {
       // Show error message to user
-      Get.snackbar(
-        'Error',
-        'Tidak dapat membuka link. Silakan buka browser dan kunjungi: $url',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.orange[600],
-        colorText: Colors.white,
-        duration: const Duration(seconds: 4),
-        mainButton: TextButton(
-          onPressed: () {
-            Clipboard.setData(ClipboardData(text: url));
-            Get.snackbar(
-              'Info',
-              'Link telah disalin ke clipboard',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.green[600],
-              colorText: Colors.white,
-            );
-          },
-          child: const Text(
-            'Copy Link',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
+      TLoaders.warningSnackBar(
+        title: 'Kesalahan',
+        message: 'Tidak dapat membuka link. Silakan buka browser dan kunjungi: $url',
       );
+      // Copy to clipboard automatically
+      Future.delayed(const Duration(milliseconds: 500), () {
+        Clipboard.setData(ClipboardData(text: url));
+        TLoaders.successSnackBar(
+          title: 'Info',
+          message: 'Link telah disalin ke clipboard',
+        );
+      });
     }
   }
 }

@@ -28,12 +28,12 @@ class FeedbackController extends GetxController {
   }
 
   Future<void> _initializeFeedbackData() async {
-   usernameController.text = userController.user.value.username.isNotEmpty 
-       ? userController.user.value.username 
-       : 'Muhammad Nizam Setiawan';
+   usernameController.text = userController.user.value.fullName.isNotEmpty 
+       ? userController.user.value.fullName 
+       : 'Pengguna';
    emailController.text = userController.user.value.email.isNotEmpty 
        ? userController.user.value.email 
-       : 'takat89@gmail.com';
+       : '';
   }
 
   Future<void> submitFeedback() async {
@@ -59,6 +59,9 @@ class FeedbackController extends GetxController {
 
       TLoaders.successSnackBar(title: 'Berhasil', message: 'Umpan balik berhasil dikirim');
 
+      // Wait a bit for snackbar to show, then navigate
+      await Future.delayed(const Duration(milliseconds: 500));
+      
       Get.off(() => const SettingsScreen());
 
     } catch (e) {
