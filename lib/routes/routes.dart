@@ -37,8 +37,13 @@ class TRoutes {
   static const agriEdu = '/agri-edu';
   static const videoDetail = '/video-detail';
   static const channelDetail = '/channel-detail';
+  static const plantingCalendar = '/planting-calendar';
+  static const farmManagement = '/farm-management';
   
   // Admin routes
   static const adminLogin = '/admin/login';
   static const adminDashboard = '/admin/dashboard';
+  static const announcementsManagement = '/admin/announcements';
+  static const plantingCalendarManagement = '/admin/planting-calendar';
+  static const farmsManagement = '/admin/farms';
 }

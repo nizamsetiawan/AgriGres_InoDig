@@ -10,6 +10,9 @@ import 'package:agrigres/features/admin/screens/crud/feedback_management_screen.
 import 'package:agrigres/features/admin/screens/crud/categories_management_screen.dart';
 import 'package:agrigres/features/admin/screens/crud/banners_management_screen.dart';
 import 'package:agrigres/features/admin/screens/crud/app_config_management_screen.dart';
+import 'package:agrigres/features/admin/screens/crud/announcements_management_screen.dart';
+import 'package:agrigres/features/admin/screens/crud/planting_calendar_management_screen.dart';
+import 'package:agrigres/features/admin/screens/crud/farms_management_screen.dart';
 import 'package:agrigres/utils/constraints/sizes.dart';
 
 class AdminDashboard extends StatelessWidget {
@@ -213,6 +216,39 @@ class AdminDashboard extends StatelessWidget {
                       iconBgColor: Colors.cyan[50]!,
                       iconColor: Colors.cyan[600]!,
                       onTap: () => Get.to(() => const AppConfigManagementScreen()),
+                    ),
+
+                    // Announcements Management
+                    _buildManagementCard(
+                      context,
+                      icon: Iconsax.notification,
+                      title: 'Manajemen Pengumuman',
+                      subtitle: 'Kelola pengumuman dan pembaruan fitur',
+                      iconBgColor: Colors.amber[50]!,
+                      iconColor: Colors.amber[600]!,
+                      onTap: () => Get.to(() => const AnnouncementsManagementScreen()),
+                    ),
+
+                    // Planting Calendar Management
+                    _buildManagementCard(
+                      context,
+                      icon: Iconsax.calendar,
+                      title: 'Manajemen Kalender Tanam',
+                      subtitle: 'Kelola kalender tanam dan waktu optimal',
+                      iconBgColor: Colors.teal[50]!,
+                      iconColor: Colors.teal[600]!,
+                      onTap: () => Get.to(() => const PlantingCalendarManagementScreen()),
+                    ),
+
+                    // Farms Management
+                    _buildManagementCard(
+                      context,
+                      icon: Iconsax.home_2,
+                      title: 'Manajemen Lahan',
+                      subtitle: 'Kelola data lahan pengguna',
+                      iconBgColor: Colors.brown[50]!,
+                      iconColor: Colors.brown[600]!,
+                      onTap: () => Get.to(() => const FarmsManagementScreen()),
                     ),
 
                     const SizedBox(height: 20),

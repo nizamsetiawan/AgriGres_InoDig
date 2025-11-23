@@ -4,6 +4,9 @@ import 'package:iconsax/iconsax.dart';
 import 'package:agrigres/features/personalization/screens/settings/settings.dart';
 import 'package:agrigres/utils/constraints/colors.dart';
 import 'package:agrigres/utils/helpers/helper_functions.dart';
+import 'package:agrigres/features/announcement/controllers/announcement_controller.dart';
+import 'package:agrigres/features/announcement/widgets/announcement_dialog.dart';
+import 'package:agrigres/features/admin/models/announcement_model.dart';
 import 'features/article/screens/all_articles/article.dart';
 import 'features/detection/screens/home/home.dart';
 import 'features/forum/screens/farmer_forum.dart';
@@ -86,6 +89,7 @@ class NavigationMenu extends StatelessWidget {
 
 class NavigationController extends GetxController {
   final Rx<int> selectedIndex = 0.obs;
+  final announcementController = Get.put(AnnouncementController());
 
   final screens = [
     const HomeScreen(),
@@ -94,4 +98,60 @@ class NavigationController extends GetxController {
     const ArticleScreen(),
     const SettingsScreen(),
   ];
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Wait for announcements to load, then show them
+    _waitAndShowAnnouncements();
+  }
+
+  Future<void> _waitAndShowAnnouncements() async {
+    // Wait for announcements to finish loading
+    while (announcementController.isLoading.value) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+    
+    // Additional delay to ensure UI is ready
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    _showAnnouncements();
+  }
+
+  void _showAnnouncements() {
+    // Get all valid announcements (active and not expired)
+    // They will always show when app opens
+    final validAnnouncements = announcementController.getValidAnnouncements();
+    
+    // Debug logging
+    print('Total announcements: ${announcementController.announcements.length}');
+    print('Valid announcements: ${validAnnouncements.length}');
+    
+    if (validAnnouncements.isEmpty) {
+      print('No valid announcements to show');
+      return;
+    }
+
+    // Show announcements one by one
+    _showNextAnnouncement(validAnnouncements, 0);
+  }
+
+  void _showNextAnnouncement(List<AnnouncementModel> announcements, int index) {
+    if (index >= announcements.length) return;
+    
+    final announcement = announcements[index];
+
+    Get.dialog(
+      AnnouncementDialog(
+        announcement: announcement,
+        onDismiss: () {
+          // Show next announcement after a short delay
+          Future.delayed(const Duration(milliseconds: 300), () {
+            _showNextAnnouncement(announcements, index + 1);
+          });
+        },
+      ),
+      barrierDismissible: false,
+    );
+  }
 }

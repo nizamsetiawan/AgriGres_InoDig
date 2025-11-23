@@ -31,8 +31,13 @@ import '../features/detection/screens/agri_care/agri_care_screen.dart';
 import '../features/agri_edu/screens/agri_edu_screen.dart';
 import '../features/agri_edu/screens/video_detail_screen.dart';
 import '../features/agri_edu/screens/channel_detail_screen.dart';
+import '../features/planting_calendar/screens/planting_calendar_screen.dart';
+import '../features/farm_management/screens/farm_management_screen.dart';
 import '../features/admin/screens/admin_login_screen.dart';
 import '../features/admin/screens/admin_dashboard.dart';
+import '../features/admin/screens/crud/announcements_management_screen.dart';
+import '../features/admin/screens/crud/planting_calendar_management_screen.dart';
+import '../features/admin/screens/crud/farms_management_screen.dart';
 
 class AppRoutes {
   static final pages = [
@@ -77,9 +82,14 @@ class AppRoutes {
         channel: Get.arguments['channel'],
       ),
     ),
+    GetPage(name: TRoutes.plantingCalendar, page: () => const PlantingCalendarScreen()),
+    GetPage(name: TRoutes.farmManagement, page: () => const FarmManagementScreen()),
     // Admin routes
     GetPage(name: TRoutes.adminLogin, page: () => const AdminLoginScreen()),
     GetPage(name: TRoutes.adminDashboard, page: () => const AdminDashboard()),
+    GetPage(name: TRoutes.announcementsManagement, page: () => const AnnouncementsManagementScreen()),
+    GetPage(name: TRoutes.plantingCalendarManagement, page: () => const PlantingCalendarManagementScreen()),
+    GetPage(name: TRoutes.farmsManagement, page: () => const FarmsManagementScreen()),
 
   ];
 }
