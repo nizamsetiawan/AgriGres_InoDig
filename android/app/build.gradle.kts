@@ -31,18 +31,15 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
-    packagingOptions {
+    packaging {
         resources {
             excludes += setOf("META-INF/*.kotlin_module")
         }
         jniLibs {
-            useLegacyPackaging = true
+            useLegacyPackaging = false
         }
     }
 
-    androidResources {
-        noCompress("tflite", "lite")
-    }
 
     defaultConfig {
         applicationId = "com.nizamsetiawan.agrigres"
@@ -50,6 +47,11 @@ android {
         targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        
+        // Support for 16 KB page size (required for Android 15+)
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        }
     }
 
     signingConfigs {
@@ -80,7 +82,6 @@ flutter {
 }
 
 dependencies {
-    // Add androidx dependencies to fix tflite plugin compatibility
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.core:core:1.15.0")
 }

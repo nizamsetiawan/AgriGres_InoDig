@@ -13,7 +13,6 @@ import '../screens/media/result_analyze/result_analyze.dart';
 class ModelController extends GetxController {
   final  modelRepository = Get.put(ModelRepository());
   final resultAnalyzeModel = <ResultAnalyzeModel>[].obs;
-  final  isModelLoaded = false.obs;
   final  selectedLabel = ''.obs;
   final handlingInstructions = <String, Map<String, String>>{}.obs;
   final selectedModel =''.obs;
@@ -25,27 +24,6 @@ class ModelController extends GetxController {
     resultAnalyzeModel.assignAll(modelRepository.getDetectionResults());
   }
 
-  Future<void> loadModel() async {
-    try {
-      if (selectedModel.value.isEmpty) {
-        TLoaders.errorSnackBar(title: 'Oh tidak...', message: 'Silakan pilih jenis tanaman terlebih dahulu.');
-        return; // Berhenti eksekusi jika model belum dipilih
-      }
-      TLoggerHelper.info("Attempting to load model...");
-      String? res = await modelRepository.loadModel(selectedModel.value);
-      if (res != null) {
-        TLoggerHelper.info("Model loaded successfully: $res");
-        isModelLoaded.value = true;
-      } else {
-        TLoggerHelper.error("Failed to load model");
-        throw "Could not load model.";
-      }
-    } catch (e) {
-      TLoggerHelper.error("Error loading model", e);
-      throw "Could not load model: ${e.toString()}";
-    }
-  }
-
   Future<void> fetchResultAnalyzeDisease(String label, double confidence) async {
     try {
       // Check if cancelled before starting
@@ -55,7 +33,6 @@ class ModelController extends GetxController {
 
       TFullScreenLoader.openLoadingDialog('Sedang Analisis...', TImages.docerAnimation);
 
-      isModelLoaded.value = true;
       selectedLabel.value = label;
 
       // Check if cancelled before API call
@@ -104,9 +81,6 @@ class ModelController extends GetxController {
         TLoaders.errorSnackBar(title: 'Kesalahan', message: e.toString());
       }
     } finally {
-      if (!_isAnalysisCancelled) {
-        isModelLoaded.value = false;
-      }
       TFullScreenLoader.stopLoading();
     }
   }
@@ -127,14 +101,12 @@ class ModelController extends GetxController {
 
       TFullScreenLoader.openLoadingDialog('Sedang Menganalisis...', TImages.docerAnimation);
 
-      List<dynamic>? recognitionsResult;
-
-      if (isFromCamera) {
-        recognitionsResult = await modelRepository.runGeminiInference(imagePath);
-      } else {
-        recognitionsResult = await modelRepository.runModelOnImage(imagePath);
-        // recognitionsResult = await modelRepository.runGeminiInference(imagePath);
-      }
+      // Always use Gemini API for both camera and gallery images
+      // Pass selectedModel to filter results based on plant type
+      List<dynamic>? recognitionsResult = await modelRepository.runGeminiInference(
+        imagePath,
+        selectedModel: selectedModel.value,
+      );
 
       // Check if cancelled after inference
       if (_isAnalysisCancelled) {
@@ -190,15 +162,6 @@ class ModelController extends GetxController {
   void cancelAnalysis() {
     _isAnalysisCancelled = true;
     TLoggerHelper.info("Analysis cancelled by user");
-  }
-
-  Future<void> releaseModel() async {
-    try {
-      await modelRepository.closeModel();
-      isModelLoaded.value = false;
-    } catch (e) {
-      TLoggerHelper.error("Error releasing model", e);
-    }
   }
 
   List<ResultAnalyzeModel> getDetectionResults() {

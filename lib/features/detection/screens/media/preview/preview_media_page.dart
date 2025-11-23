@@ -224,7 +224,6 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
                           _isAnalyzing = true;
                         });
                         try {
-                          await modelController.loadModel();
                           await modelController.runInference(
                             widget.imageFile!.path, 
                             isFromCamera: widget.isFromCamera
