@@ -63,19 +63,25 @@ class AppConfigManagementController extends GetxController {
       isSaving.value = true;
       TLoggerHelper.info('Updating AppConfig...');
 
+      // Merge dengan data yang sudah ada di configData
+      final mergedConfig = Map<String, String>.from(configData);
+      mergedConfig.addAll(updatedConfig);
+
       await _db
           .collection(_configCollection)
           .doc(_configDocId)
-          .set(updatedConfig, SetOptions(merge: true));
+          .set(mergedConfig, SetOptions(merge: true));
 
-      configData.assignAll(updatedConfig);
+      // Update local configData dengan merged config
+      configData.assignAll(mergedConfig);
 
       // Force refresh config service cache
       await FirebaseConfigService.instance.refreshConfig();
 
+      TLoggerHelper.info('Config updated: ${mergedConfig.keys.join(", ")}');
       TLoaders.successSnackBar(
         title: 'Berhasil',
-        message: 'Konfigurasi berhasil diperbarui',
+        message: 'Konfigurasi berhasil diperbarui. Cache telah di-refresh.',
       );
     } catch (e) {
       TLoggerHelper.error('Error updating AppConfig', e);

@@ -1,10 +1,8 @@
 import 'package:agrigres/features/detection/controllers/location_controller.dart';
 import 'package:agrigres/features/detection/controllers/weather_controller.dart';
-import 'package:agrigres/features/detection/screens/home/widgets/home_categories.dart';
+import 'package:agrigres/features/detection/screens/home/widgets/home_feature_tabs.dart';
 import 'package:agrigres/features/detection/screens/home/widgets/home_header.dart';
-import 'package:agrigres/features/detection/screens/home/widgets/home_location_card.dart';
-import 'package:agrigres/features/detection/screens/home/widgets/home_menu_grid.dart';
-import 'package:agrigres/features/detection/screens/home/widgets/home_weather_card.dart';
+import 'package:agrigres/features/detection/screens/home/widgets/home_overview_section.dart';
 import 'package:agrigres/features/personalization/controllers/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -58,23 +56,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 
                 const SizedBox(height: 16),
 
-                // Location with icon
-                const THomeLocationCard(),
-
-                const SizedBox(height: 16),
-
-                // Weather Card
-                const THomeWeatherCard(),
+                // Overview Card (Location + Weather + Highlights)
+                const THomeOverviewSection(),
 
                 const SizedBox(height: 20),
 
-                // Menu Utama
-                const THomeMenuGrid(),
-
-                const SizedBox(height: 20),
-
-                // Kategori Artikel
-                const THomeCategories(),
+                // Menu + Artikel tabs
+                const THomeFeatureTabs(),
 
                 const SizedBox(height: 16),
               ],

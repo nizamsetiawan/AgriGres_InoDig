@@ -1,20 +1,20 @@
 import 'package:get/get.dart';
 import 'package:agrigres/features/agri_info/models/agri_info_model.dart';
-import 'package:agrigres/features/agri_info/screens/detail_agri_info_screen.dart';
-import 'package:agrigres/features/agri_info/screens/monthly_detail_agri_info_screen.dart';
-import 'package:agrigres/features/agri_info/screens/table_detail_agri_info_screen.dart';
-import 'package:agrigres/features/agri_info/screens/province_detail_agri_info_screen.dart';
-import 'package:agrigres/features/agri_info/screens/rekapitulasi_screen.dart';
-import 'package:agrigres/features/agri_info/screens/komoditas_rekapitulasi_screen.dart';
 import 'package:agrigres/features/agri_info/screens/lahan_screen.dart';
 import 'package:agrigres/features/agri_info/screens/sawah_screen.dart';
+import 'package:agrigres/features/agri_info/screens/dinas_pertanian_dataset_detail_screen.dart';
 import 'package:agrigres/utils/logging/logger.dart';
 import 'package:agrigres/utils/helpers/loaders.dart';
+import 'package:agrigres/data/repositories/agri_info/dinas_pertanian_repository.dart';
+import 'package:agrigres/features/agri_info/models/dinas_pertanian_dataset_model.dart';
 
 class AgriInfoController extends GetxController {
   static AgriInfoController get instance => Get.find();
 
   final RxBool isLoading = false.obs;
+  final DinasPertanianRepository _repository = Get.find();
+  final RxList<DinasPertanianDatasetModel> datasetList =
+      <DinasPertanianDatasetModel>[].obs;
   final RxList<AgriInfoModel> agriInfoList = <AgriInfoModel>[].obs;
 
   @override
@@ -26,64 +26,45 @@ class AgriInfoController extends GetxController {
   Future<void> fetchAgriInfoList() async {
     try {
       isLoading.value = true;
-      
-      // No delay needed for hardcoded data
-      final agriInfoItems = [
+      final datasets = await _repository.fetchDatasets();
+      datasetList.assignAll(datasets);
+
+      final agriInfoItems = datasets
+          .map(
+            (dataset) => AgriInfoModel(
+              id: dataset.datasetId,
+              title: dataset.title,
+              source: 'Dinas Pertanian Gresik',
+              identity: dataset.identity,
+              resourceCount: dataset.resources.length,
+              iconType: _mapIconType(dataset.title),
+            ),
+          )
+          .toList();
+
+      // Append existing lahan & sawah utilities
+      agriInfoItems.addAll([
         AgriInfoModel(
-          id: '1',
-          title: 'Informasi Harga Pangan Strategis',
-          source: 'Sumber: Badan Pangan Nasional',
-          iconType: AgriInfoIconType.foodPrice,
-        ),
-        AgriInfoModel(
-          id: '2',
-          title: 'Infografis Harga Pangan',
-          source: 'Sumber: Badan Pangan Nasional',
-          iconType: AgriInfoIconType.foodPrice,
-        ),
-        AgriInfoModel(
-          id: '3',
-          title: 'Tabel Harga Pangan Antar Waktu',
-          source: 'Sumber: Badan Pangan Nasional',
-          iconType: AgriInfoIconType.foodPrice,
-        ),
-        AgriInfoModel(
-          id: '4',
-          title: 'Tabel Harga Pangan Antar Wilayah',
-          source: 'Sumber: Badan Pangan Nasional',
-          iconType: AgriInfoIconType.foodPrice,
-        ),
-        AgriInfoModel(
-          id: '5',
-          title: 'Tabel Perkembangan Harga',
-          source: 'Sumber: Badan Pangan Nasional',
-          iconType: AgriInfoIconType.foodPrice,
-        ),
-        AgriInfoModel(
-          id: '6',
-          title: 'Tabel Perkembangan Harga Komoditas',
-          source: 'Sumber: Badan Pangan Nasional',
-          iconType: AgriInfoIconType.foodPrice,
-        ),
-        AgriInfoModel(
-          id: '7',
+          id: 'LAHAN',
           title: 'Luas Penggunaan Lahan menurut Desa/Kelurahan di Kecamatan (Ha)',
-          source: 'Sumber: Satu Data Gresik',
+          source: 'Satu Data Gresik',
           iconType: AgriInfoIconType.landUse,
         ),
         AgriInfoModel(
-          id: '8',
+          id: 'SAWAH',
           title: 'Luas Penggunaan Lahan Sawah menurut Desa/Kelurahan di Kecamatan (Ha)',
-          source: 'Sumber: Satu Data Gresik',
+          source: 'Satu Data Gresik',
           iconType: AgriInfoIconType.landUse,
         ),
-      ];
-      
+      ]);
+
       agriInfoList.assignAll(agriInfoItems);
-      
     } catch (e) {
-      // Handle error
       TLoggerHelper.error('Error fetching agri info', e);
+      TLoaders.errorSnackBar(
+        title: 'Kesalahan',
+        message: 'Gagal memuat data pertanian Gresik',
+      );
     } finally {
       isLoading.value = false;
     }
@@ -92,37 +73,48 @@ class AgriInfoController extends GetxController {
   void navigateToDetail(String agriInfoId) {
     TLoggerHelper.debug('Navigate to detail: $agriInfoId');
     
-    // Navigate to detail screen based on agriInfoId
     switch (agriInfoId) {
-      case '1': // Informasi Harga Pangan Strategis
-        Get.to(() => const DetailAgriInfoScreen());
-        break;
-      case '2': // Infografis Harga Pangan
-        Get.to(() => const MonthlyDetailAgriInfoScreen());
-        break;
-      case '3': // Tabel Harga Pangan Antar Waktu
-        Get.to(() => const TableDetailAgriInfoScreen());
-        break;
-      case '4': // Tabel Harga Pangan Antar Wilayah
-        Get.to(() => const ProvinceDetailAgriInfoScreen());
-        break;
-      case '5': // Tabel Perkembangan Harga (Rekapitulasi)
-        Get.to(() => const RekapitulasiScreen());
-        break;
-      case '6': // Tabel Perkembangan Harga Komoditas (Rekapitulasi Komoditas)
-        Get.to(() => const KomoditasRekapitulasiScreen());
-        break;
-      case '7': // Luas Penggunaan Lahan menurut Desa/Kelurahan di Kecamatan (Ha)
+      case 'LAHAN':
         Get.to(() => const LahanScreen());
         break;
-      case '8': // Luas Sawah Menurut Desa/Kelurahan di Kecamatan (Ha)
+      case 'SAWAH':
         Get.to(() => const SawahScreen());
         break;
       default:
-        TLoaders.warningSnackBar(
-          title: 'Info',
-          message: 'Fitur ini sedang dalam pengembangan',
+        final dataset = _findDatasetById(agriInfoId);
+        if (dataset == null) {
+          TLoaders.warningSnackBar(
+            title: 'Info',
+            message: 'Dataset tidak ditemukan',
+          );
+          return;
+        }
+        Get.to(
+          () => DinasPertanianDatasetDetailScreen(dataset: dataset),
         );
     }
+  }
+
+  DinasPertanianDatasetModel? _findDatasetById(String id) {
+    try {
+      return datasetList.firstWhere((dataset) => dataset.datasetId == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  AgriInfoIconType _mapIconType(String title) {
+    final lowerTitle = title.toLowerCase();
+    if (lowerTitle.contains('lahan') || lowerTitle.contains('sawah')) {
+      return AgriInfoIconType.landUse;
+    }
+
+    if (lowerTitle.contains('produksi') ||
+        lowerTitle.contains('tanaman') ||
+        lowerTitle.contains('perkebunan')) {
+      return AgriInfoIconType.plantation;
+    }
+
+    return AgriInfoIconType.foodPrice;
   }
 }

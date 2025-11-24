@@ -95,6 +95,14 @@ class APIConstants {
     );
   }
 
+  /// Badan Pangan Indonesia API Key
+  static String get badanPanganApiKey {
+    return _getConfig(
+      firebaseKey: 'BADAN_PANGAN_API_KEY',
+      envKey: 'BADAN_PANGAN_API_KEY',
+    );
+  }
+
   // ============================================
   // Cloudinary Configuration
   // ============================================
@@ -166,6 +174,15 @@ class APIConstants {
       firebaseKey: 'SATU_DATA_BASE_URL',
       envKey: 'SATU_DATA_BASE_URL',
       defaultValue: 'https://satudata.gresikkab.go.id/api/3/action',
+    );
+  }
+
+  /// Satu Data Gresik - Dinas Pertanian Organization ID
+  static String get satuDataDinasPertanianOrgId {
+    return _getConfig(
+      firebaseKey: 'SATU_DATA_DINAS_PERTANIAN_ORG_ID',
+      envKey: 'SATU_DATA_DINAS_PERTANIAN_ORG_ID',
+      defaultValue: '971a678c-c734-4277-b2e6-e78b1bfcfa42',
     );
   }
 
@@ -325,4 +342,5 @@ class APIConstants {
       cloudinaryCloudName.isNotEmpty && 
       cloudinaryApiKey.isNotEmpty && 
       cloudinaryApiSecret.isNotEmpty;
+  static bool get isBadanPanganConfigured => badanPanganApiKey.isNotEmpty;
 }

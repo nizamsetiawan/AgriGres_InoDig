@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:agrigres/utils/constraints/colors.dart';
 
 class AgriInfoSectionHeader extends StatelessWidget {
   const AgriInfoSectionHeader({super.key});
@@ -11,17 +12,17 @@ class AgriInfoSectionHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Informasi Pangan',
+          'Data Pertanian Gresik',
           style: textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.grey[900],
+            color: TColors.textPrimary,
           ),
         ),
         const SizedBox(height: 4),
         Text(
-          'Update harga pangan harian & data pertanian Gresik',
+          'Dataset resmi Dinas Pertanian & Ketahanan Pangan Kabupaten Gresik',
           style: textTheme.bodyMedium?.copyWith(
-            color: Colors.grey[600],
+            color: TColors.textSecondary,
           ),
         ),
       ],

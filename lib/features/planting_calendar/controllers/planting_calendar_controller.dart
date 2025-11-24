@@ -1,10 +1,12 @@
 import 'package:get/get.dart';
 import 'package:agrigres/data/repositories/planting_calendar/planting_calendar_repository.dart';
+import 'package:agrigres/data/repositories/planting_calendar/planting_calendar_option_repository.dart';
 import 'package:agrigres/features/planting_calendar/models/planting_calendar_model.dart';
 import 'package:agrigres/utils/logging/logger.dart';
 
 class PlantingCalendarController extends GetxController {
   final PlantingCalendarRepository _repository = Get.find<PlantingCalendarRepository>();
+  final PlantingCalendarOptionRepository _optionRepository = PlantingCalendarOptionRepository();
 
   final calendars = <PlantingCalendarModel>[].obs;
   final isLoading = false.obs;
@@ -28,24 +30,38 @@ class PlantingCalendarController extends GetxController {
     'Desember',
   ];
 
-  // Crop types
-  final List<String> cropTypes = [
-    'Padi',
-    'Jagung',
-    'Sayuran',
-    'Buah-buahan',
-    'Palawija',
-    'Hortikultura',
-    'Lainnya',
-  ];
+  // Crop types - now loaded from Firebase
+  final RxList<String> cropTypes = <String>[].obs;
 
   @override
   void onInit() {
     super.onInit();
+    loadCropTypes();
     loadPlantingCalendars();
     // Set current month as default
     final currentMonth = DateTime.now().month;
     selectedMonth.value = months[currentMonth - 1];
+  }
+
+  /// Load crop types from Firebase
+  Future<void> loadCropTypes() async {
+    try {
+      final cropTypesList = await _optionRepository.getCropTypes();
+      cropTypes.assignAll(cropTypesList.map((option) => option.value).toList());
+      TLoggerHelper.info('Loaded ${cropTypes.length} crop types from Firebase');
+    } catch (e) {
+      TLoggerHelper.error('Error loading crop types', e);
+      // Fallback to default crop types
+      cropTypes.assignAll([
+        'Padi',
+        'Jagung',
+        'Sayuran',
+        'Buah-buahan',
+        'Palawija',
+        'Hortikultura',
+        'Lainnya',
+      ]);
+    }
   }
 
   /// Load all active planting calendars

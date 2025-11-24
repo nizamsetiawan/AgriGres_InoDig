@@ -70,6 +70,13 @@ class ProvinceDetailAgriInfoController extends GetxController {
 
       TLoggerHelper.debug('Fetching province data from: $url');
       final request = http.Request('GET', url);
+      // Add API key header if available
+      if (APIConstants.badanPanganApiKey.isNotEmpty) {
+        request.headers['X-Authorization'] = APIConstants.badanPanganApiKey;
+        TLoggerHelper.debug('Using Badan Pangan API key for authentication');
+      } else {
+        TLoggerHelper.warning('Badan Pangan API key not configured. Request may fail.');
+      }
       final response = await request.send();
 
       if (response.statusCode == 200) {

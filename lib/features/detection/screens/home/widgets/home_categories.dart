@@ -7,13 +7,18 @@ import '../../../../../common/widgets/loaders/category_shimmer.dart';
 import '../../../controllers/category_controller.dart';
 
 class THomeCategories extends StatelessWidget {
+  final bool showHeader;
+
   const THomeCategories({
     super.key,
+    this.showHeader = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    final categoryController = Get.put(CategoryController());
+    final categoryController = Get.isRegistered<CategoryController>()
+        ? Get.find<CategoryController>()
+        : Get.put(CategoryController());
     final textTheme = Theme.of(context).textTheme;
     
     // Define colors for categories
@@ -28,20 +33,22 @@ class THomeCategories extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Kategori Artikel',
-          style: textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
+        if (showHeader) ...[
+          Text(
+            'Kategori Artikel',
+            style: textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          'Pusat Bacaan & Edukasi',
-          style: textTheme.bodyMedium?.copyWith(
-            color: Colors.grey[600],
+          const SizedBox(height: 2),
+          Text(
+            'Pusat Bacaan & Edukasi',
+            style: textTheme.bodyMedium?.copyWith(
+              color: Colors.grey[600],
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
+          const SizedBox(height: 12),
+        ],
         
         // Categories from Controller - 2 rows with 5 items each
         Obx(

@@ -96,8 +96,17 @@ class MonthlyDetailAgriInfoController extends GetxController {
 
       TLoggerHelper.debug('Fetching monthly data from: $url');
 
+      // Prepare headers with API key if available
+      final headers = <String, String>{};
+      if (APIConstants.badanPanganApiKey.isNotEmpty) {
+        headers['X-Authorization'] = APIConstants.badanPanganApiKey;
+        TLoggerHelper.debug('Using Badan Pangan API key for authentication');
+      } else {
+        TLoggerHelper.warning('Badan Pangan API key not configured. Request may fail.');
+      }
+
       // Make API request
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers);
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);

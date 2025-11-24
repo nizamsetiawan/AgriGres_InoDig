@@ -33,7 +33,13 @@ OPENWEATHER_API_KEY: "your_openweather_api_key"
 YOUTUBE_API_KEY: "your_youtube_api_key"
 SECRET_API_KEY: "your_secret_api_key"
 GEMINI_API_KEY: "your_gemini_api_key"
+BADAN_PANGAN_API_KEY: "your_badan_pangan_api_key"
 ```
+
+**Catatan untuk Badan Pangan API Key:**
+- Daftar di [Portal WebAPI Badan Pangan](https://webapi.badanpangan.go.id/register)
+- Setelah verifikasi email dan disetujui oleh Pusdatin, API Key akan tersedia di dashboard
+- API Key digunakan untuk autentikasi semua request ke API Badan Pangan
 
 #### YouTube Channel Configuration
 ```
@@ -70,6 +76,7 @@ SATU_DATA_SAWAH_RESOURCE_ID: "6558d003-413c-11f0-8b48-005056016148"
 SATU_DATA_LAHAN_RESOURCE_ID: "919459eb-413b-11f0-8b48-005056016148"
 SATU_DATA_COOKIE_SAWAH: "cookie-satudata_2024=u9528obkpk99sg3sa6b23psaln6ma26f"
 SATU_DATA_COOKIE_LAHAN: "cookie-satudata_2024=sg6l3o4jqu0ie91ii0p7912rc8sdm515"
+SATU_DATA_DINAS_PERTANIAN_ORG_ID: "971a678c-c734-4277-b2e6-e78b1bfcfa42"
 ```
 
 #### Location & Geolocation

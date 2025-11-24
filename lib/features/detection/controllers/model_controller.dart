@@ -16,12 +16,27 @@ class ModelController extends GetxController {
   final  selectedLabel = ''.obs;
   final handlingInstructions = <String, Map<String, String>>{}.obs;
   final selectedModel =''.obs;
+  final availablePlantTypes = <String>[].obs;
   bool _isAnalysisCancelled = false;
 
   @override
   void onInit() {
     super.onInit();
     resultAnalyzeModel.assignAll(modelRepository.getDetectionResults());
+    loadPlantTypes();
+  }
+
+  /// Load available plant types from Firebase
+  Future<void> loadPlantTypes() async {
+    try {
+      final plantTypes = await modelRepository.getAvailablePlantTypes();
+      availablePlantTypes.assignAll(plantTypes);
+      TLoggerHelper.info("Loaded ${plantTypes.length} plant types");
+    } catch (e) {
+      TLoggerHelper.error("Error loading plant types", e);
+      // Fallback to default
+      availablePlantTypes.assignAll(['Tanaman Tomat', 'Tanaman Singkong', 'Tanaman Jagung']);
+    }
   }
 
   Future<void> fetchResultAnalyzeDisease(String label, double confidence) async {

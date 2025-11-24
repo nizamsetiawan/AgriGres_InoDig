@@ -13,6 +13,14 @@ import 'package:agrigres/features/admin/screens/crud/app_config_management_scree
 import 'package:agrigres/features/admin/screens/crud/announcements_management_screen.dart';
 import 'package:agrigres/features/admin/screens/crud/planting_calendar_management_screen.dart';
 import 'package:agrigres/features/admin/screens/crud/farms_management_screen.dart';
+import 'package:agrigres/features/admin/screens/crud/detection_config_management_screen.dart';
+import 'package:agrigres/features/admin/screens/crud/analyze_management_screen.dart';
+import 'package:agrigres/features/admin/screens/crud/home_menu_management_screen.dart';
+import 'package:agrigres/features/admin/screens/crud/guidelines_management_screen.dart';
+import 'package:agrigres/features/admin/screens/crud/agri_edu_category_management_screen.dart';
+import 'package:agrigres/features/admin/screens/crud/farm_option_management_screen.dart';
+import 'package:agrigres/features/admin/screens/crud/planting_calendar_option_management_screen.dart';
+import 'package:agrigres/features/admin/screens/crud/level_harga_option_management_screen.dart';
 import 'package:agrigres/utils/constraints/sizes.dart';
 
 class AdminDashboard extends StatelessWidget {
@@ -249,6 +257,94 @@ class AdminDashboard extends StatelessWidget {
                       iconBgColor: Colors.brown[50]!,
                       iconColor: Colors.brown[600]!,
                       onTap: () => Get.to(() => const FarmsManagementScreen()),
+                    ),
+
+                    // Detection Config Management
+                    _buildManagementCard(
+                      context,
+                      icon: Iconsax.scan_barcode,
+                      title: 'Konfigurasi Deteksi',
+                      subtitle: 'Kelola daftar penyakit dan keyword Gemini',
+                      iconBgColor: Colors.lime[50]!,
+                      iconColor: Colors.lime[700]!,
+                      onTap: () => Get.to(() => const DetectionConfigManagementScreen()),
+                    ),
+
+                    // Analyze Management
+                    _buildManagementCard(
+                      context,
+                      icon: Iconsax.document_text,
+                      title: 'Manajemen Data Analisis',
+                      subtitle: 'Kelola data hasil analisis penyakit tanaman',
+                      iconBgColor: Colors.purple[50]!,
+                      iconColor: Colors.purple[600]!,
+                      onTap: () => Get.to(() => const AnalyzeManagementScreen()),
+                    ),
+
+                    // Home Menu Management
+                    _buildManagementCard(
+                      context,
+                      icon: Iconsax.menu,
+                      title: 'Manajemen Menu Utama',
+                      subtitle: 'Kelola menu utama aplikasi',
+                      iconBgColor: Colors.blue[50]!,
+                      iconColor: Colors.blue[600]!,
+                      onTap: () => Get.to(() => const HomeMenuManagementScreen()),
+                    ),
+
+                    // Guidelines Management
+                    _buildManagementCard(
+                      context,
+                      icon: Iconsax.document_text,
+                      title: 'Manajemen Panduan',
+                      subtitle: 'Kelola panduan penggunaan aplikasi',
+                      iconBgColor: Colors.green[50]!,
+                      iconColor: Colors.green[600]!,
+                      onTap: () => Get.to(() => const GuidelinesManagementScreen()),
+                    ),
+
+                    // AgriEdu Category Management
+                    _buildManagementCard(
+                      context,
+                      icon: Iconsax.category,
+                      title: 'Manajemen Kategori AgriEdu',
+                      subtitle: 'Kelola kategori video AgriEdu',
+                      iconBgColor: Colors.orange[50]!,
+                      iconColor: Colors.orange[600]!,
+                      onTap: () => Get.to(() => const AgriEduCategoryManagementScreen()),
+                    ),
+
+                    // Farm Option Management
+                    _buildManagementCard(
+                      context,
+                      icon: Iconsax.home_2,
+                      title: 'Manajemen Opsi Lahan',
+                      subtitle: 'Kelola jenis tanaman dan status lahan',
+                      iconBgColor: Colors.brown[50]!,
+                      iconColor: Colors.brown[600]!,
+                      onTap: () => Get.to(() => const FarmOptionManagementScreen()),
+                    ),
+
+                    // Planting Calendar Option Management
+                    _buildManagementCard(
+                      context,
+                      icon: Iconsax.calendar,
+                      title: 'Manajemen Opsi Kalender Tanam',
+                      subtitle: 'Kelola jenis tanaman untuk kalender tanam',
+                      iconBgColor: Colors.teal[50]!,
+                      iconColor: Colors.teal[600]!,
+                      onTap: () => Get.to(() => const PlantingCalendarOptionManagementScreen()),
+                    ),
+
+                    // Level Harga Option Management
+                    _buildManagementCard(
+                      context,
+                      icon: Iconsax.dollar_circle,
+                      title: 'Manajemen Level Harga',
+                      subtitle: 'Kelola level harga untuk AgriInfo',
+                      iconBgColor: Colors.blue[50]!,
+                      iconColor: Colors.blue[600]!,
+                      onTap: () => Get.to(() => const LevelHargaOptionManagementScreen()),
                     ),
 
                     const SizedBox(height: 20),

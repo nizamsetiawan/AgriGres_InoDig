@@ -181,7 +181,7 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
                             ),
                           ),
                         ),
-                        ...['Tanaman Tomat', 'Tanaman Singkong', 'Tanaman Jagung']
+                        ...modelController.availablePlantTypes
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,

@@ -4,6 +4,8 @@ import 'package:iconsax/iconsax.dart';
 import 'package:agrigres/common/widgets/appbar/appbar.dart';
 import 'package:agrigres/features/farm_management/controllers/farm_management_controller.dart';
 import 'package:agrigres/features/farm_management/models/farm_model.dart';
+import 'package:agrigres/data/repositories/farm_management/farm_option_repository.dart';
+import 'package:agrigres/features/farm_management/models/farm_option_model.dart';
 import 'package:agrigres/utils/constraints/sizes.dart';
 import 'package:intl/intl.dart';
 
@@ -19,6 +21,7 @@ class CreateEditFarmScreen extends StatefulWidget {
 class _CreateEditFarmScreenState extends State<CreateEditFarmScreen> {
   final _formKey = GlobalKey<FormState>();
   final _controller = Get.find<FarmManagementController>();
+  final _optionRepository = FarmOptionRepository();
 
   final _farmNameController = TextEditingController();
   final _areaController = TextEditingController();
@@ -33,27 +36,15 @@ class _CreateEditFarmScreenState extends State<CreateEditFarmScreen> {
   DateTime? _expectedHarvestDate;
   final List<String> _imageUrls = [];
 
-  final List<String> cropTypes = [
-    'Padi',
-    'Jagung',
-    'Sayuran',
-    'Buah-buahan',
-    'Palawija',
-    'Hortikultura',
-    'Lainnya',
-  ];
-
-  final List<String> statusOptions = [
-    'preparing',
-    'planting',
-    'growing',
-    'harvesting',
-    'harvested',
-  ];
+  // Options from Firebase
+  final RxList<FarmOptionModel> cropTypes = <FarmOptionModel>[].obs;
+  final RxList<FarmOptionModel> statusOptions = <FarmOptionModel>[].obs;
+  final RxBool isLoadingOptions = false.obs;
 
   @override
   void initState() {
     super.initState();
+    _loadOptions();
     if (widget.farm != null) {
       _farmNameController.text = widget.farm!.farmName;
       _areaController.text = widget.farm!.area.toString();
@@ -66,6 +57,20 @@ class _CreateEditFarmScreenState extends State<CreateEditFarmScreen> {
       _plantingDate = widget.farm!.plantingDate;
       _expectedHarvestDate = widget.farm!.expectedHarvestDate;
       _imageUrls.addAll(widget.farm!.imageUrls);
+    }
+  }
+
+  Future<void> _loadOptions() async {
+    isLoadingOptions.value = true;
+    try {
+      final cropTypesList = await _optionRepository.getCropTypes();
+      final statusOptionsList = await _optionRepository.getStatusOptions();
+      cropTypes.assignAll(cropTypesList);
+      statusOptions.assignAll(statusOptionsList);
+    } catch (e) {
+      // Error already handled in repository
+    } finally {
+      isLoadingOptions.value = false;
     }
   }
 
@@ -221,26 +226,40 @@ class _CreateEditFarmScreenState extends State<CreateEditFarmScreen> {
               const SizedBox(height: TSizes.spaceBtwInputFields),
 
               // Crop Type
-              DropdownButtonFormField<String>(
-                value: _cropTypeController.text.isEmpty ? null : _cropTypeController.text,
-                decoration: const InputDecoration(
-                  labelText: 'Jenis Tanaman',
-                  prefixIcon: Icon(Iconsax.tree),
-                ),
-                items: cropTypes.map((type) {
-                  return DropdownMenuItem(value: type, child: Text(type));
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _cropTypeController.text = value ?? '';
-                  });
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Jenis tanaman harus dipilih';
-                  }
-                  return null;
-                },
+              Obx(
+                () => isLoadingOptions.value
+                    ? DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'Jenis Tanaman',
+                          prefixIcon: Icon(Iconsax.tree),
+                        ),
+                        items: const [],
+                        onChanged: null,
+                      )
+                    : DropdownButtonFormField<String>(
+                        value: _cropTypeController.text.isEmpty ? null : _cropTypeController.text,
+                        decoration: const InputDecoration(
+                          labelText: 'Jenis Tanaman',
+                          prefixIcon: Icon(Iconsax.tree),
+                        ),
+                        items: cropTypes.map((option) {
+                          return DropdownMenuItem(
+                            value: option.value,
+                            child: Text(option.label),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _cropTypeController.text = value ?? '';
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Jenis tanaman harus dipilih';
+                          }
+                          return null;
+                        },
+                      ),
               ),
               const SizedBox(height: TSizes.spaceBtwInputFields),
 
@@ -255,23 +274,34 @@ class _CreateEditFarmScreenState extends State<CreateEditFarmScreen> {
               const SizedBox(height: TSizes.spaceBtwInputFields),
 
               // Status
-              DropdownButtonFormField<String>(
-                value: _selectedStatus,
-                decoration: const InputDecoration(
-                  labelText: 'Status',
-                  prefixIcon: Icon(Iconsax.info_circle),
-                ),
-                items: statusOptions.map((status) {
-                  return DropdownMenuItem(
-                    value: status,
-                    child: Text(_getStatusLabel(status)),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedStatus = value ?? 'preparing';
-                  });
-                },
+              Obx(
+                () => isLoadingOptions.value
+                    ? DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'Status',
+                          prefixIcon: Icon(Iconsax.info_circle),
+                        ),
+                        items: const [],
+                        onChanged: null,
+                      )
+                    : DropdownButtonFormField<String>(
+                        value: _selectedStatus,
+                        decoration: const InputDecoration(
+                          labelText: 'Status',
+                          prefixIcon: Icon(Iconsax.info_circle),
+                        ),
+                        items: statusOptions.map((option) {
+                          return DropdownMenuItem(
+                            value: option.value,
+                            child: Text(option.label),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedStatus = value ?? (statusOptions.isNotEmpty ? statusOptions.first.value : 'preparing');
+                          });
+                        },
+                      ),
               ),
               const SizedBox(height: TSizes.spaceBtwInputFields),
 
@@ -403,21 +433,5 @@ class _CreateEditFarmScreenState extends State<CreateEditFarmScreen> {
     );
   }
 
-  String _getStatusLabel(String status) {
-    switch (status) {
-      case 'preparing':
-        return 'Persiapan';
-      case 'planting':
-        return 'Menanam';
-      case 'growing':
-        return 'Tumbuh';
-      case 'harvesting':
-        return 'Panen';
-      case 'harvested':
-        return 'Sudah Panen';
-      default:
-        return status;
-    }
-  }
 }
 

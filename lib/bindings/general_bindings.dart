@@ -7,6 +7,9 @@ import 'package:agrigres/data/repositories/admin/admin_repository.dart';
 import 'package:agrigres/data/repositories/announcement/announcement_repository.dart';
 import 'package:agrigres/data/repositories/planting_calendar/planting_calendar_repository.dart';
 import 'package:agrigres/data/repositories/farm_management/farm_repository.dart';
+import 'package:agrigres/data/repositories/disease/model_repository.dart';
+import 'package:agrigres/data/repositories/categories/category_repository.dart';
+import 'package:agrigres/data/repositories/agri_info/dinas_pertanian_repository.dart';
 
 class GeneralBindings extends Bindings {
 
@@ -20,5 +23,8 @@ class GeneralBindings extends Bindings {
     Get.put(AnnouncementRepository());
     Get.put(PlantingCalendarRepository());
     Get.put(FarmRepository());
+    Get.put(ModelRepository());
+    Get.put(CategoryRepository());
+    Get.put(DinasPertanianRepository());
   }
 }

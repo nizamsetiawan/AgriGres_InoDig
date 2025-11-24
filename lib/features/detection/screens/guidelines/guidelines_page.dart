@@ -4,6 +4,7 @@ import 'package:agrigres/utils/constraints/colors.dart';
 
 import '../../../../utils/constraints/text_strings.dart';
 import '../../../../utils/helpers/loaders.dart';
+import '../../controllers/guidelines_controller.dart';
 
 class GuidelinesScreen extends StatelessWidget {
   const GuidelinesScreen({super.key});
@@ -11,6 +12,7 @@ class GuidelinesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final controller = Get.put(GuidelinesController());
     
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -39,104 +41,72 @@ class GuidelinesScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+        child: Obx(
+          () {
+            if (controller.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (controller.guidelines.isEmpty) {
+              return Center(
+                child: Text(
+                  'Tidak ada panduan tersedia',
+                  style: textTheme.bodyLarge,
+                ),
+              );
+            }
+
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Text(
-                    TTexts.guidelinesTitle,
-                    style: textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: TColors.primary,
+                      child: Text(
+                        controller.headerTitle ?? TTexts.guidelinesTitle,
+                        style: textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: TColors.primary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                _buildStepSection(
-                  context,
-                  textTheme,
-                  "1",
-                  TTexts.step1Title,
-                  TTexts.step1Description,
+                    // Guidelines List
+                    ...controller.guidelines.map((guideline) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: _buildStepSection(
+                          context,
+                          textTheme,
+                          guideline.icon ?? '',
+                          guideline.title,
+                          guideline.description,
+                        ),
+                      );
+                    }).toList(),
+                  ],
                 ),
-                const SizedBox(height: 16),
-
-                _buildStepSection(
-                  context,
-                  textTheme,
-                  "2",
-                  TTexts.step2Title,
-                  TTexts.step2Description,
-                ),
-                const SizedBox(height: 16),
-
-                _buildStepSection(
-                  context,
-                  textTheme,
-                  "3",
-                  TTexts.step3Title,
-                  TTexts.step3Description,
-                ),
-                const SizedBox(height: 16),
-
-                _buildStepSection(
-                  context,
-                  textTheme,
-                  "4",
-                  TTexts.step4Title,
-                  TTexts.step4Description,
-                ),
-                const SizedBox(height: 16),
-
-                _buildStepSection(
-                  context,
-                  textTheme,
-                  "5",
-                  TTexts.step5Title,
-                  TTexts.step5Description,
-                ),
-                const SizedBox(height: 16),
-
-                _buildStepSection(
-                  context,
-                  textTheme,
-                  "ℹ️",
-                  TTexts.additionalFeatureHistoryTitle,
-                  TTexts.additionalFeatureHistoryDescription,
-                ),
-                const SizedBox(height: 16),
-
-                _buildStepSection(
-                  context,
-                  textTheme,
-                  "📚",
-                  TTexts.additionalFeatureArticleTitle,
-                  TTexts.additionalFeatureArticleDescription,
-                ),
-                const SizedBox(height: 16),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:agrigres/features/agri_info/models/agri_info_model.dart';
+import 'package:agrigres/utils/constraints/colors.dart';
 
 class AgriInfoListItem extends StatelessWidget {
   final AgriInfoModel agriInfo;
@@ -14,6 +15,7 @@ class AgriInfoListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final tagMaxWidth = MediaQuery.of(context).size.width * 0.55;
     
     return Material(
       color: Colors.transparent,
@@ -23,10 +25,10 @@ class AgriInfoListItem extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: TColors.white,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: Colors.grey[200]!,
+              color: TColors.borderSecondary,
               width: 0.5,
             ),
           ),
@@ -47,7 +49,7 @@ class AgriInfoListItem extends StatelessWidget {
                       agriInfo.title,
                       style: textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
-                        color: Colors.grey[800],
+                        color: TColors.textPrimary,
                         height: 1.2,
                       ),
                     ),
@@ -58,10 +60,33 @@ class AgriInfoListItem extends StatelessWidget {
                     Text(
                       agriInfo.source,
                       style: textTheme.bodySmall?.copyWith(
-                        color: Colors.green[600],
+                        color: TColors.primary,
                         fontSize: 11,
                       ),
                     ),
+
+                    if (agriInfo.resourceCount > 0 || agriInfo.identity.isNotEmpty)
+                      const SizedBox(height: 4),
+
+                    if (agriInfo.resourceCount > 0 || agriInfo.identity.isNotEmpty)
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: [
+                          if (agriInfo.resourceCount > 0)
+                            _buildTag(
+                              icon: Icons.dataset_outlined,
+                              label: '${agriInfo.resourceCount} data',
+                              maxWidth: tagMaxWidth,
+                            ),
+                          if (agriInfo.identity.isNotEmpty)
+                            _buildTag(
+                              icon: Icons.local_offer_outlined,
+                              label: agriInfo.identity,
+                              maxWidth: tagMaxWidth,
+                            ),
+                        ],
+                      ),
                   ],
                 ),
               ),
@@ -70,7 +95,7 @@ class AgriInfoListItem extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_ios,
                 size: 12,
-                color: Colors.grey[400],
+                color: TColors.textSecondary.withOpacity(0.6),
               ),
             ],
           ),
@@ -100,18 +125,22 @@ class AgriInfoListItem extends StatelessWidget {
   Color _getIconBackgroundColor() {
     switch (agriInfo.iconType) {
       case AgriInfoIconType.foodPrice:
-        return Colors.blue[50]!;
+        return TColors.secondary.withOpacity(0.12);
       case AgriInfoIconType.landUse:
-        return Colors.orange[50]!;
+        return TColors.primary.withOpacity(0.1);
+      case AgriInfoIconType.plantation:
+        return TColors.primary.withOpacity(0.06);
     }
   }
 
   Color _getIconBorderColor() {
     switch (agriInfo.iconType) {
       case AgriInfoIconType.foodPrice:
-        return Colors.blue[200]!;
+        return TColors.secondary.withOpacity(0.4);
       case AgriInfoIconType.landUse:
-        return Colors.orange[200]!;
+        return TColors.primary.withOpacity(0.35);
+      case AgriInfoIconType.plantation:
+        return TColors.primary.withOpacity(0.25);
     }
   }
 
@@ -120,15 +149,56 @@ class AgriInfoListItem extends StatelessWidget {
       case AgriInfoIconType.foodPrice:
         return Icon(
           Icons.analytics_outlined,
-          color: Colors.blue[600],
+          color: TColors.secondary,
           size: 20,
         );
       case AgriInfoIconType.landUse:
         return Icon(
           Icons.terrain_outlined,
-          color: Colors.orange[600],
+          color: TColors.primary,
+          size: 20,
+        );
+      case AgriInfoIconType.plantation:
+        return Icon(
+          Icons.grass,
+          color: TColors.primary,
           size: 20,
         );
     }
+  }
+
+  Widget _buildTag({
+    required IconData icon,
+    required String label,
+    double? maxWidth,
+  }) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: maxWidth ?? double.infinity,
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: TColors.softGrey,
+          borderRadius: BorderRadius.circular(99),
+          border: Border.all(color: TColors.borderPrimary),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 12, color: TColors.textSecondary),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 11, color: TColors.textPrimary),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -16,7 +16,7 @@ File `.env` berisi semua konfigurasi API keys, base URLs, dan pengaturan lainnya
 
 ## 📝 Daftar Environment Variables
 
-### 🔑 API Keys (4 variables)
+### 🔑 API Keys (5 variables)
 
 | Variable | Description | Where to Get |
 |----------|-------------|--------------|
@@ -24,6 +24,7 @@ File `.env` berisi semua konfigurasi API keys, base URLs, dan pengaturan lainnya
 | `YOUTUBE_API_KEY` | YouTube Data API Key | [https://console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials) |
 | `GEMINI_API_KEY` | Google Gemini AI API Key | [https://makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey) |
 | `SECRET_API_KEY` | Secret API Key (for general use) | Your own API key |
+| `BADAN_PANGAN_API_KEY` | Badan Pangan Indonesia API Key | [https://webapi.badanpangan.go.id/register](https://webapi.badanpangan.go.id/register) |
 
 ### 📺 YouTube Channel Configuration (2 variables)
 
@@ -66,6 +67,7 @@ File `.env` berisi semua konfigurasi API keys, base URLs, dan pengaturan lainnya
 | `SATU_DATA_LAHAN_RESOURCE_ID` | `919459eb-413b-11f0-8b48-005056016148` | Resource ID for Lahan (Lahan Pertanian) data |
 | `SATU_DATA_COOKIE_SAWAH` | `cookie-satudata_2024=u9528obkpk99sg3sa6b23psaln6ma26f` | Cookie for Satu Data Gresik API (Sawah) |
 | `SATU_DATA_COOKIE_LAHAN` | `cookie-satudata_2024=sg6l3o4jqu0ie91ii0p7912rc8sdm515` | Cookie for Satu Data Gresik API (Lahan) |
+| `SATU_DATA_DINAS_PERTANIAN_ORG_ID` | `971a678c-c734-4277-b2e6-e78b1bfcfa42` | Organization ID for Dinas Pertanian datasets |
 
 ### 📍 Location & Geolocation Configuration (2 variables)
 
@@ -100,6 +102,7 @@ OPENWEATHER_API_KEY=your_openweather_api_key_here
 YOUTUBE_API_KEY=your_youtube_api_key_here
 GEMINI_API_KEY=your_gemini_api_key_here
 SECRET_API_KEY=your_secret_api_key_here
+BADAN_PANGAN_API_KEY=your_badan_pangan_api_key_here
 
 # ============================================
 # YouTube Channel Configuration
@@ -137,6 +140,7 @@ SATU_DATA_SAWAH_RESOURCE_ID=6558d003-413c-11f0-8b48-005056016148
 SATU_DATA_LAHAN_RESOURCE_ID=919459eb-413b-11f0-8b48-005056016148
 SATU_DATA_COOKIE_SAWAH=cookie-satudata_2024=u9528obkpk99sg3sa6b23psaln6ma26f
 SATU_DATA_COOKIE_LAHAN=cookie-satudata_2024=sg6l3o4jqu0ie91ii0p7912rc8sdm515
+SATU_DATA_DINAS_PERTANIAN_ORG_ID=971a678c-c734-4277-b2e6-e78b1bfcfa42
 
 # ============================================
 # Location & Geolocation Configuration
@@ -165,6 +169,7 @@ Semua konfigurasi berikut sudah dipindahkan ke `.env`:
 - ✅ YouTube API Key & Base URL
 - ✅ Google Gemini AI API Key & Model Name
 - ✅ Cloudinary Configuration (Cloud Name, API Key, API Secret, Base URL, Upload Presets)
+- ✅ Badan Pangan Indonesia API Key
 - ✅ Agri Info API Base URL
 - ✅ Satu Data Gresik API Base URL, Resource IDs, & Cookies
 - ✅ Location Configuration (Default Location, Accuracy)

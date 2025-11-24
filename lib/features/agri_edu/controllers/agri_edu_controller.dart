@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 import '../models/youtube_video_model.dart';
 import '../models/youtube_channel_model.dart';
 import '../repositories/youtube_repository.dart';
+import '../../../data/repositories/agri_edu_category_repository.dart';
 import '../../../utils/logging/logger.dart';
 import '../../../utils/helpers/loaders.dart';
 
 class AgriEduController extends GetxController {
   final YouTubeRepository _youtubeRepository = YouTubeRepository();
+  final AgriEduCategoryRepository _categoryRepository = AgriEduCategoryRepository();
   
   final RxList<YouTubeVideoModel> videos = <YouTubeVideoModel>[].obs;
   final RxList<YouTubeVideoModel> allVideos = <YouTubeVideoModel>[].obs;
@@ -23,29 +25,43 @@ class AgriEduController extends GetxController {
   final RxString searchQuery = ''.obs;
   final RxString errorMessage = ''.obs;
   final TextEditingController searchTextController = TextEditingController();
-  // Search filters
-  final RxList<String> categories = <String>[
-    'Pertanian',
-    'Hidroponik',
-    'Organik',
-    'Urban',
-    'Aquaponik',
-    'Teknologi',
-    'Tips',
-    'Greenhouse',
-    'Pascapanen',
-  ].obs;
+  // Search filters - now loaded from Firebase
+  final RxList<String> categories = <String>[].obs;
   final RxString selectedFilter = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
+    loadCategories();
     fetchVideos();
     fetchChannels();
     // Fetch featured videos after channels are loaded
     Future.delayed(const Duration(milliseconds: 500), () {
       fetchFeaturedVideos();
     });
+  }
+
+  /// Load categories from Firebase
+  Future<void> loadCategories() async {
+    try {
+      final categoryList = await _categoryRepository.getCategories();
+      categories.assignAll(categoryList.map((cat) => cat.name).toList());
+      TLoggerHelper.info('Loaded ${categories.length} categories from Firebase');
+    } catch (e) {
+      TLoggerHelper.error('Error loading categories', e);
+      // Fallback to default categories
+      categories.assignAll([
+        'Pertanian',
+        'Hidroponik',
+        'Organik',
+        'Urban',
+        'Aquaponik',
+        'Teknologi',
+        'Tips',
+        'Greenhouse',
+        'Pascapanen',
+      ]);
+    }
   }
 
   @override

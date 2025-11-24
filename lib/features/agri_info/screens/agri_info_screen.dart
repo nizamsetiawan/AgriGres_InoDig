@@ -5,6 +5,7 @@ import 'package:agrigres/features/agri_info/widgets/agri_info_section_header.dar
 import 'package:agrigres/features/agri_info/widgets/agri_info_list_item.dart';
 import 'package:agrigres/features/agri_info/controllers/agri_info_controller.dart';
 import 'package:agrigres/features/agri_info/models/agri_info_model.dart';
+import 'package:agrigres/utils/constraints/colors.dart';
 
 class AgriInfoScreen extends StatelessWidget {
   const AgriInfoScreen({super.key});
@@ -15,7 +16,7 @@ class AgriInfoScreen extends StatelessWidget {
     final controller = Get.put(AgriInfoController());
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: TColors.light,
       appBar: const TAppBar(
         title: Text('Agri Info'),
         showBackArrow: true,
@@ -42,6 +43,36 @@ class AgriInfoScreen extends StatelessWidget {
   }
 
   Widget _buildAgriInfoList(AgriInfoController controller) {
+    if (controller.isLoading.value) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 32),
+        child: Column(
+          children: const [
+            LinearProgressIndicator(
+              minHeight: 3,
+              color: TColors.primary,
+              backgroundColor: TColors.primaryBackground,
+            ),
+            SizedBox(height: 12),
+            Text(
+              'Memuat dataset terbaru...',
+              style: TextStyle(color: TColors.textSecondary),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (controller.agriInfoList.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 32),
+        child: const Text(
+          'Belum ada dataset yang dapat ditampilkan.',
+          style: TextStyle(color: TColors.textSecondary),
+        ),
+      );
+    }
+
     return Column(
       children: controller.agriInfoList.map((item) {
         return Padding(
